@@ -22,7 +22,7 @@ Imports:
     checkmate,
     clue,
     expm,
-    Rcpp,
+    Rcpp (>= 1.1.0),
     RcppParallel (>= 5.1.10),
     stats,
     ucminf
