@@ -1,5 +1,6 @@
 # tests/testthat/test-optimize_likelihood.R
 library(testthat)
+library(xsdm)
 test_that("optimize_likelihood() returns expected structure and sorting", {
   # Small synthetic env array: n locations, T time steps, p variables
   set.seed(1)
@@ -211,7 +212,7 @@ test_that("start_parms() returning 0 rows triggers informative error", {
         fixed = FALSE
       )
     },
-    .package = "xsdmMle" # ensure binding is replaced in the package namespace
+    .package = "xsdm" # ensure binding is replaced in the package namespace
   )
 })
 
@@ -340,7 +341,7 @@ test_that("optimize_likelihood() completes and excludes failed starts when runne
       expect_lt(nrow(res$solutions), 4L)
       expect_gte(nrow(res$solutions), 1L)
     },
-    .package = "xsdmMle"
+    .package = "xsdm"
   )
 })
 
@@ -373,7 +374,7 @@ test_that("optimize_likelihood() reports failed-start count with verbose=TRUE", 
         fixed = FALSE
       )
     },
-    .package = "xsdmMle"
+    .package = "xsdm"
   )
 })
 

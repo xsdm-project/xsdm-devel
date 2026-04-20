@@ -1,6 +1,3 @@
-library(testthat)
-
-
 test_that("tests for the function convert_equivalence_class", {
   skip_on_cran()
   # set up a random example

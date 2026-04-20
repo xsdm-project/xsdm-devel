@@ -1,5 +1,3 @@
-library(testthat)
-
 test_that("expit_general returns value between bounds", {
   result <- expit_general(0, -1, 1, 0)
   expect_true(result >= -1 && result <= 1)

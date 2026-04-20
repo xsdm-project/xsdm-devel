@@ -1,5 +1,4 @@
 library(testthat)
-library(xsdmMle)
 
 test_that("math_to_bio converts p=1 correctly (no o_par)", {
   # Build canonical vector for p=1

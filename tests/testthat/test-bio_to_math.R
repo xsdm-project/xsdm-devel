@@ -1,5 +1,3 @@
-library(testthat)
-library(xsdmMle)
 test_that("bio_to_math is inverse of math_to_bio for small generators (principal branch)", {
   set.seed(1)
   p <- 3

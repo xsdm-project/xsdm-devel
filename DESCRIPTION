@@ -1,7 +1,7 @@
 Package: xsdm
 Type: Package
 Title: Demographic Approach to Species Distribution Model
-Version: 0.2.0
+Version: 1.0.0
 Authors@R: c(
     person("Emilio", "Berti", , "emilio.berti@idiv.de", role = c("aut"),
            comment = c(ORCID = "0000-0001-9286-011X")),
@@ -25,7 +25,12 @@ Imports:
     Rcpp (>= 1.1.0),
     RcppParallel (>= 5.1.10),
     stats,
-    ucminf
+    ucminf,
+    furrr,
+    future,
+    future.callr,
+    pomp,
+    purrr
 LinkingTo: Rcpp, RcppParallel
 SystemRequirements: GNU make
 RoxygenNote: 7.3.3
@@ -35,11 +40,6 @@ Depends:
 LazyData: true
 LazyDataCompression: xz
 Suggests: 
-    furrr,
-    future,
-    future.callr,
-    pomp,
-    purrr,
     terra,
     testthat (>= 3.0.0),
     tibble

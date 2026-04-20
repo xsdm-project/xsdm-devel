@@ -1,3 +1,8 @@
+.onLoad <- function(libname, pkgname) {
+  options(future.globals.maxSize = 8.0 * 1024^3)
+  assign("xsdm", new.env(), envir = parent.env(environment()))
+}
+
 xsdmStartupMessage <- function()
 {
   msg <- c(paste0(
@@ -12,11 +17,6 @@ __  _____  __| |_ __ ___
   )
   
   return(msg)
-}
-
-.onLoad <- function(libname, pkgname) {
-  # Set future.globals.maxSize to your desired default value (e.g., 1 GB)
-  options(future.globals.maxSize = 8.0 * 1024^3) # 1 GB in bytes
 }
 
 .onAttach <- function(lib, pkg)

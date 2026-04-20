@@ -1,5 +1,3 @@
-library(testthat)
-
 test_that("create_mask returns empty mask when params is NULL", {
   result <- create_mask(p = 2)
 

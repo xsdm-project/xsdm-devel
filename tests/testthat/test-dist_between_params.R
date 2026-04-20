@@ -1,5 +1,3 @@
-# tests/testthat/test-dist_between_params.R
-library(testthat)
 test_that("dist_between_params: basic structure, correctness, and parity with slow version", {
   skip_if_not_installed("clue")
   skip_if_not_installed("expm")

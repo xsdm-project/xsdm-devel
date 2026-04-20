@@ -1,4 +1,4 @@
-library(xsdmMle)
+library(xsdm)
 # Graphical (not unit) tests for interpret_parameters(). Run interactively
 # and verify each plot visually.
 #
