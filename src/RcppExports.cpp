@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // like_ltsg
 NumericVector like_ltsg(NumericVector mu, NumericMatrix env_m, NumericMatrix dl_mat, NumericMatrix drl_mat, NumericMatrix ortho_m, int q, int r);
-RcppExport SEXP _xsdmMle_like_ltsg(SEXP muSEXP, SEXP env_mSEXP, SEXP dl_matSEXP, SEXP drl_matSEXP, SEXP ortho_mSEXP, SEXP qSEXP, SEXP rSEXP) {
+RcppExport SEXP _xsdm_like_ltsg(SEXP muSEXP, SEXP env_mSEXP, SEXP dl_matSEXP, SEXP drl_matSEXP, SEXP ortho_mSEXP, SEXP qSEXP, SEXP rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,11 +29,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_xsdmMle_like_ltsg", (DL_FUNC) &_xsdmMle_like_ltsg, 7},
+    {"_xsdm_like_ltsg", (DL_FUNC) &_xsdm_like_ltsg, 7},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_xsdmMle(DllInfo *dll) {
+RcppExport void R_init_xsdm(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
