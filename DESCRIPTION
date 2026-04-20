@@ -1,0 +1,45 @@
+Package: xsdmMle
+Type: Package
+Title: Demographic Approach to Species Distribution Model
+Version: 0.2.0
+Authors@R: c(
+    person("Emilio", "Berti", , "emilio.berti@idiv.de", role = c("aut"),
+           comment = c(ORCID = "0000-0001-9286-011X")),
+    person("Daniel C.", "Reuman", , "reuman@ku.edu", role = c("aut"),
+           comment = c(ORCID = "0000-0002-1407-8947")),
+    person("Angel Luis", "Robles Fernandez", , "a.l.robles.fernandez@gmail.com",
+    role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4674-4270"))
+  )
+Description: Integrates concepts of stochastic demography into species 
+    distribution modelling. The main approach maximizes a likelihood function 
+    based on environmental information and presence/absence records. 
+    This is used to reconstruct species' fundamental ecological niches and to
+    project their potential geographic range. Data requirements include species
+    presence/absence records and a timeseries of environmental data. 
+License: GPL (>= 3)
+Imports: 
+    checkmate,
+    clue,
+    expm,
+    Rcpp,
+    RcppParallel (>= 5.1.10),
+    stats,
+    ucminf
+LinkingTo: Rcpp, RcppParallel
+SystemRequirements: GNU make
+RoxygenNote: 7.3.3
+Encoding: UTF-8
+Depends: 
+    R (>= 4.1.0)
+LazyData: true
+LazyDataCompression: xz
+Suggests: 
+    furrr,
+    future,
+    future.callr,
+    pomp,
+    purrr,
+    terra,
+    testthat (>= 3.0.0),
+    tibble

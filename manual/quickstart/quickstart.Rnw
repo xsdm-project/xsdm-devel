@@ -1,0 +1,68 @@
+\documentclass[11pt]{article}
+
+% --- Packages for math & formatting ---
+\usepackage{amsmath, amssymb, amsthm} % advanced math
+\usepackage{listings}                  % code formatting
+\usepackage{xcolor}                     % color for code
+\usepackage{graphicx}                   % include figures
+\usepackage{hyperref}                   % clickable links
+\usepackage{authblk}                    % author affiliations
+
+% --- Configure code display ---
+\lstset{
+  language=R,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  breaklines=true,
+  captionpos=b
+}
+
+% --- Theorem environment ---
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% --- New commands ---
+\newcommand*\mean[1]{\overline{#1}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}}
+\newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}}
+
+% --- Header material ---
+\title{xsdmMle quickstart}
+\author[1]{Angel Lu\'{i}s Robles Fern\'{a}ndez}
+\author[1]{Daniel C. Reuman}
+\affil[1]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
+University of Kansas}
+\date{}
+
+% --- start the doc ---
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+Angel to draft this.
+Quickstart - Very brief orientation to the reason for using the package (variability
+and process-oriented SDMs - see the beginning of the xsdmModel document, but the 
+version here should be much shorter),
+then basically gets the user to their first call to optim_mll, and that's it. Write this 
+later since we have not finalized optim_mll yet. Then at the end it's a brief 
+outline of the other vignette materials and what orders you might want to read
+them in depending on your needs - Dan can write that part.
+Mostly aimed at  basic user, but also kinda aimed at the impatient advanced user
+who wants to just run some stuff before they then go back and read xsdmModel.
+Maybe you also want to have a very short section aimed at the statistically/computationally
+sophisticated (advanced) user, too, so they can, say, see the likelihood function for the model
+exposed? Probably yes but still thinking that through. Dan can write that section, too.
+
+
+\end{document}

@@ -1,0 +1,624 @@
+\documentclass[11pt]{article}
+
+% --- Packages for math & formatting ---
+\usepackage{amsmath, amssymb, amsthm} % advanced math
+\usepackage{listings}                  % code formatting
+\usepackage{xcolor}                     % color for code
+\usepackage{graphicx}                   % include figures
+\usepackage{hyperref}                   % clickable links
+\usepackage{authblk}                    % author affiliations
+\usepackage[margin=1in]{geometry}
+\usepackage{fvextra} % better verbatim with line wrapping
+\usepackage{float}
+
+% --- Configure code display ---
+\lstset{
+  language=R,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  breaklines=true,
+  captionpos=b
+}
+
+% --- Theorem environment ---
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% --- New commands ---
+\newcommand*\mean[1]{\overline{#1}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}}
+\newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}}
+
+% --- Header material ---
+\title{Troubleshooting: boundary models 2, and unusable models}
+\author[1]{Daniel C. Reuman}
+\author[2]{Angel Luis Robles Fern\'{a}ndez}
+\affil[1]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
+University of Kansas}
+\affil[2]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
+University of Kansas}
+\date{}
+
+% --- Make Sweave code/output blocks obey text margins and wrap nicely ---
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+% Optional: if you have Scode blocks too
+\DefineVerbatimEnvironment{Scode}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+% --- start the doc ---
+\begin{document}
+
+<<setup, include=FALSE>>=
+knitr::opts_chunk$set(
+  echo=TRUE,
+  message=FALSE,
+  warning=FALSE,
+  cache=FALSE
+)
+@
+
+\maketitle
+
+\begin{abstract}
+\noindent When an xsdm model does not have a maximum likelihood, it should not be used. 
+This documents shows an example of how that can occur and makes some relevant 
+comments. Along the way to that outcome, a second type of boundary model is 
+illustrated where sigma parameters are set to infinity, corresponding to 
+insensitivity of annual net growth to environmental changes in a certain direction
+in environment space. 
+\end{abstract}
+
+\noindent The Eastern glass lizard, \emph{Ophisaurus ventralis}, is found in the southeastern United States. 
+%DAN: Add a bit more about the species, where the data came from, etc. Maybe it
+%is enough just to cite our archive paper since it's the same data used there.
+%Likewise for the troubleshooting document bdry1, which used the southern
+%short-tailed shrew.
+
+We start by loading the data:
+<<bring_in_the_data>>=
+env_array = readRDS("ophisaurus_ventralis_env.Rds")
+dim(env_array)
+dimnames(env_array)[[3]]
+occ = readRDS("ophisaurus_ventralis_occ.Rds")
+length(occ)
+@
+%DAN: You need to figure out where these data will be stored. In the package, or 
+%somewhere else? If not the package, how will we make them available to the reader?
+
+\noindent Here, there are \Sexpr{dim(env_array)[3]} environmental variables recorded for 
+\Sexpr{dim(env_array)[2]} years in \Sexpr{dim(env_array)[1]} locations, with 
+accompanying detections and pseudo-absences in the variable \texttt{occ}.
+The first three environmental variables (BIO1, BIO10, BIO11) are temperature
+variables, and the last three (BIO12, BIO16, BIO17) are precipitation variables.
+BIO1 is mean annual temperature, BIO10 is mean temperature of the warmest quarter, 
+BIO11 is mean temperature of the coldest quarter, BIO12 is annual precipitation, BIO16 is 
+precipitation of the wettest quarter, and BIO17 is precipitation of the driest quarter. 
+
+Now look at the distributions of values of environmental variables to make sure they 
+are not on wildly different scales, which would cause problems for optimization:
+<<look at distributions>>=
+apply(FUN=quantile, X=env_array, MARGIN=3,prob=c(.025,.25,.5,.75,.975))
+@
+
+\noindent These distributions look basically OK.
+
+Now fit 15 models, each from 25 starting conditions:
+<<fit_models,cache=TRUE>>=
+models = matrix(c(1,0,0,0,0,0,
+                  0,1,0,0,0,0,
+                  0,0,1,0,0,0,
+                  0,0,0,1,0,0,
+                  0,0,0,0,1,0,
+                  0,0,0,0,0,1,
+                  1,0,0,1,0,0,
+                  1,0,0,0,1,0,
+                  1,0,0,0,0,1,
+                  0,1,0,1,0,0,
+                  0,1,0,0,1,0,
+                  0,1,0,0,0,1,
+                  0,0,1,1,0,0,
+                  0,0,1,0,1,0,
+                  0,0,1,0,0,1), nrow=15, byrow=TRUE)
+all_model_results = list()
+for (i in 1:nrow(models)) 
+{
+  env_dat = env_array[,,models[i,]==1,drop=FALSE]
+  starts = xsdmMle::start_parms(env_dat,num_starts=25)
+  all_optim_results = list()
+  for (j in 1:nrow(starts)) 
+  {
+    all_optim_results[[j]] = optim(par=starts[j,],fn=xsdmMle::loglik_math, 
+                                   method="BFGS",
+                                   env_dat=env_dat, occ=occ,negative=TRUE,
+                                   control=list(trace=0))
+  }
+  all_model_results[[i]] = all_optim_results
+}
+@
+
+\noindent Rank the models by BIC, bearing in mind that we've been working with the 
+negative of the likelihood:
+<<rank_by_BIC>>=
+model_BICs = sapply(X=all_model_results, 
+                      FUN=function(x){
+                        best_loglik = min(sapply(X=x, FUN=function(y){y$value}))
+                        num_parms = length(x[[1]]$par)
+                        n = length(occ)
+                        BIC = 2*best_loglik + num_parms*log(n)
+                        return(BIC)
+                      }
+                    )
+@
+
+\noindent Also by AIC:
+<<rank_by_AIC>>=
+model_AICs = sapply(X=all_model_results, 
+                      FUN=function(x){
+                        best_loglik = min(sapply(X=x, FUN=function(y){y$value}))
+                        num_parms = length(x[[1]]$par)
+                        AIC = 2*best_loglik + 2*num_parms
+                        return(AIC)
+                      }
+                    )
+
+inds = order(model_BICs)
+rbind(model_BICs[inds],model_AICs[inds])
+plot(model_BICs,model_AICs,type="p",xlab="BIC",ylab="AIC")
+order(model_BICs)
+order(model_AICs)
+@
+
+\noindent The AIC and BIC results are pretty well aligned, and the four
+best models are the same:
+<<look_at_models>>=
+models[order(model_BICs)[1:4],]
+@
+
+\noindent These four models all use the same predictor, the fifth one, and 
+then various possible second predictors.
+
+Among the models we fitted, there is one clear winner in BIC, model 
+\Sexpr{order(model_BICs)[1]}. 
+So let's try to use it. Start by optimizing it a bit harder to see if we can 
+do any better.
+<<check_model_11,cache=TRUE>>=
+i=11
+env_dat = env_array[,,models[i,]==1,drop=FALSE]
+starts = xsdmMle::start_parms(env_dat,num_starts=100)
+model_11_results = list()
+for (j in 1:nrow(starts)) 
+{
+  model_11_results[[j]] = optim(par=starts[j,],fn=xsdmMle::loglik_math, 
+                                 method="BFGS",
+                                 env_dat=env_dat, occ=occ,negative=TRUE,
+                                 control=list(trace=0))
+}
+min(sapply(X=all_model_results[[11]], FUN=function(y){y$value}))
+min(sapply(X=model_11_results, FUN=function(y){y$value}))
+@
+
+\noindent Pretty similar, so move forward by looking at the results for this model: 
+<<look_at_optim_results>>=
+examine_optim_results = function(optim_results,mask=NULL)
+{
+  #put optimization results in order from best to worst
+  bestlogliks = sapply(X=optim_results,FUN=function(x){x$value})
+  inds = order(bestlogliks)
+  bestlogliks = bestlogliks[inds]
+  optim_results = optim_results[inds]
+
+  #model convergence
+  convergences = sapply(X=optim_results,FUN=function(x){x$convergence})
+
+  #compute distances to the best result in parameter space
+  best_parms_math = optim_results[[1]]$par
+  parms_dists_to_best = lapply(
+    X=optim_results,
+    FUN=function(x){
+      xsdmMle::distance_between_params_hungarian(
+        x$par,
+        best_parms_math,
+        mask=mask,
+        GiveClosestRep=TRUE)
+    }
+  )
+  parms_dists = sapply(X=parms_dists_to_best, FUN=function(x){x$distance})
+
+  #look at the best 5 results in parameter space
+  bestparms=sapply(X=parms_dists_to_best, FUN=function(x){unlist(x$representative)})
+  
+  #put it all together
+  return(rbind(bestlogliks,convergences,parms_dists,bestparms))
+}
+
+h=examine_optim_results(all_model_results[[11]])
+t(h[,1:8])
+@
+
+\noindent The very large values of \texttt{sigltil2} should be effectively 
+equivalent to setting \texttt{sigltil2} to \texttt{Inf}. So we consider the
+corresponding boundary model:
+<<fit_boundary_model,cache=TRUE>>=
+i
+env_dat = env_array[,,models[i,]==1,drop=FALSE]
+mask=c(sigltil2=Inf)
+
+new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],
+                                  mask=mask,num_starts=100)
+new_starts
+
+bdry_optim_results = list()
+for (j in 1:nrow(new_starts)) 
+{
+  #print(j)
+  bdry_optim_results[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+                                method="BFGS",
+                                env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
+                                control=list(trace=0,maxit=500))
+}
+@
+
+\noindent Have a look at these results:
+<<look_at_bdry_models>>=
+h=examine_optim_results(bdry_optim_results,mask=mask)
+t(h[,1:8])
+@
+
+\noindent The best likelihoods obtained for this boundary model are very similar 
+to those obtained for the initial, non-boundary model, and the boundary model has one 
+fewer parameter, so we tentatively adopt the boundary model over the 
+earlier model. However, these optimizations results don't look great. 
+Although the likelihoods of the top
+several optimization results are pretty similar, the corresponding 
+parameters are rather more
+spread out in parameter space than one would expect if these distinct optimizations
+were all converging to the same clean likelihood peak. This is a sign that the 
+likelihood surface may be ridged or flat around its highest values,
+and/or that we may not have 
+successfully optimized. 
+
+To investigate the model further, we profile:
+<<profile, cache=TRUE>>=
+pnames=names(xsdmMle::make_mask_names(2))
+pnames=pnames[pnames!="sigltil2"]
+
+values = sapply(X=bdry_optim_results, FUN=function(x){x$value})
+inds = order(values)
+bdry_optim_results = bdry_optim_results[inds]
+
+all_profiles=list()
+linc = rep(0.05, length(pnames))
+rinc = rep(0.05, length(pnames))
+linc[8] = 0.001
+rinc[8] = 0.001
+for (counter in 1:length(pnames))
+{
+  all_profiles[[counter]] = xsdmMle::profile_likelihood(
+                              profile_parameter=pnames[counter],
+                              increment_left=linc[counter],
+                              increment_right=rinc[counter],
+                              num_steps_left=50,
+                              num_steps_right=50,
+                              alpha=0.95,
+                              optim_param_vector=bdry_optim_results[[1]]$par,
+                              env_dat=env_dat,
+                              occ=occ,
+                              mask=mask,
+                              num_threads=6
+                            )
+}
+names(all_profiles) = pnames
+@
+
+\noindent Now plot these profiles:
+<<plot_profiles>>=
+plot_tool=function(ap,index)
+{
+  x=ap[[index]]$profile$value_math
+  y=ap[[index]]$profile$loglik
+  xlab=names(ap)[index]
+  thresh=ap[[index]]$threshold
+  plot(x,y,
+       type="o",xlab=xlab,
+       ylab="Log likelihood")
+  lines(range(x),rep(thresh,2),type="l",
+        lty="dashed",col="red")
+}
+
+par(mfrow=c(3,3))
+plot_tool(all_profiles,1)
+plot_tool(all_profiles,2)
+plot_tool(all_profiles,3)
+plot_tool(all_profiles,4)
+plot_tool(all_profiles,5)
+plot_tool(all_profiles,6)
+plot_tool(all_profiles,7)
+plot_tool(all_profiles,8)
+@
+
+\noindent These profiles are not dome-shaped, and have other idiosyncratic features,
+confirming that we had not effectively optimized the likelihood. 
+The \texttt{mu2} profile, in particular, shows problems. 
+
+
+
+% Let's try optimizing again, this time using the \texttt{parscale} 
+% argument to \texttt{optim} in
+% case the problems above were because of a likelihood surface that changes much more 
+% rapidly in some directions than in others:
+% <<try_again,cache=TRUE>>=
+% i
+% env_dat = env_array[,,models[i,]==1,drop=FALSE]
+% mask=c(sigltil2=Inf)
+% new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],
+%                                   mask=mask,num_starts=100)
+% 
+% parscale = c(3,3,1,1,1,5,0.1,0.01)
+% 
+% bdry_optim_results2 = list()
+% for (j in 1:nrow(new_starts)) 
+% {
+%   bdry_optim_results2[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+%                                 method="BFGS",
+%                                 env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
+%                                 control=list(trace=0,maxit=500,parscale=parscale))
+% }
+% 
+% h=examine_optim_results(bdry_optim_results2,mask=mask)
+% t(h[,1:8])
+% @
+% 
+% \noindent We did a bit better than before, though we still suspect we have not
+% found the max. These 
+% results again make it look like there may be a ridge in parameter space - one can get
+% quite far away in parameter space while still having very nearly the same log
+% likelihood value, for instance compare the 6th-best parameters to the first.
+% 
+% Redo the profiles to investigate further:
+% <<redo_profiles, cache=TRUE>>=
+% pnames=names(xsdmMle::make_mask_names(2))
+% pnames=pnames[pnames!="sigltil2"]
+% mask = c(sigltil2=Inf)
+%   
+% values = sapply(X=bdry_optim_results2, FUN=function(x){x$value})
+% inds = order(values)
+% bdry_optim_results2 = bdry_optim_results2[inds]
+% 
+% linc = rep(0.05, length(pnames))
+% rinc = rep(0.05, length(pnames))
+% linc[8] = 0.001
+% rinc[8] = 0.001
+% all_profiles=list()
+% for (counter in 1:length(pnames))
+% {
+%   all_profiles[[counter]] = xsdmMle::profile_likelihood(
+%                               profile_parameter=pnames[counter],
+%                               increment_left=linc[counter],
+%                               increment_right=rinc[counter],
+%                               num_steps_left=50,
+%                               num_steps_right=50,
+%                               alpha=0.95,
+%                               optim_param_vector=bdry_optim_results2[[1]]$par,
+%                               env_dat=env_dat,
+%                               occ=occ,
+%                               mask=mask,
+%                               num_threads=6
+%                             )
+% }
+% names(all_profiles) = pnames
+% 
+% par(mfrow=c(3,3))
+% plot_tool(all_profiles,1)
+% plot_tool(all_profiles,2)
+% plot_tool(all_profiles,3)
+% plot_tool(all_profiles,4)
+% plot_tool(all_profiles,5)
+% plot_tool(all_profiles,6)
+% plot_tool(all_profiles,7)
+% plot_tool(all_profiles,8)
+% @
+% 
+% \noindent The profiles are still not suitable.
+
+We do a pairs plot based on the \texttt{mu2} profile to investigate further:
+<<make_pairs_plot_again>>=
+p = all_profiles[[2]]$parameters
+head(p)
+p = p[,1:8]
+pairs(p)
+@
+
+\noindent This pairs plot helps us see the tradeoff going on 
+between parameters.
+As \texttt{mu2} is increased, other parameters, especially \texttt{ctil},
+change monotonically. These results strongly suggest a ridge in the 
+likelihood surface that appears to rise asymptotically along some path
+in parameter space for which \texttt{mu2} is increasing. We have not identified
+a maximum of the likelihood function, and it looks as though there may not 
+be one if the increase is indeed asymptotic.
+
+Let's have a look at what the growth-environment function looks like
+for the best parameters we have found so far, maybe that will give some insight into what
+is going wrong. 
+<<look_at_inferred_ge_func>>=
+param_list = bdry_optim_results[[1]]$par
+param_list["sigltil2"] = Inf
+param_list
+param_list_b = xsdmMle::math_to_bio(param_list)
+param_list_b
+plot_lims = list(quantile(env_dat[,,1]-param_list_b$mu[1],c(0.01,0.99)),
+                   quantile(env_dat[,,2]-param_list_b$mu[2],c(0.01,0.99)))
+source("../../R/interpret_parameters.R")
+interpret_parameters(param_list=param_list_b,
+                     plot_indices=c(1,2),
+                     plot_lims=plot_lims,
+                     main="With occ==1")
+points(env_dat[occ==1,,1],env_dat[occ==1,,2],pch=20,
+       col=rgb(0,0,0,.2),cex=0.2)
+interpret_parameters(param_list=param_list_b,
+                     plot_indices=c(1,2),
+                     plot_lims=plot_lims,
+                     main="With occ==0")
+points(env_dat[occ==0,,1],env_dat[occ==0,,2],pch=20,
+       col=rgb(0,0,0,.2),cex=0.2)
+@
+%DAN: This part need to be substantially changed once Angel puts the 
+%interpret_parameters function back and I reinstall the latest version.
+
+\noindent Estimated values of \texttt{mu2} are outside
+the range of the environmental data. The actual distribution of the species is across 
+Florida and along the coasts of the Southeastern United States, 
+and the southern extent of the
+species is very likely constrained by the Atlantic Ocean and the Gulf of Mexico
+rather than by temperature and precipitation. 
+Ultimately the modeling probably fails here for these reasons. 
+A Bayesian approch to the same problem could likely address some of the 
+limitations, here, by setting appropriate priors. In the frequentist setting,
+one must discard the model. 
+
+Immediate next steps should probably include examination of models 
+\Sexpr{order(model_BICs)[2]} and \Sexpr{order(model_BICs)[3]}, which are the 
+next-best models according to BIC, to see if they have similar problems.
+For brevity and because we are just trying to illustrate staistical princples and
+workflows, we skip straight to examining model \Sexpr{order(model_BICs)[3]}, 
+which may be simpler because it only uses one environmental variable. 
+The larger point is, that when a model does not have a maximum likelihood, it should 
+be discarded in favor of others models which do have maximum likelihoods.
+Examining model 5:
+<<examine_result_model_5>>=
+model_5_optim_results = all_model_results[[5]]
+h=examine_optim_results(model_5_optim_results)
+t(h[,1:8])
+
+values = sapply(X=model_5_optim_results, FUN=function(x){x$value})
+inds = order(values)
+model_5_optim_results = model_5_optim_results[inds]
+@
+
+\noindent One can see the boundary model with \texttt{sigrtil} to infinity
+should be considered:
+<<fit_boundary_model_5,cache=TRUE>>=
+i=5
+env_dat = env_array[,,models[i,]==1,drop=FALSE]
+mask=c(sigrtil1=Inf)
+new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,num_starts=100)
+
+bdry_optim_results5 = list()
+for (j in 1:nrow(new_starts)) 
+{
+  bdry_optim_results5[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+                                method="BFGS",
+                                env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
+                                control=list(trace=0,maxit=500))
+}
+@
+
+\noindent Examine these results:
+<<look_at_bdry_models_5>>=
+h=examine_optim_results(bdry_optim_results5,mask=mask)
+t(h[,1:8])
+values = sapply(X=bdry_optim_results5, FUN=function(x){x$value})
+inds = order(values)
+bdry_optim_results5 = bdry_optim_results5[inds]
+@
+
+This model looks like it might have optimized well. Do profiles:
+<<profile_model_5, cache=TRUE>>=
+i=5
+env_dat = env_array[,,models[i,]==1,drop=FALSE]
+
+all_profiles=list()
+pnames=names(xsdmMle::make_mask_names(1))
+pnames = pnames[pnames!="sigrtil1"]
+bdry_optim_results5[[1]]$par
+linc = c(0.05,0.025,0.05,0.05)
+rinc = c(0.15,0.025,0.05,0.05)
+for (counter in 1:length(pnames))
+{
+  all_profiles[[counter]] = xsdmMle::profile_likelihood(
+                              profile_parameter=pnames[counter],
+                              increment_left=linc[counter],
+                              increment_right=rinc[counter],
+                              num_steps_left=50,
+                              num_steps_right=50,
+                              alpha=0.95,
+                              optim_param_vector=bdry_optim_results5[[1]]$par,
+                              env_dat=env_dat,
+                              occ=occ,
+                              mask=mask,
+                              num_threads=6
+                            )
+}
+names(all_profiles) = pnames
+
+par(mfrow=c(2,3))
+plot_tool(all_profiles,1)
+plot_tool(all_profiles,2)
+plot_tool(all_profiles,3)
+plot_tool(all_profiles,4)
+@
+
+\noindent The profiles look adequate. So the model is suitable for use, unlike 
+the previous models. If model \Sexpr{order(model_BICs)[2]} or 
+\Sexpr{order(model_BICs)[3]} is suitable in the same manner, the lowest-BIC model
+suitable model should tend to be preferred.
+
+Examining the growth-environment function for this model:
+<<now interpret these parameters>>=
+param_list = bdry_optim_results5[[1]]$par
+param_list_b = xsdmMle::math_to_bio(param_list)
+param_list_b$sigrtil = Inf
+plot_lims = list(quantile(env_dat[,,1]-param_list_b$mu[1],c(0.01,0.99)))
+interpret_parameters(param_list=param_list_b,
+                     plot_indices=c(1),
+                     plot_lims=plot_lims,
+                     main="With occ==1")
+xvals = env_dat[occ==1,,1]
+points(xvals,-2+rnorm(length(xvals),0,.1),pch=20,
+       col=rgb(0,0,0,.1),cex=0.2)
+interpret_parameters(param_list=param_list_b,
+                     plot_indices=c(1),
+                     plot_lims=plot_lims,
+                     main="With occ==0")
+xvals = env_dat[occ==0,,1]
+points(xvals,-2+rnorm(length(xvals),0,.1),pch=20,
+       col=rgb(0,0,0,.1),cex=0.2)
+@
+%DAN: You will have to change how this chunk is done after Angel
+%puts his interpret_parameters function back and I reinstall the latest version
+%of the package.
+
+\end{document}

@@ -1,0 +1,3 @@
+# We also need importFrom(RcppParallel,RcppParallelLibs) in NAMESPACE
+PKG_CXXFLAGS += -DRCPP_PARALLEL_USE_TBB=1
+PKG_LIBS += $(shell ${R_HOME}/bin/Rscript -e "RcppParallel::RcppParallelLibs()")

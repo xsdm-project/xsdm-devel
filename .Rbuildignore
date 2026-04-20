@@ -1,0 +1,15 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+^sandbox$
+^manual$
+^R_debug$
+^\.github$
+^codecov\.yml$
+^badges$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^ReumanAnnularVirtualSpecies$
+^ClaudeOutputs$

@@ -1,0 +1,6 @@
+%This will be a virtual species manual, on how to work with Angel's functions for 
+%generating virtual species, and related topics. And it'll produce the data for the 
+%virtual species used in howToFit *exactly*, as one of its outputs, so people can
+%go back and see where those data came from.
+
+%Call it "Virtual species and habitat suitability maps"
