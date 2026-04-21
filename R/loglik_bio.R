@@ -59,47 +59,47 @@ loglik_bio <- function(env_dat,
   # Validate inputs for modeling function --------------------------------------
   # occ: must be either a logical vector (TRUE/FALSE) with no NAs or a numeric
   # or integer  vector containing only 0 and 1 with no NA
-
+  
   #   Using a disjunctive assert so either condition is acceptable
   checkmate::assert(
     checkmate::check_logical(occ, any.missing = FALSE),
     checkmate::check_integerish(occ, lower = 0, upper = 1, any.missing = FALSE),
     .var.name = "occ"
   )
-
+  
   # env_dat: must be a 3-dimensional array (n_loc x n_time x p) with no NAs.
-
+  
   # This prevents passing a vector or 1D array by mistake.
   check_env_array(env_dat)
-
+  
   # mu: numeric vector (length >= 1) with no missing values.
   checkmate::assert_numeric(mu, any.missing = FALSE, min.len = 1)
-
+  
   # sigl: numeric vector (length >= 1) with no missing values. Left side scale
   # of asymmetrical long term stochastic growht function)
   checkmate::assert_numeric(sigltil, any.missing = FALSE, min.len = 1)
-
+  
   # sigl: numeric vector (length >= 1) with no missing values. Right side scale
   # of asymmetrical long term stochastic growht function)
   checkmate::assert_numeric(sigrtil, any.missing = FALSE, min.len = 1)
-
+  
   # ctil: single numeric scalar (len == 1) with no missing values. Threshold
   # parameter; enforcing scalar avoids vector to be automatically repeated
   # (recycled) to match the length of longer vectors in operations
   # without warning
   checkmate::assert_numeric(ctil, any.missing = FALSE, len = 1)
-
+  
   # pd: single numeric scalar (len == 1) with no missing values. Penalty
   # in the probability of detection; enforcing scalar (see above ctil).
   checkmate::assert_numeric(pd, any.missing = FALSE, len = 1)
-
+  
   # o_mat: numeric matrix with at least 1 row and 1 column and no NAs.
   # Observation/occurrence matrix; dimensions must be valid and no missing.
   checkmate::assert_matrix(
     o_mat,
     min.rows = 1, min.cols = 1, any.missing = FALSE
   )
-
+  
   # establish the desired number of threads to use. Is set as defaultNumThreads
   RcppParallel::setThreadOptions(numThreads = num_threads)
   # Restore previous thread setting on exit (success or failure) so that the
@@ -128,7 +128,7 @@ loglik_bio <- function(env_dat,
   } else {
     res <- occ * log_p + (1 - occ) * log1mexp(-log_p)
   }
-
+  
   # If return_prob is TRUE the user wants linear-scale instead of log-scale
   # likelihoods.
   if (return_prob) {
