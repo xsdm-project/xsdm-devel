@@ -1,5 +1,5 @@
 # Test to ensure the C++ implementation (like_neg_ltsgr_cpp) and
-# the  internal R implementation (xsdm:::like_neg_ltsgr_r) returnd
+# the  internal R implementation (xsdm:::like_neg_ltsgr_r) return
 # identical results when fed parameters from `param_table_example`,
 # using an orthogonal matrix built via `build_orthogonal_matrix`.
 
@@ -101,4 +101,3 @@ test_that("R and C++ implementations agree with Inf in sigltil/sigrtil", {
   cpp4 <- like_neg_ltsgr_cpp(env_dat_2d, mu, sigl, sigr, o_mat, num_threads = 1)
   expect_equal(cpp4, r4, tolerance = 1e-14)
 })
-
