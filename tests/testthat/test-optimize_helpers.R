@@ -12,7 +12,7 @@ test_that(".optimize_loglik_math injects invh_lt and restores names if optimizer
     list(par = unname(par), value = 123, convergence = 0L)
   }
   
-  res <- xsdmMle:::.optimize_loglik_math(
+  res <- xsdm:::.optimize_loglik_math(
     param_vector = par0,
     env_dat      = env_dat,
     occ          = occ,
@@ -38,7 +38,7 @@ test_that(".optimize_loglik_math sanitizes non-finite par and sets convergence =
     list(par = c(a = NaN, b = Inf, c = 1), value = 5, convergence = 1L)
   }
   
-  res <- xsdmMle:::.optimize_loglik_math(
+  res <- xsdm:::.optimize_loglik_math(
     param_vector = par0,
     env_dat      = env_dat,
     occ          = occ,
@@ -65,7 +65,7 @@ test_that(".optimize_loglik_math returns structured error object on optimizer fa
   # Mock optimizer that throws
   fake_opt <- function(...) stop("boom")
   
-  out <- xsdmMle:::.optimize_loglik_math(
+  out <- xsdm:::.optimize_loglik_math(
     param_vector = par0,
     env_dat      = env_dat,
     occ          = occ,

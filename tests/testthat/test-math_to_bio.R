@@ -8,7 +8,7 @@ test_that("math_to_bio converts p=1 correctly (no o_par)", {
     sigltil1 = log(1.2),
     sigrtil1 = log(0.8),
     ctil = -3.0,
-    pd = xsdmMle:::logit(0.85)
+    pd = xsdm:::logit(0.85)
   )
   
   bio <- math_to_bio(math_vec)
