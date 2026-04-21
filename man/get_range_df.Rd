@@ -62,3 +62,4 @@ env <- array(rnorm(10 * 5 * 2), dim = c(10, 5, 2))
 get_range_df(env)                 # default breadth = 1
 get_range_df(env, breadth = 0.3)  # narrower search
 }
+\keyword{internal}

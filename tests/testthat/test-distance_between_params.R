@@ -44,3 +44,4 @@ test_that("tests for the function distance_between_params", {
 
   # ANGEL to consider adding some more tests
 })
+
