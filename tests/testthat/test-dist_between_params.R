@@ -98,7 +98,9 @@ test_that("dist_between_params: basic structure, correctness,
   expect_equal(res_slow$representative$pd, res_fast$representative$pd)
   expect_equal(res_slow$representative$sigltil, res_fast$representative$sigltil)
   expect_equal(res_slow$representative$sigrtil, res_fast$representative$sigrtil)
-  expect_equal(res_slow$representative$o_mat, res_fast$representative$o_mat, tolerance = 1e-12)
+  expect_equal(res_slow$representative$o_mat,
+               res_fast$representative$o_mat,
+               tolerance = 1e-12)
   
   # ---- Parity with the slow exhaustive version (4D) ---------------------------
   set.seed(456)
