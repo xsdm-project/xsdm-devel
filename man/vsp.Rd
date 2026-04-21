@@ -12,11 +12,14 @@ variables). Each element should be a `SpatRaster` or similar object from the
 `terra` package.}
 
 \item{param_list}{A named list of parameters required by `log_prob_detect()`.
-Must include `mu`, `sigltil`, `sigrtil`, `ctil`, `pd`, and `o_mat`.}
+Must include `mu`, `sigltil`, `sigrtil`, `ctil`, `pd`, and `o_mat`.
+This parameters are in biological scale. So for parameters like
+`sigltil`, `sigrtil` The values could be `Inf`}
 
-\item{return_raster}{Logical. If `TRUE`, returns a `SpatRaster` object with
-probabilities. If `FALSE`, returns a tibble with columns `x`, `y`, and
-`probs`.}
+\item{return_raster}{Logical.If `FALSE`, returns a tibble with columns `x`, `y`, and
+`probs`. (Default)
+If `TRUE`, returns a `SpatRaster` object with
+probabilities.}
 }
 \value{
 Either:

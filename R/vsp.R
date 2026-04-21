@@ -68,9 +68,9 @@ vsp <- function(env_data, param_list, return_raster = FALSE) {
   }
   # Validate inputs using checkmate
   checkmate::assert_list(env_data,
-    types = "SpatRaster",
-    min.len = 1,
-    any.missing = FALSE
+                         types = "SpatRaster",
+                         min.len = 1,
+                         any.missing = FALSE
   )
   checkmate::assert_list(param_list, names = "unique", any.missing = FALSE)
   checkmate::assert_true(
@@ -81,31 +81,32 @@ vsp <- function(env_data, param_list, return_raster = FALSE) {
   )
   checkmate::assert_flag(return_raster)
   if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("Package 'terra' is required for vsp(). Install it with: install.packages('terra')")
+    stop("Package 'terra' is required for vsp().
+         Install it with: install.packages('terra')")
   }
-
+  
   # Convert environmental data to array
   env_m <- env_data_array(env_data)
-
+  
   # Generate function for probability calculation
   f <- function(env_) {
     function(mu, sigltil, sigrtil, o_mat, ctil, pd) {
       log_prob_detect(env_, mu, sigltil, sigrtil, o_mat, ctil, pd)
     }
   }
-
+  
   # Apply the function to the environmental array
-
+  
   f_par <- f(env_m)
-
+  
   # Extract coordinates and CRS
   coords <- terra::crds(env_data[[1]])
   crs_val <- terra::crs(env_data[[1]])
-
+  
   # Compute probabilities
   probs <- suppressWarnings(do.call(f_par, args = param_list))
   probs <- exp(probs)
-
+  
   # Return result
   if (!return_raster) {
     data.frame(coords, probs) |> tibble::as_tibble()
