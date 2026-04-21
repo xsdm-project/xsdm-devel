@@ -44,16 +44,16 @@
 #' @examples
 #' \dontrun{
 #'   lims <- auto_plot_lims(
-#'     env_dat    = example_1_env_array,
-#'     param_list = example_1_param_list_example,
+#'     env_dat    = examples$env_array,
+#'     param_list = examples$par_list  ,
 #'     indices    = c(1, 2)
 #'   )
 #'   interpret_parameters(
-#'     example_1_param_list_example,
+#'     examples$par_list,
 #'     plot_indices = c(1, 2),
 #'     plot_lims    = lims,
-#'     env_dat      = example_1_env_array,
-#'     occ          = example_1_occurrence_vector
+#'     env_dat      = examples$env_array,
+#'     occ          = examples$occ_vec
 #'   )
 #' }
 #' @export

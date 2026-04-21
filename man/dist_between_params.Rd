@@ -41,14 +41,16 @@ before measuring distance because that is the scale it makes most sense to
 measure distance for those parameters.
 }
 \examples{
-example_1_optim_param_list <- math_to_bio(example_1_optim_param_vector)
-example_1_optim_param_list_equivalent <- math_to_bio(example_1_optim_param_vector_equivalent)
+# Using list in biological scale
+par_list <- math_to_bio(examples$optim_par_vec)
+par_list_equivalent <- math_to_bio(examples$optim_par_vec_equivalent)
 dist_between_params(
-  p1 = example_1_optim_param_list,
-  p2 = example_1_optim_param_list_equivalent
+  p1 = par_list,
+  p2 = par_list_equivalent
 )
+# Using vectors in math scale
 dist_between_params(
-  p1 = example_1_optim_param_vector,
-  p2 = example_1_optim_param_vector_equivalent
+  p1 = examples$optim_par_vec,
+  p2 = examples$optim_par_vec_equivalent
 )
 }
