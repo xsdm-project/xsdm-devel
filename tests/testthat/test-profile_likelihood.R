@@ -211,9 +211,9 @@ test_that("profile_likelihood: errors when no free parameters remain", {
   occ <- c(1, 0, 1, 0)
 
   # Mask all parameters except the profiled one -> zero free parameters
-  all_names <- names(example_1_optim_param_vector)
+  all_names <- names(examples$optim_par_vec)
   mask_names <- setdiff(all_names, "mu1")
-  mask <- example_1_optim_param_vector[mask_names]
+  mask <- examples$optim_par_vec[mask_names]
 
   expect_error(
     profile_likelihood(
@@ -221,7 +221,7 @@ test_that("profile_likelihood: errors when no free parameters remain", {
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = mask,
@@ -247,7 +247,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = NULL,
@@ -265,7 +265,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = occ
     ),
@@ -280,7 +280,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 1,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = occ
     ),
@@ -295,7 +295,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = 1:10,
       occ = occ
     ),
@@ -310,7 +310,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = c(1, 0) # wrong length
     ),

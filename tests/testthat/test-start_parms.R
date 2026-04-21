@@ -2,7 +2,7 @@
 library(testthat)
 test_that("start_parms() returns expected shape and names with no mask", {
   # Subset environmental array to presences, as in the examples
-  env_dat_pres <- example_1_env_array[example_1_occurrence_vector == 1, , ]
+  env_dat_pres <- examples$env_array[examples$occ_vec == 1, , ]
 
   # Small number of starts for speed/determinism
   set.seed(123)
@@ -18,8 +18,9 @@ test_that("start_parms() returns expected shape and names with no mask", {
   expect_s3_class(sp, "tbl_df")
   expect_equal(nrow(sp), num_starts)
 
-  # Column names should match all "free" parameters (i.e., all rows in get_range_df)
-  range_df <- get_range_df(env_dat_pres, 1)
+  # Column names should match all "free" parameters
+  # (i.e., all rows in xsdm:::get_range_df_)
+  range_df <- xsdm:::get_range_df_(env_dat_pres, 1)
   expect_setequal(colnames(sp), rownames(range_df))
 
   # All values must lie within [lower, upper] of range_df
@@ -33,7 +34,7 @@ test_that("start_parms() returns expected shape and names with no mask", {
 })
 
 test_that("start_parms() respects mask by excluding masked parameters", {
-  env_dat_pres <- example_1_env_array[example_1_occurrence_vector == 1, , ]
+  env_dat_pres <- examples$env_array[examples$occ_vec == 1, , ]
 
   # For p = 2, typical canonical names include:
   # mu1, mu2, sigltil1, sigltil2, sigrtil1, sigrtil2, ctil, pd, o_par1
@@ -51,13 +52,13 @@ test_that("start_parms() respects mask by excluding masked parameters", {
   expect_false("pd" %in% names(out))
 
   # Everything else should still be present
-  range_df <- get_range_df(env_dat = env_dat_pres, breadth = 1)
+  range_df <- xsdm:::get_range_df_(env_dat = env_dat_pres, breadth = 1)
   expected_names <- setdiff(rownames(range_df), names(mask))
   expect_setequal(names(out), expected_names)
 })
 
 test_that("start_parms() is (roughly) deterministic with a fixed seed", {
-  env_dat_pres <- example_1_env_array[example_1_occurrence_vector == 1, , ]
+  env_dat_pres <- examples$env_array[examples$occ_vec == 1, , ]
 
   set.seed(42)
   a <- start_parms(env_dat_pres, num_starts = 5)
@@ -79,7 +80,7 @@ test_that("start_parms() input validation errors", {
   )
 
   # wrong quant_vec length
-  env_dat_pres <- example_1_env_array[example_1_occurrence_vector == 1, , ]
+  env_dat_pres <- examples$env_array[examples$occ_vec == 1, , ]
   expect_error(
     start_parms(env_dat_pres, breadth  = c(0.1, 0.9)),
     regexp = "Must have length 1", # from checkmate::assert_numeric(len = 3)

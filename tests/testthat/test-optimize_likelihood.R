@@ -117,10 +117,13 @@ test_that("optimize_likelihood() prints the single-thread notice in parallel mod
   occ <- rep(c(1L, 0L), length.out = n)
 
   expect_message(
-    optimize_likelihood(env_dat, occ,
-      num_starts = 4L,
-      parallel = TRUE, num_threads = 4L, verbose = TRUE,
-      control = list(maxeval = 20)
+    optimize_likelihood(env_dat,
+                        occ,
+                        num_starts = 4L,
+                        parallel = TRUE,
+                        num_threads = 2L,
+                        verbose = TRUE,
+      control = list(maxeval = 5)
     ),
     regexp = "parallel=TRUE: forcing num_threads=1",
     fixed = FALSE
@@ -147,7 +150,7 @@ test_that("optimize_likelihood() respects mask and reconstructs full parameter v
     breadth     = 1,
     parallel    = FALSE,
     num_threads = 1L,
-    control     = list(maxeval = 10),
+    control     = list(maxeval = 5),
     verbose     = FALSE
   )
 
@@ -180,7 +183,7 @@ test_that("logical occ is normalized to integer (coverage of is.logical(occ))", 
     breadth     = 1,
     parallel    = FALSE,
     num_threads = 1L,
-    control     = NULL,
+    control     = list(maxeval = 5),
     verbose     = FALSE
   )
 
@@ -243,7 +246,7 @@ test_that("verbose messages are printed in non-parallel mode", {
       env_dat, occ,
       num_starts = 4L,
       num_threads = 1L,
-      control = list(maxeval = 20),
+      control     = list(maxeval = 5),
       verbose = TRUE, # covers: "Best log-likelihood: ..."
       parallel = FALSE
     ),
