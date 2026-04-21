@@ -49,14 +49,17 @@ For \code{p = 1} there are no \code{o_par} entries; the orthogonal matrix
 is simply a 1-by-1 identity.
 }
 \examples{
-# For p = 1 (no o_par entries)
+# Create your own vector of parameter for p = 1 (no o_par entries),
+# We use the function make_mask_names with p = 1 to get the correct names and
+# length 
 p1_names <- make_mask_names(1)
 math_vec <- p1_names
 math_vec[] <- c(11, log(1.2), log(0.8), -6.7, -1.13)
+# We get a list with parameters in biological scale
 math_to_bio(math_vec)
 
 # For p = 2 (includes o_par1) -- using the shipped example vector
-math_to_bio(example_1_optim_param_vector)
+math_to_bio(examples$par_vec)
 }
 \seealso{
 \code{\link{make_mask_names}}, \code{\link{num_par}},
