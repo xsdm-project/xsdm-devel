@@ -13,14 +13,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-# xsdmMle
+# xsdm
 
 <!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/alrobles/xsdmMle/graph/badge.svg)](https://app.codecov.io/gh/alrobles/xsdmMle)
-[![codecov](https://codecov.io/gh/OWNER/REPO/branch/BRANCH/graph/badge.svg)](https://codecov.io/gh/OWNER/REPO)
+[![Codecov test coverage](https://codecov.io/gh/xsdm-project/xsdm-devel/badge.svg)](https://app.codecov.io/gh/xsdm-project/xsdm-devel)
 <!-- badges: end -->
 
-The goal of xsdmMle is to fit 
+- xsdm integrates concepts of stochastic demography into species distribution modelling.
+- The main approach maximizes a likelihood function based on environmental information and presence/absence records.
+- This is used to reconstruct species' fundamental ecological niches and to project their potential geographic range.
+- Data requirements include species
+presence/absence records and a timeseries of bioclimatic data.
 
 ## Installation
 
@@ -28,7 +31,7 @@ You can install the development version of xsdmMle from [GitHub](https://github.
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("alrobles/xsdmMle")
+remotes::install_github("alrobles/xsdm")
 ```
 
 ## Example

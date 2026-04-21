@@ -1,14 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# xsdmMle
+# xsdm
 
 <!-- badges: start -->
 
 [![Codecov test
-coverage](https://codecov.io/gh/alrobles/xsdmMle/graph/badge.svg)](https://app.codecov.io/gh/alrobles/xsdmMle)
-[![codecov](https://codecov.io/gh/OWNER/REPO/branch/BRANCH/graph/badge.svg)](https://codecov.io/gh/OWNER/REPO)
-<!-- badges: end -->
+coverage](https://codecov.io/gh/xsdm-project/xsdm-devel/badge.svg)](https://app.codecov.io/gh/xsdm-project/xsdm-devel)
+–\> <!-- badges: end -->
 
 The goal of xsdmMle is to fit
 

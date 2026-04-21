@@ -84,8 +84,8 @@ occ <- example_1_occurrence_vector
 
 res <- profile_likelihood(
   profile_parameter = "mu1",
-  increment_left = 0.2,
-  increment_right = 0.2,
+  increment_left = 0.4,
+  increment_right = 0.4,
   num_steps_left = 1L, # one iteration on the left
   num_steps_right = 1L, # one iteration on the right
   alpha = 0.95,
@@ -94,7 +94,7 @@ res <- profile_likelihood(
   occ = occ,
   mask = NULL,
   num_threads = 1L, # keep it fast and deterministic
-  control = list(maxeval = 50),
+  control = list(maxeval = 10),
   verbose = FALSE
 )
 
