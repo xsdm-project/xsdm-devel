@@ -19,7 +19,7 @@
 #'   \code{last_full}, \code{last_invh}, \code{steps}, and \code{crossed}.
 #' @keywords internal
 #' @seealso \code{\link{profile_likelihood}}
-.profile_one_side <- function(
+profile_one_side_ <- function(
   direction, # -1 for left, +1 for right
   increment, # step size (math scale)
   max_steps, # iteration cap

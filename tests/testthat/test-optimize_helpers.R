@@ -1,6 +1,6 @@
 # tests/testthat/test-optimize_helpers.R
 
-test_that(".optimize_loglik_math injects invh_lt and restores names if optimizer drops them", {
+test_that("optimize_loglik_math_ injects invh_lt and restores names if optimizer drops them", {
   env_dat <- array(0, dim = c(2, 2, 1))
   occ     <- c(1L, 0L)
   par0    <- c(a = 0.1, b = -0.2, c = 0.3)
@@ -12,7 +12,7 @@ test_that(".optimize_loglik_math injects invh_lt and restores names if optimizer
     list(par = unname(par), value = 123, convergence = 0L)
   }
   
-  res <- xsdm:::.optimize_loglik_math(
+  res <- xsdm:::optimize_loglik_math_(
     param_vector = par0,
     env_dat      = env_dat,
     occ          = occ,
@@ -28,7 +28,7 @@ test_that(".optimize_loglik_math injects invh_lt and restores names if optimizer
   expect_equal(res$convergence, 0L)
 })
 
-test_that(".optimize_loglik_math sanitizes non-finite par and sets convergence = -99", {
+test_that("optimize_loglik_math_ sanitizes non-finite par and sets convergence = -99", {
   env_dat <- array(0, dim = c(2, 2, 1))
   occ     <- c(1L, 0L)
   par0    <- c(a = 0.1, b = -0.2, c = 0.3)
@@ -38,7 +38,7 @@ test_that(".optimize_loglik_math sanitizes non-finite par and sets convergence =
     list(par = c(a = NaN, b = Inf, c = 1), value = 5, convergence = 1L)
   }
   
-  res <- xsdm:::.optimize_loglik_math(
+  res <- xsdm:::optimize_loglik_math_(
     param_vector = par0,
     env_dat      = env_dat,
     occ          = occ,
@@ -57,7 +57,7 @@ test_that(".optimize_loglik_math sanitizes non-finite par and sets convergence =
   expect_identical(res$convergence, -99L)
 })
 
-test_that(".optimize_loglik_math returns structured error object on optimizer failure", {
+test_that("optimize_loglik_math_ returns structured error object on optimizer failure", {
   env_dat <- array(0, dim = c(2, 2, 1))
   occ     <- c(1L, 0L)
   par0    <- c(a = 0.1, b = -0.2)
@@ -65,7 +65,7 @@ test_that(".optimize_loglik_math returns structured error object on optimizer fa
   # Mock optimizer that throws
   fake_opt <- function(...) stop("boom")
   
-  out <- xsdm:::.optimize_loglik_math(
+  out <- xsdm:::optimize_loglik_math_(
     param_vector = par0,
     env_dat      = env_dat,
     occ          = occ,

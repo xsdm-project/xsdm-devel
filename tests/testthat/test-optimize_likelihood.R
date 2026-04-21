@@ -299,7 +299,7 @@ test_that("parallel branch executes, forces single-thread, and prints messages",
 
 test_that("optimize_likelihood() completes and excludes failed starts when runner errors", {
   # Inject a runner that raises an error for every other start by mocking
-  # .optimize_loglik_math so that odd-indexed calls throw.
+  # optimize_loglik_math_ so that odd-indexed calls throw.
   set.seed(42)
   n <- 10; Tt <- 5; p <- 2
   env_dat <- array(runif(n * Tt * p, -1, 1), dim = c(n, Tt, p))
@@ -317,7 +317,7 @@ test_that("optimize_likelihood() completes and excludes failed starts when runne
   # without the need to corrupt env_dat values.
   with_mocked_bindings <- testthat::with_mocked_bindings
   with_mocked_bindings(
-    `.optimize_loglik_math` = function(param_vector, env_dat, occ, mask,
+    `optimize_loglik_math_` = function(param_vector, env_dat, occ, mask,
                                        num_threads, base_control, invh_lt) {
       call_count <<- call_count + 1L
       if (call_count %% 2L == 1L) stop("injected runner failure")
@@ -353,7 +353,7 @@ test_that("optimize_likelihood() reports failed-start count with verbose=TRUE", 
 
   call_count <- 0L
   testthat::with_mocked_bindings(
-    `.optimize_loglik_math` = function(param_vector, env_dat, occ, mask,
+    `optimize_loglik_math_` = function(param_vector, env_dat, occ, mask,
                                        num_threads, base_control, invh_lt) {
       call_count <<- call_count + 1L
       if (call_count == 1L) stop("first start fails")
