@@ -23,7 +23,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #' # This function is internal and mainly used for testing.
+#' # This function is internal and mainly used for testing.
 #' # Use the exported `dist_between_params()` for general purposes.
 #'
 #' # Create two equivalent parameter sets (p = 2)
@@ -86,8 +86,7 @@ distance_between_params <- function(p1, p2, GiveClosestRep = FALSE) {
     (p1$pd - p2$pd)^2
   
   # get lists of all the sign flip patterns and all the permutations which are
-  to
-  # be implemented in all possible combinations
+  # to be implemented in all possible combinations
   all_perms <- permutations(dd, dd, 1:dd)
   all_flips <- as.matrix(expand.grid(rep(list(c(0, 1)), dd)))
   

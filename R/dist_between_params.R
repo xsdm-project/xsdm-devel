@@ -50,7 +50,7 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
   }
   checkmate::assert_true(is.list(p1) || is.numeric(p1))
   checkmate::assert_true(is.list(p2) || is.numeric(p2))
-
+  
   # --- now convert to the biological scale if needed, and also do more input checking ---
   if (is.numeric(p1)) {
     # get names in p1 and names in mask and expect them to complement each other
@@ -59,14 +59,14 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
     nmask <- names(mask)
     np1 <- names(p1)
     checkmate::assert_true(setequal(c(names(mask), names(p1)), names(make_mask_names(p))))
-
+    
     # checks on which values can be infinite
     checkmate::assert_numeric(p1, any.missing = FALSE, finite = TRUE) # p1 has to have all finite values
     allnames <- names(make_mask_names(p))
     maskinfnames <- names(mask[is.infinite(mask)])
     checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
-      c(allnames[grepl("^sig", allnames)], "pd"))) # mask can only have infinite values for pd and the sigs
-
+                                 c(allnames[grepl("^sig", allnames)], "pd"))) # mask can only have infinite values for pd and the sigs
+    
     # now convert to bio scale
     p1 <- math_to_bio(create_param_vector_masked(p1, mask, p))
   }
@@ -77,18 +77,18 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
     nmask <- names(mask)
     np2 <- names(p2)
     checkmate::assert_true(setequal(c(names(mask), names(p2)), names(make_mask_names(p))))
-
+    
     # checks on which values can be infinite
     checkmate::assert_numeric(p2, any.missing = FALSE, finite = TRUE) # p2 has to have all finite values
     allnames <- names(make_mask_names(p))
     maskinfnames <- names(mask[is.infinite(mask)])
     checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
-      c(allnames[grepl("^sig", allnames)], "pd"))) # mask can only have infinite values for pd and the sigs
-
+                                 c(allnames[grepl("^sig", allnames)], "pd"))) # mask can only have infinite values for pd and the sigs
+    
     # now convert to bio scale
     p2 <- math_to_bio(create_param_vector_masked(p2, mask, p))
   }
-
+  
   # --- now do biological-scale checks ---
   checkmate::assert_names(names(p1), must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
   checkmate::assert_numeric(p1$mu, finite = TRUE, any.missing = FALSE)
@@ -101,8 +101,8 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
   checkmate::assert_true(length(p1$sigltil) == p)
   checkmate::assert_true(length(p1$sigrtil) == p)
   checkmate::assert_true(all(dim(p1$o_mat) == c(p, p)))
-
-
+  
+  
   checkmate::assert_names(names(p2), must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
   checkmate::assert_numeric(p2$mu, finite = TRUE, any.missing = FALSE)
   checkmate::assert_numeric(p2$sigltil, any.missing = FALSE)
@@ -114,16 +114,16 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
   checkmate::assert_true(length(p2$sigltil) == p)
   checkmate::assert_true(length(p2$sigrtil) == p)
   checkmate::assert_true(all(dim(p2$o_mat) == c(p, p)))
-
+  
   # -- distance to be used between log-scale/math-scale entries of sigxtil,
   # currently just squared difference
   sigdistsq <- function(x, y) {
     return((1 / x - 1 / y)^2)
   }
-
+  
   # --- get the cost matrix ---
   dd <- dim(p1$o_mat)[1]
-
+  
   cost <- matrix(NA, dd, dd)
   posneg <- matrix(NA, dd, dd)
   for (cc2 in 1:dd)
@@ -142,26 +142,26 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
       }
     }
   }
-
+  
   # --- apply the Hungarian algorithm ---
-
+  
   # got a special object type, see help for solve_LSAP
   perm <- clue::solve_LSAP(cost)
-
+  
   # compute square distance for all parameters except o_mat, sigltil, and sigrtil
   sq_dist_other_params <- sum((p1$mu - p2$mu)^2) +
     (p1$ctil - p2$ctil)^2 +
     (p1$pd - p2$pd)^2
-
+  
   # --- now get the answer(s) and return
-
+  
   pairing <- cbind(seq_len(nrow(cost)), perm)
   costs <- cost[pairing]
   distance <- sqrt(sum(costs) + sq_dist_other_params)
   if (!give_closest_rep) {
     return(distance)
   }
-
+  
   perm_inv <- order(as.numeric(perm))
   posnegs <- posneg[pairing]
   posnegs <- posnegs[perm_inv]

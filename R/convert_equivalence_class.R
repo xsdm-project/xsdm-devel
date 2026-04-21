@@ -26,7 +26,7 @@ convert_equivalence_class <- function(p, flip, perm) {
   sigltil <- p$sigltil
   sigrtil <- p$sigrtil
   dd <- dim(o_mat)[1]
-
+  
   # do the sign flipping
   for (cc in 1:dd) {
     if (flip[cc]) {
@@ -36,7 +36,7 @@ convert_equivalence_class <- function(p, flip, perm) {
       sigltil[cc] <- h
     }
   }
-
+  
   # do the permuting
   o_mat <- o_mat[, perm]
   sigltil <- sigltil[perm]

@@ -45,22 +45,36 @@ p1 <- list(
   o_mat = diag(2)
 )
 
-# p2 is equivalent to p1: columns swapped and one sign flipped
-p2 <- p1
-p2$o_mat <- matrix(c(0, -1, 1, 0), 2, 2)  # swapped columns, second column negated
-p2$sigltil <- p1$sigltil[c(2, 1)]
-p2$sigrtil <- p1$sigrtil[c(2, 1)]
-p2$sigltil[2] <- p1$sigrtil[1]  # because of sign flip, sigltil and sigrtil swap
-p2$sigrtil[2] <- p1$sigltil[1]
+# Build an equivalent p2 by swapping columns (2,1) and flipping the sign
+# of the first column.
+perm <- c(2, 1)
+flip <- 1
+
+o_mat_swapped <- p1$o_mat[, perm]
+o_mat_flipped <- o_mat_swapped
+o_mat_flipped[, flip] <- -o_mat_flipped[, flip]
+
+sigltil_swapped <- p1$sigltil[perm]
+sigrtil_swapped <- p1$sigrtil[perm]
+sigltil_final <- sigltil_swapped
+sigrtil_final <- sigrtil_swapped
+sigltil_final[flip] <- sigrtil_swapped[flip]
+sigrtil_final[flip] <- sigltil_swapped[flip]
+
+p2 <- list(
+  mu = p1$mu,
+  sigltil = sigltil_final,
+  sigrtil = sigrtil_final,
+  ctil = p1$ctil,
+  pd = p1$pd,
+  o_mat = o_mat_flipped
+)
 
 # Distance should be zero (or near machine precision)
 xsdm:::distance_between_params(p1, p2)
 
-# Get the closest representative of p1's equivalence class to p2
-res <- xsdm:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
-str(res)
-
-# Using the package's example data
+# Using the package's example data.  Distance should be zero
+# (or near machine precision)
 bio1 <- math_to_bio(example_1_optim_param_vector)
 bio2 <- math_to_bio(example_1_optim_param_vector_equivalent)
 xsdm:::distance_between_params(bio1, bio2)

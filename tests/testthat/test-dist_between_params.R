@@ -1,4 +1,6 @@
-test_that("dist_between_params: basic structure, correctness, and parity with slow version", {
+library(testthat)
+test_that("dist_between_params: basic structure, correctness,
+          and parity with slow version", {
   skip_if_not_installed("clue")
   skip_if_not_installed("expm")
   
@@ -170,7 +172,10 @@ test_that("dist_between_params: basic structure, correctness, and parity with sl
   v_drop <- setdiff(names(v), names(mask))[1]
   v_masked <- v[names(v) != names(mask)]
   # symmetrical case to itself should be zero distance
-  expect_equal(dist_between_params(p1 = v_masked, p2 = v_masked, mask = mask), 0)
+  expect_equal(dist_between_params(p1 = v_masked,
+                                   p2 = v_masked,
+                                   mask = mask),
+               0)
 })
 
 
@@ -199,9 +204,11 @@ test_that("dist_between_params: core behavior, types, and basic accuracy", {
   # Representative has canonical names and copied scalars
   rep <- res2$representative
   expect_named(rep, c("mu","sigltil","sigrtil","ctil","pd","o_mat"))
-  expect_equal(rep$mu, mu); expect_equal(rep$ctil, ctil); expect_equal(rep$pd, pd)
+  expect_equal(rep$mu, mu)
+  expect_equal(rep$ctil, ctil); expect_equal(rep$pd, pd)
   
-  # With identical sigs/scalars, distance reduces to Frobenius distance on o_mat after best assignment/sign
+  # With identical sigs/scalars, distance reduces to Frobenius distance on o_mat
+  # after best assignment/sign
   expect_equal(res1, sqrt(sum((o_mat1 - o_mat2)^2)))
 })
 
@@ -221,8 +228,9 @@ test_that("dist_between_params: tie branch (pos == neg) sets sign to +1", {
   p2 <- list(mu = mu, ctil = ctil, pd = pd, o_mat = o2,
              sigltil = sig_equal, sigrtil = sig_equal)
   
-  # We can't directly access posneg, but we can check that the chosen representative
-  # corresponds to +1 flips for the paired columns (tie -> +1 per code path).
+  # We can't directly access posneg, but we can check that the chosen
+  # representative corresponds to +1 flips for the paired columns
+  # (tie -> +1 per code path).
   out <- dist_between_params(p1, p2, give_closest_rep = TRUE)
   rep <- out$representative
   
@@ -235,23 +243,29 @@ test_that("dist_between_params: tie branch (pos == neg) sets sign to +1", {
 })
 
 
-test_that("dist_between_params: math-scale inputs + mask complementarity (including Inf for sig*/pd)", {
+test_that("dist_between_params: math-scale inputs + mask complementarity
+          (including Inf for sig*/pd)", {
   # p = 2; build full canonical name vector, then split between p and mask
   nm <- make_mask_names(2)
   set.seed(303)
-  v <- nm; v[seq_along(v)] <- rnorm(length(v))  # full canonical math-scale vector (length 9)
+  # full canonical math-scale vector (length 9)
+  v <- nm; v[seq_along(v)] <- rnorm(length(v))  
   
   # ---- Valid mask branch (control) ----
-  mask <- c(sigltil1 = Inf, pd = Inf)                 # allowed names for Inf
-  v_free <- v[setdiff(names(v), names(mask))]         # drop the masked names from the free vector
+  # allowed names for Inf
+  mask <- c(sigltil1 = Inf, pd = Inf)                 
+  # drop the masked names from the free vector
+  v_free <- v[setdiff(names(v), names(mask))]         
   d0 <- dist_between_params(p1 = v_free, p2 = v_free, mask = mask)
   expect_equal(d0, 0)
   
   # ---- Invalid mask branch (what we want to test) ----
-  # To reach the "mask can only have infinite values ..." check, ensure the union of names
-  # matches the canonical set: remove the masked name from the free vector and put it in 'mask'.
+  # To reach the "mask can only have infinite values ..." check,
+  # ensure the union of names matches the canonical set: remove the masked name
+  # from the free vector and put it in 'mask'.
   bad_mask <- c(mu1 = Inf)                            # NOT allowed to be Inf
-  v_free_bad <- v[setdiff(names(v), names(bad_mask))] # remove mu1 so |v_free_bad| + |mask| == 9
+  # remove mu1 so |v_free_bad| + |mask| == 9
+  v_free_bad <- v[setdiff(names(v), names(bad_mask))] 
   expect_error(
     dist_between_params(p1 = v_free_bad, p2 = v_free_bad, mask = bad_mask),
     regexp = "Must be TRUE"
@@ -259,7 +273,8 @@ test_that("dist_between_params: math-scale inputs + mask complementarity (includ
 })
 
 
-test_that("dist_between_params: mismatched lengths/names on math-scale raise errors", {
+test_that("dist_between_params:
+          mismatched lengths/names on math-scale raise errors", {
   # --- 1) Wrong length: assert_integerish() ---
   nm <- make_mask_names(2)
   v_bad_len <- nm[-1]; v_bad_len[] <- 0
@@ -281,7 +296,9 @@ test_that("dist_between_params: mismatched lengths/names on math-scale raise err
   mask_overlap <- c(mu1 = 0.1)
   
   expect_error(
-    dist_between_params(v_free_bad_union, v_free_bad_union, mask = mask_overlap),
+    dist_between_params(v_free_bad_union,
+                        v_free_bad_union,
+                        mask = mask_overlap),
     regexp = "Must be TRUE",
     fixed  = FALSE
   )
@@ -307,5 +324,6 @@ test_that("dist_between_params", {
   res_slow <- xsdm:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
   res_fast <- dist_between_params(p1, p2, give_closest_rep = TRUE)
   expect_equal(res_slow$distance, res_fast$distance, tolerance = 1e-12)
-  expect_equal(res_slow$representative$o_mat, res_fast$representative$o_mat, tolerance = 1e-12)
+  expect_equal(res_slow$representative$o_mat, res_fast$representative$o_mat,
+               tolerance = 1e-12)
 })

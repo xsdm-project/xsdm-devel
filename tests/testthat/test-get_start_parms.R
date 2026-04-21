@@ -1,6 +1,6 @@
 library(testthat)
 
-test_that("get_start_parms returns correct tibble with expected structure", {
+test_that("xsdm:::get_start_parms_ returns correct tibble with expected structure", {
   # Mock ranges data frame
   ranges <- data.frame(
     lower = c(-1, 0.1),
@@ -10,7 +10,7 @@ test_that("get_start_parms returns correct tibble with expected structure", {
   )
 
   # Call the function
-  result <- get_start_parms(ranges, numstarts = 10)
+  result <- xsdm:::get_start_parms_(ranges, numstarts = 10)
 
   # Check output type
   expect_s3_class(result, "tbl_df")
@@ -28,11 +28,11 @@ test_that("get_start_parms returns correct tibble with expected structure", {
   }
 })
 
-test_that("get_start_parms fails with invalid inputs", {
+test_that("xsdm:::get_start_parms_ fails with invalid inputs", {
   # Wrong column names
   bad_ranges <- data.frame(a = 1, b = 2, c = 3)
-  expect_error(get_start_parms(bad_ranges, numstarts = 10))
+  expect_error(xsdm:::get_start_parms_(bad_ranges, numstarts = 10))
 
   # Wrong type for numstarts
-  expect_error(get_start_parms(ranges, numstarts = "ten"))
+  expect_error(xsdm:::get_start_parms_(ranges, numstarts = "ten"))
 })
