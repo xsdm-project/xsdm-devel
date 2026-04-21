@@ -6,7 +6,7 @@
 #' @keywords internal
 #'
 #' @examples
-#' logit(0.5)
+#' xsdm:::logit(0.5)
 logit <- function(x) {
   no <- (x < 0) | (x > 1)
   out <- numeric(length(x))

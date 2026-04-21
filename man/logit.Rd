@@ -16,6 +16,6 @@ A numeric
 Logit function. Inverse of the expit function.
 }
 \examples{
-logit(0.5)
+xsdm:::logit(0.5)
 }
 \keyword{internal}

@@ -59,4 +59,7 @@ The center of every range is fixed and data-driven: it is
 \examples{
 set.seed(1)
 env <- array(rnorm(10 * 5 * 2), dim = c(10, 5, 2))
+xsdm:::get_range_df(env)                 # default breadth = 1
+xsdm:::get_range_df(env, breadth = 0.3) 
 }
+\keyword{internal}
