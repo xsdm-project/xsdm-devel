@@ -64,24 +64,15 @@ vector of occurrences and pseudo-absences, and model parameters on the
 biological scale.
 }
 \examples{
-mu <- param_list_example$mu
-sigltil <- param_list_example$sigltil
-sigrtil <- param_list_example$sigrtil
-ctil <- param_list_example$ctil
-pd <- param_list_example$pd
-o_mat <- param_list_example$o_mat
-env_dat <- example_1_env_array
-occ <- example_1_occurrence_vector
-
 ll <- loglik_bio(
-  env_dat,
-  occ,
-  mu = mu,
-  sigltil = sigltil,
-  sigrtil = sigrtil,
-  o_mat = o_mat,
-  ctil = ctil,
-  pd = pd
+  env_dat = examples$env_array,
+  occ = examples$occ_vec,
+  mu = examples$par_list$mu,
+  sigltil = examples$par_list$sigltil,
+  sigrtil = examples$par_list$sigrtil,
+  o_mat = examples$par_list$o_mat,
+  ctil = examples$par_list$ctil,
+  pd = examples$par_list$pd
 )
 ll
 }
