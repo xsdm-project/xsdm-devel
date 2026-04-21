@@ -182,7 +182,7 @@ optimize_likelihood <- function(
     res_list <- furrr::future_map(
       list_of_pars, runner,
       .options = furrr::furrr_options(
-        packages = c("xsdmMle", "ucminf", "checkmate", "RcppParallel"),
+        packages = c("xsdm", "ucminf", "checkmate", "RcppParallel"),
         seed     = TRUE
       ),
       .progress = TRUE
