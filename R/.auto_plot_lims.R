@@ -40,24 +40,8 @@
 #'   numeric length-2 vector \code{c(lower, upper)} of limits *relative to*
 #'   the corresponding \code{mu[indices[i]]}, suitable for direct use as
 #'   the \code{plot_lims} argument of \code{\link{interpret_parameters}()}.
-#'
-#' @examples
-#' \dontrun{
-#'   lims <- auto_plot_lims(
-#'     env_dat    = examples$env_array,
-#'     param_list = examples$par_list  ,
-#'     indices    = c(1, 2)
-#'   )
-#'   interpret_parameters(
-#'     examples$par_list,
-#'     plot_indices = c(1, 2),
-#'     plot_lims    = lims,
-#'     env_dat      = examples$env_array,
-#'     occ          = examples$occ_vec
-#'   )
-#' }
-#' @export
-auto_plot_lims <- function(env_dat,
+#' @keywords internal
+.auto_plot_lims <- function(env_dat,
                            param_list,
                            indices,
                            breadth = 1,
