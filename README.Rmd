@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# xsdm <img src="man/figures/README-pressure-1.png" align="right" height="120" alt="" />
+# xsdm
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/xsdm-project/xsdm-devel/badge.svg)](https://app.codecov.io/gh/xsdm-project/xsdm-devel)
@@ -337,7 +337,7 @@ BibTeX:
   journal = {bioRxiv},
   doi    = {10.1101/2024.10.30.621023},
   year   = {2025},
-  url    = {https://www.biorxiv.org/content/10.1101/2024.10.30.621023v2}
+  url    = {https://doi.org/10.1101/2024.10.30.621023}
 }
 ```
 
