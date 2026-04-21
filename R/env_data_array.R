@@ -12,10 +12,13 @@
 #' @export
 #'
 #' @examples
-#' bio1_ts <- terra::unwrap(example_1_bio01)
-#' bio12_ts <- terra::unwrap(example_1_bio12)
+#' bio1_ts <- terra::unwrap(examples$bio01)
+#' bio12_ts <- terra::unwrap(examples$bio12)
 #' env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
-#' occ <- example_1_occurrence_df[1:5, ]
+#' occ <- examples$occ_df[1:5, ]
+#' # Return array correspoding to each presence absence provided
+#' env_data_array(env_data, occ)
+#' # Return all the environmental in the rasters
 #' env_data_array(env_data, occ)
 env_data_array <- function(env_data, occ = NULL) {
   if (!requireNamespace("terra", quietly = TRUE)) {
@@ -39,9 +42,7 @@ env_data_array <- function(env_data, occ = NULL) {
   n_vars <- length(env_data)
   time_names <- names(env_data[[1]])
   var_names <- names(env_data)
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("Package 'terra' is required for env_data_array(). Install it with: install.packages('terra')")
-  }
+  
   # Create spatial points if occurrences are provided
   if (!is.null(occ)) {
     checkmate::assert_names(names(occ),
