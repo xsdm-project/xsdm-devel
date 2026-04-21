@@ -1,13 +1,17 @@
-# ============================================================================
-# Graphical (not unit) tests for interpret_parameters() and auto_plot_lims_()
+# ----------------------------------------------------------------------------
+# Manual graphical test for interpret_parameters()
 #
-# Run interactively and verify each plot visually. To save plots to a PDF
-# for later review, set save_pdf <- TRUE and specify a filename.
-# ============================================================================
+# Run this script interactively to visually verify plots.
+# To save plots to a PDF (optional), set save_pdf <- TRUE below.
+# ----------------------------------------------------------------------------
 
 save_pdf <- FALSE
-if (save_pdf) pdf("interpret_parameters_test_plots.pdf", width = 10, height = 6)
-
+if (save_pdf) {
+  pdf_file <- tempfile(pattern = "interpret_parameters_", fileext = ".pdf")
+  pdf(pdf_file, width = 10, height = 6)
+  on.exit(dev.off(), add = TRUE)
+  message("Saving plots to: ", pdf_file)
+}
 library(xsdm)
 
 # ----------------------------------------------------------------------------

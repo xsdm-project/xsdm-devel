@@ -310,7 +310,7 @@ interpret_parameters <- function(param_list,
         if (length(env_k)) {
           points(
             env_k,
-            runif(length(env_k), ymin - ypad, ymin - 0.2 * ypad),
+            stats::runif(length(env_k), ymin - ypad, ymin - 0.2 * ypad),
             pch = 16, cex = 0.5,
             col = grDevices::adjustcolor("black", alpha.f = 0.3)
           )
