@@ -47,9 +47,10 @@
 #' Optimizing the likelihood and profiling requires conventions for transforming
 #' parameters from unconstrained spaces to the constrained space of possible
 #' parameters which can be accepted by \code{loglik_bio}. This function and
-#' \code{math_to_bio} implement those conventions, and also allow for optimizations
-#' while keeping one or more parameters fixed, including potentially at boundary
-#' values. Typically \code{loglik_math} is the function one optimizes numerically
+#' \code{math_to_bio} implement those conventions, and also allow for
+#' optimizations while keeping one or more parameters fixed, including
+#' potentially at boundary values. Typically \code{loglik_math} is the function
+#' one optimizes numerically
 #' in order to fit xsdm or a boundary model with data, or to profile a fitted
 #' model. For what follows, denote \code{dim(env_dat)[3]} by \code{p}.
 #'
@@ -97,18 +98,29 @@
 #' models. Entries of \code{param_vector} must be finite.
 #'
 #' @examples
-#' env_dat <- example_1_env_array
-#' occ <- example_1_occurrence_vector
-#' param_vector <- param_table_example[5, ]
-#' diff_names <- setdiff(names(param_vector), "mu2")
-#' param_vector <- param_vector[diff_names]
-#' mask_parameters_a <- c(mu2 = 0)
+#' # Testing the function with the example data
 #' loglik_math(
-#'   param_vector,
-#'   env_dat,
-#'   occ,
-#'   mask_parameters_a
+#'   param_vector = examples$par_vec,
+#'   env_dat = examples$env_array,
+#'   occ = examples$occ_vec
 #' )
+#' # Mute one parameter to use the mask
+#' par_vec <- examples$par_vec[-2]
+#' mask_parameters_a <- c(mu2 = 6.5)
+#' loglik_math(
+#'   param_vector = par_vec,
+#'   env_dat = examples$env_array,
+#'   occ = examples$occ_vec,
+#'   mask = mask_parameters_a
+#' )
+#' # Return the negative
+#' loglik_math(
+#'   param_vector = examples$par_vec,
+#'   env_dat = examples$env_array,
+#'   occ = examples$occ_vec,
+#'   negative = TRUE
+#' )
+
 loglik_math <- function(param_vector,
                         env_dat,
                         occ,
@@ -141,8 +153,12 @@ loglik_math <- function(param_vector,
 
   # Now validate biological parameters (mu, sigltil, sigrtil, ctil, pd)---------
   checkmate::assert_numeric(param_list$mu, any.missing = FALSE, min.len = 1)
-  checkmate::assert_numeric(param_list$sigltil, any.missing = FALSE, min.len = 1)
-  checkmate::assert_numeric(param_list$sigrtil, any.missing = FALSE, min.len = 1)
+  checkmate::assert_numeric(param_list$sigltil,
+                            any.missing = FALSE,
+                            min.len = 1)
+  checkmate::assert_numeric(param_list$sigrtil,
+                            any.missing = FALSE,
+                            min.len = 1)
   checkmate::assert_numeric(param_list$ctil, any.missing = FALSE, len = 1)
   checkmate::assert_numeric(param_list$pd, any.missing = FALSE, len = 1)
 
@@ -162,7 +178,7 @@ loglik_math <- function(param_vector,
 
   # Flag to return negative or positive values. We invert the function
   # (i. e. returns negative) when want to maximize. Minimize is the standard
-  # behavior of ucminf optimizer. We use in this package
+  # behavior of ucminf optimizer thet we use in this package
   if(!negative) {
     res
   } else {
