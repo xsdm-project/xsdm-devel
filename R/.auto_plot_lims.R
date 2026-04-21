@@ -41,7 +41,7 @@
 #'   the corresponding \code{mu[indices[i]]}, suitable for direct use as
 #'   the \code{plot_lims} argument of \code{\link{interpret_parameters}()}.
 #' @keywords internal
-.auto_plot_lims <- function(env_dat,
+auto_plot_lims_ <- function(env_dat,
                            param_list,
                            indices,
                            breadth = 1,

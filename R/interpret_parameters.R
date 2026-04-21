@@ -28,7 +28,7 @@
 #' @param plot_lims Optional list of the same length as \code{plot_indices},
 #'   each element a 2-vector giving the plotting extent *relative to*
 #'   \code{mu}. If \code{NULL} (the default) and \code{env_dat} is
-#'   supplied, limits are auto-derived via \code{\link{.auto_plot_lims}()}
+#'   supplied, limits are auto-derived via \code{\link{auto_plot_lims_}()}
 #'   using the \code{breadth} argument. The auto-derived limits cover the
 #'   full observed environmental range plus a symmetric margin on each side.
 #' @param env_dat Optional 3D numeric array of environmental data with
@@ -42,7 +42,7 @@
 #' @param breadth Scalar in \code{[0, 1]} controlling how wide the
 #'   auto-derived plotting window is around \code{mu}, with the same
 #'   semantics as in \code{\link{get_range_df}()} and
-#'   \code{\link{.auto_plot_lims}()}: \code{breadth = 1} (default) shows
+#'   \code{\link{auto_plot_lims_}()}: \code{breadth = 1} (default) shows
 #'   the full min-max environmental range plus a 10\% margin on each side;
 #'   \code{breadth = 0} collapses to essentially a single point.
 #'   Ignored when \code{plot_lims} is supplied.
@@ -166,7 +166,7 @@ interpret_parameters <- function(param_list,
         call. = FALSE
       )
     }
-    plot_lims <- .auto_plot_lims(
+    plot_lims <- auto_plot_lims_(
       env_dat    = env_dat,
       param_list = param_list,
       indices    = plot_indices,
