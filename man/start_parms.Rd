@@ -45,7 +45,7 @@ varies, but generally wider ranges in quant_vec produce wider ranges for
 start parameters.
 }
 \examples{
-env_dat <- example_1_env_array[example_1_occurrence_vector == 1, , ]
+env_dat <- examples$env_array[examples$occ_vec == 1, , ]
 start_parms(env_dat)
 start_parms(env_dat, mask = c(mu2 = 5, pd = 1))
 }

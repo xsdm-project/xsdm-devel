@@ -79,25 +79,21 @@ Basic (non-adaptive) tool for profiling the likelihood
 }
 \examples{
 ## Minimal profiling example (fast): 1 step left + 1 step right
-env_dat <- example_1_env_array
-occ <- example_1_occurrence_vector
-
 res <- profile_likelihood(
   profile_parameter = "mu1",
-  increment_left = 0.4,
-  increment_right = 0.4,
-  num_steps_left = 1L, # one iteration on the left
-  num_steps_right = 1L, # one iteration on the right
-  alpha = 0.95,
-  optim_param_vector = example_1_optim_param_vector,
-  env_dat = env_dat,
-  occ = occ,
-  mask = NULL,
-  num_threads = 1L, # keep it fast and deterministic
-  control = list(maxeval = 10),
-  verbose = FALSE
+ increment_left = 0.2,
+ increment_right = 0.2,
+ num_steps_left = 1L, # one iteration on the left
+ num_steps_right = 1L, # one iteration on the right
+ alpha = 0.95,
+ optim_param_vector = examples$optim_par_vec,
+ env_dat = examples$env_array,
+ occ = examples$occ_vec,
+ num_threads = 1L, # keep it fast and deterministic
+ control = list(maxeval = 20),
+ verbose = FALSE
 )
-
+# Check the structure of the output:
 res$profile
 res$threshold
 res$found_better

@@ -4,7 +4,7 @@
 \alias{vsp}
 \title{Generate a virtual species probability map}
 \usage{
-vsp(env_data, param_list, return_raster)
+vsp(env_data, param_list, return_raster = FALSE)
 }
 \arguments{
 \item{env_data}{A named list of time-series raster objects (e.g., bioclimatic
@@ -20,9 +20,11 @@ probabilities. If `FALSE`, returns a tibble with columns `x`, `y`, and
 }
 \value{
 Either:
-  * A `SpatRaster` object (if `return_raster = TRUE`), or
-  * A tibble with coordinates and probability values
-  (if `return_raster = FALSE`).
+  * A tibble with coordinates and probability values by default
+  (if `return_raster = FALSE`) or
+  * A `SpatRaster` object (if `return_raster = TRUE`)
+  Both with values corresponding to the probability of detection for the
+  virtual species. Values range from 0 to 1
 }
 \description{
 Creates a virtual species probability-of-detection map based on environmental
@@ -38,22 +40,30 @@ Internally, the function:
 }
 }
 \examples{
-# Example using chelsa dataset preloaded in xsdm package:
-bio1_ts <- terra::unwrap(example_1_bio01)
-bio12_ts <- terra::unwrap(example_1_bio12)
-bio1_ts <- bio1_ts / 100
-bio12_ts <- bio12_ts / 100
-env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
-param_list_example <- list(
-  mu = c(14, 6.5),
-  sigltil = c(0.46, 1.08),
-  sigrtil = c(0.105, 0.9),
-  ctil = -18.14,
-  pd = 0.89,
-  o_mat = matrix(c(-0.18, 0.983, -0.983, -0.18), nrow = 2, ncol = 2)
-)
-vsp(env_data, param_list_example, return_raster = TRUE)
+\donttest{
+# Load the consolidated example data (provided by the package)
+data("examples", package = "xsdm")
 
+# Unpack the raster time series (they are stored as packed SpatRasters)
+bio1_ts  <- terra::unwrap(examples$bio01)
+bio12_ts <- terra::unwrap(examples$bio12)
+
+# Scale to match typical units (CHELSA data are often in 0.1 units)
+bio1_ts  <- bio1_ts / 100
+bio12_ts <- bio12_ts / 100
+
+# Build the list of environmental rasters
+env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
+
+# Return a tibble (the default)
+prob_tbl <- vsp(env_data, examples$par_list)
+head(prob_tbl)
+
+# Return a SpatRaster
+prob_rast <- vsp(env_data, examples$par_list, return_raster = TRUE)
+# Quick plot (commented to avoid plotting in examples)
+# plot(prob_rast)
+}
 }
 \seealso{
 [env_data_array()], [log_prob_detect()], [terra::rast()]
