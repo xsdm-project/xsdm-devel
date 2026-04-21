@@ -18,7 +18,7 @@ test_that("optimize_loglik_math_ injects invh_lt and restores names if optimizer
     occ          = occ,
     mask         = NULL,
     num_threads  = 1L,
-    base_control = list(),
+    base_control = list(maxeval = 5),
     invh_lt      = invh,
     optimizer_fun = fake_opt
   )
@@ -44,7 +44,7 @@ test_that("optimize_loglik_math_ sanitizes non-finite par and sets convergence =
     occ          = occ,
     mask         = NULL,
     num_threads  = 1L,
-    base_control = list(),
+    base_control = list(maxeval = 5),
     optimizer_fun = fake_opt
   )
   
@@ -71,7 +71,7 @@ test_that("optimize_loglik_math_ returns structured error object on optimizer fa
     occ          = occ,
     mask         = NULL,
     num_threads  = 1L,
-    base_control = list(),
+    base_control = list(maxeval = 5),
     optimizer_fun = fake_opt
   )
   
