@@ -1,3 +1,79 @@
+#' Helper (internal): automatically derive relative plot limits for
+#' `interpret_parameters()`
+#'
+#' Computes variable-specific plotting limits **for internal use only**.
+#'
+#' ## Details
+#'
+#' Limits are expressed *relative to* the species' optimal environmental
+#' values `mu`, i.e. each returned limit is reported as
+#' `(abs_limit - mu_i)`.
+#'
+#' Width is controlled by a single scalar `breadth` with the same
+#' semantics used elsewhere in the package (see [get_range_df()]):
+#'
+#' - `breadth = 1` (default) gives the widest view: the full min–max range
+#'   plus a symmetric margin of `margin * range` on each side.
+#' - `breadth = 0` collapses every limit pair to essentially a single point
+#'   around `mu`.
+#' - Values in between interpolate linearly.
+#'
+#' @param env_dat A 3D numeric array. **Must not contain missing values.**
+#' @param param_list Named list, must contain entry `mu`.
+#' @param indices Integer vector specifying which environmental variables
+#'   to compute limits for.
+#' @param breadth Scalar in \eqn{[0, 1]}. Default `1`.
+#' @param margin Non-negative scalar. Fraction of observed range to expand.
+#'
+#' @returns A list of length `length(indices)`. Each element is a numeric
+#'   length-2 vector `c(lower, upper)` of limits *relative to* `mu`.
+#'
+#' @noRd
+#' @keywords internal
+auto_plot_lims_ <- function(env_dat,
+                            param_list,
+                            indices,
+                            breadth = 1,
+                            margin  = 0.1) {
+  # ---- Validation --------------------------------------------------------
+  check_env_array(env_dat)
+  checkmate::assert_list(param_list, any.missing = FALSE)
+  checkmate::assert_true("mu" %in% names(param_list))
+  mu <- param_list$mu
+  checkmate::assert_numeric(mu, any.missing = FALSE, finite = TRUE)
+  p <- length(mu)
+  checkmate::assert_integerish(indices,
+                               lower = 1, upper = p,
+                               any.missing = FALSE
+  )
+  checkmate::assert_number(
+    breadth,
+    lower = 0, upper = 1, finite = TRUE, na.ok = FALSE
+  )
+  checkmate::assert_number(margin, lower = 0, finite = TRUE, na.ok = FALSE)
+  
+  # ---- Full env range per variable (no occ filter) -----------------------
+  env_sub  <- env_dat[, , indices, drop = FALSE]
+  abs_lo   <- apply(env_sub, 3, min, na.rm = TRUE)
+  abs_hi   <- apply(env_sub, 3, max, na.rm = TRUE)
+  
+  # Breathing room: fraction of the observed range on each side
+  data_range <- abs_hi - abs_lo
+  dev        <- margin * data_range
+  
+  # ---- Relative to mu at breadth = 1 (widest) ---------------------------
+  rel_lo_full <- (abs_lo - dev) - mu[indices]
+  rel_hi_full <- (abs_hi + dev) - mu[indices]
+  
+  # ---- Linear interpolation from pinprick (breadth = 0) to full ----------
+  eps    <- 1e-6
+  rel_lo <- breadth * rel_lo_full + (1 - breadth) * (-eps)
+  rel_hi <- breadth * rel_hi_full + (1 - breadth) * ( eps)
+  
+  Map(c, rel_lo, rel_hi)
+}
+
+
 #' Tool to help interpret xsdm model parameters
 #'
 #' Due to the parameter reduction step which was carried out to eliminate
@@ -28,8 +104,8 @@
 #' @param plot_lims Optional list of the same length as \code{plot_indices},
 #'   each element a 2-vector giving the plotting extent *relative to*
 #'   \code{mu}. If \code{NULL} (the default) and \code{env_dat} is
-#'   supplied, limits are auto-derived via \code{\link{auto_plot_lims_}()}
-#'   using the \code{breadth} argument. The auto-derived limits cover the
+#'   supplied, limits are auto-derived via \code{auto_plot_lims_()} using
+#'   the \code{breadth} argument. The auto-derived limits cover the
 #'   full observed environmental range plus a symmetric margin on each side.
 #' @param env_dat Optional 3D numeric array of environmental data with
 #'   dimensions \code{(locations) x (time) x (variables)}. Required for the
@@ -42,7 +118,7 @@
 #' @param breadth Scalar in \code{[0, 1]} controlling how wide the
 #'   auto-derived plotting window is around \code{mu}, with the same
 #'   semantics as in \code{\link{get_range_df}()} and
-#'   \code{\link{auto_plot_lims_}()}: \code{breadth = 1} (default) shows
+#'   \code{auto_plot_lims_()}: \code{breadth = 1} (default) shows
 #'   the full min-max environmental range plus a 10\% margin on each side;
 #'   \code{breadth = 0} collapses to essentially a single point.
 #'   Ignored when \code{plot_lims} is supplied.
@@ -69,8 +145,7 @@
 #' no units of their own.
 #'
 #' @importFrom graphics abline image mtext par points
-#' @importFrom grDevices hcl.colors
-#' @importFrom stats runif
+#' @importFrom grDevices hcl.colors adjustcolor
 #' @export
 #'
 #' @examples
@@ -219,7 +294,7 @@ interpret_parameters <- function(param_list,
     if (have_data) {
       op <- par(mfrow = c(1L, 2L))
       on.exit(par(op), add = TRUE)
-      plot_one_1d <- function(title_tag, keep) {
+      plot_one_1d <- function(title_tag, keep, ...) {
         plot(x, y,
              type = "l",
              xlab = paste("Environmental variable", idx),
@@ -241,8 +316,8 @@ interpret_parameters <- function(param_list,
           )
         }
       }
-      plot_one_1d("Presences (occ == 1)",      occ_flat == 1L)
-      plot_one_1d("Non-detections (occ == 0)", occ_flat == 0L)
+      plot_one_1d("Presences (occ == 1)",      occ_flat == 1L, ...)
+      plot_one_1d("Non-detections (occ == 0)", occ_flat == 0L, ...)
     } else {
       plot(x, y,
            type = "l",
@@ -283,13 +358,14 @@ interpret_parameters <- function(param_list,
     if (is.null(dots$col))  dots$col  <- grDevices::hcl.colors(64, "YlOrRd",
                                                                rev = TRUE)
     
-    draw_one_2d <- function(title_tag, keep) {
+    draw_one_2d <- function(title_tag, keep, ...) {
       do.call(image, c(
         list(x = x_1, y = x_2, z = z, axes = TRUE,
              xlab = paste("Environmental variable", idx1),
              ylab = paste("Environmental variable", idx2),
              main = title_tag),
-        dots
+        dots,
+        list(...)
       ))
       points(
         param_list$mu[idx1], param_list$mu[idx2],
@@ -311,10 +387,10 @@ interpret_parameters <- function(param_list,
     if (have_data) {
       op <- par(mfrow = c(1L, 2L))
       on.exit(par(op), add = TRUE)
-      draw_one_2d("Presences (occ == 1)",      occ_flat == 1L)
-      draw_one_2d("Non-detections (occ == 0)", occ_flat == 0L)
+      draw_one_2d("Presences (occ == 1)",      occ_flat == 1L, ...)
+      draw_one_2d("Non-detections (occ == 0)", occ_flat == 0L, ...)
     } else {
-      draw_one_2d("", logical(0))
+      draw_one_2d("", logical(0), ...)
     }
   }
   

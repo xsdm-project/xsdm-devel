@@ -1,17 +1,23 @@
-library(xsdm)
-# Graphical (not unit) tests for interpret_parameters(). Run interactively
-# and verify each plot visually.
+# ============================================================================
+# Graphical (not unit) tests for interpret_parameters() and auto_plot_lims_()
 #
-# Section 1  Legacy single-panel (no env_dat / occ). Must be identical to
-#            the pre-#44 output.
-# Section 2  New two-panel (#44) using the package example data.
-#            Axis limits auto-derived from the full env range + 10% margin.
-# Section 3  auto_plot_lims stand-alone smoke tests.
-# Section 4  Expected-error cases.
+# Run interactively and verify each plot visually. To save plots to a PDF
+# for later review, set save_pdf <- TRUE and specify a filename.
+# ============================================================================
 
-# ========================================================================
-# 1) Legacy single-panel calls
-# ========================================================================
+save_pdf <- FALSE
+if (save_pdf) pdf("interpret_parameters_test_plots.pdf", width = 10, height = 6)
+
+library(xsdm)
+
+# ----------------------------------------------------------------------------
+# Helper: safely call internal function
+# ----------------------------------------------------------------------------
+auto_plot_lims_ <- xsdm:::auto_plot_lims_
+
+# ----------------------------------------------------------------------------
+# 1) Legacy single-panel calls (no env_dat / occ)
+# ----------------------------------------------------------------------------
 
 param_list <- list(
   mu      = c(1, 2),
@@ -22,25 +28,25 @@ param_list <- list(
   o_mat   = diag(2)
 )
 
-# two univariate plots in each direction
+# Two univariate plots in each direction
 interpret_parameters(param_list, plot_indices = 1, plot_lims = list(c(-2, 4)))
 interpret_parameters(param_list, plot_indices = 2, plot_lims = list(c(-6, 2)))
 
-# bivariate plot
+# Bivariate plot
 interpret_parameters(
   param_list,
   plot_indices = c(1, 2),
   plot_lims    = list(c(-8, 16), c(-16, 8))
 )
 
-# doubling limits: same contour shape, different axis ticks
+# Doubling limits: same contour shape, different axis ticks
 interpret_parameters(
   param_list,
   plot_indices = c(1, 2),
   plot_lims    = list(c(-16, 32), c(-32, 16))
 )
 
-# rotated parameters
+# Rotated parameters
 theta <- 30 * pi / 180
 param_list$o_mat <- matrix(
   c(cos(theta), sin(theta), -sin(theta), cos(theta)),
@@ -54,24 +60,16 @@ interpret_parameters(
   plot_lims    = list(c(-8, 16), c(-16, 8))
 )
 
-# ========================================================================
-# 2) New two-panel behaviour (#44)
-#    Axis limits are derived from the FULL env range (all locations and
-#    time steps, not filtered by occ) plus a 10% margin on each side.
-#    The `breadth` knob controls the width with the same semantics as in
-#    get_range_df():
-#      breadth = 1  ->  full min-max env range + 10% margin
-#      breadth = 0  ->  pinprick around mu
-# ========================================================================
+# ----------------------------------------------------------------------------
+# 2) New two-panel behaviour (using package example data)
+# ----------------------------------------------------------------------------
 
-env_dat <- example_1_env_array
-occ     <- example_1_occurrence_vector
-pl      <- example_1_param_list_example
+# Load example data (adjust names as needed; these are placeholders)
+env_dat <- xsdm::example_1_env_array
+occ     <- xsdm::example_1_occurrence_vector
+pl      <- xsdm::example_1_param_list_example
 
-# 2a) Bivariate, default breadth = 1 (full range + margin).
-#     EXPECTED: all scatter points (presences left, non-detections right)
-#     sit comfortably inside the axis limits with breathing room on every
-#     edge.
+# 2a) Bivariate, default breadth = 1 (full range + 10% margin)
 interpret_parameters(
   pl,
   plot_indices = c(1, 2),
@@ -79,9 +77,7 @@ interpret_parameters(
   occ          = occ
 )
 
-# 2b) Bivariate, breadth = 0.5 (halfway). Axis range visibly narrower than
-#     2a; some data points near the tails may now sit close to the plot edge
-#     or outside it.
+# 2b) Bivariate, breadth = 0.5 (halfway)
 interpret_parameters(
   pl,
   plot_indices = c(1, 2),
@@ -90,8 +86,7 @@ interpret_parameters(
   breadth      = 0.5
 )
 
-# 2c) Bivariate, breadth = 0 (pinprick). Essentially no data visible;
-#     smoke check that the code path does not blow up.
+# 2c) Bivariate, breadth = 0 (pinprick around mu)
 interpret_parameters(
   pl,
   plot_indices = c(1, 2),
@@ -100,22 +95,21 @@ interpret_parameters(
   breadth      = 0
 )
 
-# 2d) Bivariate with user-supplied plot_lims. When plot_lims is given,
-#     breadth is silently ignored; env_dat / occ still trigger two-panel.
+# 2d) Bivariate with user-supplied plot_lims (using internal helper)
+lims_user <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 1)
 interpret_parameters(
   pl,
   plot_indices = c(1, 2),
-  plot_lims    = auto_plot_lims(env_dat, pl, c(1, 2)),
+  plot_lims    = lims_user,
   env_dat      = env_dat,
   occ          = occ
 )
 
-# 2e) Univariate two-panel: growth curve + jitter cloud of env values at
-#     presences (left) and non-detections (right). Same curve on both.
+# 2e) Univariate two-panel
 interpret_parameters(pl, plot_indices = 1, env_dat = env_dat, occ = occ)
 interpret_parameters(pl, plot_indices = 2, env_dat = env_dat, occ = occ)
 
-# 2f) Univariate narrower breadth.
+# 2f) Univariate narrower breadth
 interpret_parameters(
   pl,
   plot_indices = 1,
@@ -124,12 +118,12 @@ interpret_parameters(
   breadth      = 0.3
 )
 
-# ========================================================================
-# 3) auto_plot_lims standalone smoke tests
-# ========================================================================
+# ----------------------------------------------------------------------------
+# 3) auto_plot_lims_ standalone tests
+# ----------------------------------------------------------------------------
 
-# 3a) breadth = 1: limits should comfortably cover all env values.
-lims_full <- auto_plot_lims(env_dat, pl, c(1, 2), breadth = 1)
+# 3a) breadth = 1: limits cover all env values
+lims_full <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 1)
 for (k in 1:2) {
   env_k <- as.numeric(env_dat[, , k])
   lo <- pl$mu[k] + lims_full[[k]][1]
@@ -142,42 +136,57 @@ for (k in 1:2) {
   ))
 }
 
-# 3b) breadth = 0: limits should collapse to a pinprick around mu.
-lims_pin <- auto_plot_lims(env_dat, pl, c(1, 2), breadth = 0)
+# 3b) breadth = 0: pinprick width < 1e-4
+lims_pin <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 0)
 for (k in 1:2) {
   width <- lims_pin[[k]][2] - lims_pin[[k]][1]
   stopifnot(width < 1e-4)
   message(sprintf("Var %d: pinprick width %.2e -- OK", k, width))
 }
 
-# 3c) breadth monotonicity: wider breadth -> wider limits.
-lims_lo <- auto_plot_lims(env_dat, pl, c(1, 2), breadth = 0.2)
-lims_hi <- auto_plot_lims(env_dat, pl, c(1, 2), breadth = 0.8)
+# 3c) Monotonicity: larger breadth gives wider limits
+lims_lo <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 0.2)
+lims_hi <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 0.8)
 for (k in 1:2) {
   w_lo <- lims_lo[[k]][2] - lims_lo[[k]][1]
   w_hi <- lims_hi[[k]][2] - lims_hi[[k]][1]
   stopifnot(w_hi >= w_lo)
-  message(sprintf("Var %d: width at 0.2 = %.4f < width at 0.8 = %.4f -- OK",
+  message(sprintf("Var %d: width 0.2 = %.4f < width 0.8 = %.4f -- OK",
                   k, w_lo, w_hi))
 }
 
-# ========================================================================
-# 4) Expected-error cases
-# ========================================================================
+# 3d) Test margin parameter (default 0.1, try 0.2)
+lims_margin <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 1, margin = 0.2)
+for (k in 1:2) {
+  env_range <- diff(range(env_dat[, , k]))
+  default_margin <- 0.1 * env_range
+  new_margin <- 0.2 * env_range
+  # The width (hi - lo) should be increased by extra 0.2 * range compared to default?
+  # Actually the extra margin is added symmetrically, so total width increases by 2 * extra_margin.
+  # But for simplicity, just check that limits are wider:
+  lims_default <- auto_plot_lims_(env_dat, pl, c(1, 2), breadth = 1, margin = 0.1)
+  stopifnot(lims_margin[[k]][1] < lims_default[[k]][1])
+  stopifnot(lims_margin[[k]][2] > lims_default[[k]][2])
+  message(sprintf("Var %d: margin 0.2 gives wider limits than margin 0.1 -- OK", k))
+}
 
-# 4a) Neither plot_lims nor env_dat supplied.
+# ----------------------------------------------------------------------------
+# 4) Expected-error cases
+# ----------------------------------------------------------------------------
+
+# 4a) Neither plot_lims nor env_dat supplied
 tryCatch(
   interpret_parameters(param_list, plot_indices = 1),
   error = function(e) message("OK, got expected error:\n  ", conditionMessage(e))
 )
 
-# 4b) occ without env_dat.
+# 4b) occ without env_dat
 tryCatch(
   interpret_parameters(param_list, plot_indices = 1, occ = occ),
   error = function(e) message("OK, got expected error:\n  ", conditionMessage(e))
 )
 
-# 4c) breadth out of range.
+# 4c) breadth out of range
 tryCatch(
   interpret_parameters(pl, c(1, 2), env_dat = env_dat, occ = occ, breadth = 1.5),
   error = function(e) message("OK, got expected error:\n  ", conditionMessage(e))
@@ -186,3 +195,36 @@ tryCatch(
   interpret_parameters(pl, c(1, 2), env_dat = env_dat, occ = occ, breadth = -0.01),
   error = function(e) message("OK, got expected error:\n  ", conditionMessage(e))
 )
+
+# 4d) Invalid plot_indices (out of range)
+tryCatch(
+  interpret_parameters(pl, plot_indices = 3, env_dat = env_dat, occ = occ),
+  error = function(e) message("OK, got expected error:\n  ", conditionMessage(e))
+)
+
+# 4e) Non-finite mu
+bad_param <- pl
+bad_param$mu[1] <- NA
+tryCatch(
+  interpret_parameters(bad_param, plot_indices = 1, plot_lims = list(c(-2,4))),
+  error = function(e) message("OK, got expected error:\n  ", conditionMessage(e))
+)
+
+# ----------------------------------------------------------------------------
+# 5) Additional graphical argument passing test
+# ----------------------------------------------------------------------------
+# Check that ... is passed correctly to plot/image
+interpret_parameters(
+  pl,
+  plot_indices = 1,
+  env_dat = env_dat,
+  occ = occ,
+  breadth = 0.5,
+  col.main = "blue",    # passed to title()
+  cex.lab = 1.2
+)
+
+# ----------------------------------------------------------------------------
+
+if (save_pdf) dev.off()
+message("\nAll tests completed. Please review the generated plots manually.")
