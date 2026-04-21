@@ -73,7 +73,6 @@ names(examples)
 # Unpack a raster
 \donttest{
 bio1 <- terra::unwrap(examples$bio01)
-plot(bio1[[1]])
 }
 
 # Use a parameter set

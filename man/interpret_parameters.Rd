@@ -43,9 +43,8 @@ presence/absence. Required together with \code{env_dat} for the
 two-panel display.}
 
 \item{breadth}{Scalar in \code{[0, 1]} controlling how wide the
-auto-derived plotting window is around \code{mu}, with the same
-semantics as in \code{\link{get_range_df}()} and
-\code{auto_plot_lims_()}: \code{breadth = 1} (default) shows
+auto-derived plotting window is around \code{mu}:
+\code{breadth = 1} (default) shows
 the full min-max environmental range plus a 10\% margin on each side;
 \code{breadth = 0} collapses to essentially a single point.
 Ignored when \code{plot_lims} is supplied.}

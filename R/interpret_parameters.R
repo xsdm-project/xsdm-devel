@@ -9,8 +9,7 @@
 #' values `mu`, i.e. each returned limit is reported as
 #' `(abs_limit - mu_i)`.
 #'
-#' Width is controlled by a single scalar `breadth` with the same
-#' semantics used elsewhere in the package (see [get_range_df()]):
+#' Width is controlled by a single scalar `breadth`:
 #'
 #' - `breadth = 1` (default) gives the widest view: the full min–max range
 #'   plus a symmetric margin of `margin * range` on each side.
@@ -24,6 +23,7 @@
 #'   to compute limits for.
 #' @param breadth Scalar in \eqn{[0, 1]}. Default `1`.
 #' @param margin Non-negative scalar. Fraction of observed range to expand.
+#' Default is 0.1, i.e. 10% of the observed range on each side.
 #'
 #' @returns A list of length `length(indices)`. Each element is a numeric
 #'   length-2 vector `c(lower, upper)` of limits *relative to* `mu`.
@@ -116,9 +116,8 @@ auto_plot_lims_ <- function(env_dat,
 #'   presence/absence. Required together with \code{env_dat} for the
 #'   two-panel display.
 #' @param breadth Scalar in \code{[0, 1]} controlling how wide the
-#'   auto-derived plotting window is around \code{mu}, with the same
-#'   semantics as in \code{\link{get_range_df}()} and
-#'   \code{auto_plot_lims_()}: \code{breadth = 1} (default) shows
+#'   auto-derived plotting window is around \code{mu}:
+#'   \code{breadth = 1} (default) shows
 #'   the full min-max environmental range plus a 10\% margin on each side;
 #'   \code{breadth = 0} collapses to essentially a single point.
 #'   Ignored when \code{plot_lims} is supplied.
