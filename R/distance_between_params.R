@@ -45,16 +45,16 @@
 #' p2$sigrtil[2] <- p1$sigltil[1]
 #'
 #' # Distance should be zero (or near machine precision)
-#' xsdmMle:::distance_between_params(p1, p2)
+#' xsdm:::distance_between_params(p1, p2)
 #'
 #' # Get the closest representative of p1's equivalence class to p2
-#' res <- xsdmMle:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
+#' res <- xsdm:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
 #' str(res)
 #'
 #' # Using the package's example data
 #' bio1 <- math_to_bio(example_1_optim_param_vector)
 #' bio2 <- math_to_bio(example_1_optim_param_vector_equivalent)
-#' xsdmMle:::distance_between_params(bio1, bio2)
+#' xsdm:::distance_between_params(bio1, bio2)
 #' }
 distance_between_params <- function(p1, p2, GiveClosestRep = FALSE) {
   # No error checking of inputs because this is not an exported function, it is

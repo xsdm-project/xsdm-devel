@@ -38,7 +38,7 @@ Internally, the function:
 }
 }
 \examples{
-# Example using chelsa dataset preloaded in xsdmMle package:
+# Example using chelsa dataset preloaded in xsdm package:
 bio1_ts <- terra::unwrap(example_1_bio01)
 bio12_ts <- terra::unwrap(example_1_bio12)
 bio1_ts <- bio1_ts / 100

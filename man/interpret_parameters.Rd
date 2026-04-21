@@ -67,7 +67,7 @@ contours for the inferred log growth-environment function. The shapes of
 these contours are determined by inference, even though their levels are
 not; and the shapes are generally more informative anyway. See the manual
 documents ``The xsdm model'' and ``How to fit xsdm models with species
-occurrence data using xsdmMle'' for additional details.
+occurrence data using xsdm'' for additional details.
 }
 \details{
 If \code{env_dat} and \code{occ} are provided, two panels are drawn side
