@@ -46,19 +46,11 @@
 #'
 #' @examples
 #' # Example usage:
-#' o_mat <- matrix(c(-0.4, 0.9, -0.9, -0.4), ncol = 2)
-#' mu <- c(11, 5)
-#' sigltil <- c(1, 1.5)
-#' sigrtil <- c(1.5, 1.4)
-#' env_dat <- array(runif(400 * 30 * 2, min = 4, max = 12), dim = c(400, 30, 2))
-#' like_neg_ltsgr_cpp(example_1_env_array, mu, sigltil, sigrtil, o_mat)
-#'
-#'
-#' o_mat <- matrix(c(-0.4443546, 0.8958510, -0.8958510, -0.4443546), ncol = 2)
-#' mu <- c(11.433373, 5.046939)
-#' sigltil <- c(1.036834, 1.556083)
-#' sigrtil <- c(1.538972, 1.458738)
-#' like_neg_ltsgr_cpp(example_1_env_array, mu, sigltil, sigrtil, o_mat)
+#' like_neg_ltsgr_cpp(env_dat = examples$env_array,
+#'                   mu = examples$par_list$mu,
+#'                   sigltil = examples$par_list$sigltil,
+#'                   sigrtil = examples$par_list$sigrtil,
+#'                   o_mat = examples$par_list$o_mat)
 like_neg_ltsgr_cpp <- function(env_dat,
                                mu,
                                sigltil,
