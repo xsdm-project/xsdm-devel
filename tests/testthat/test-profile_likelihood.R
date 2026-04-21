@@ -1,7 +1,9 @@
 library(testthat)
 
-test_that("profile_likelihood: minimal run returns expected structure (1 left + 1 right)", {
-  # Small synthetic data (p = 2) to keep test fast and independent of large datasets
+test_that("profile_likelihood:
+          minimal run returns expected structure (1 left + 1 right)", {
+  # Small synthetic data (p = 2) to keep test fast and independent of large
+  # datasets
   env_dat <- array(c(
     13, 13, 12, 2, 3, 3,
     15, 16, 15, 3, 5, 3,
@@ -11,7 +13,7 @@ test_that("profile_likelihood: minimal run returns expected structure (1 left + 
   occ <- c(1, 0, 1, 0)
 
   # Use packaged named vector on math scale (p = 2)
-  optim_param_vector <- example_1_optim_param_vector
+  optim_param_vector <- examples$optim_par_vec
 
   inc <- 0.2
 
@@ -46,7 +48,8 @@ test_that("profile_likelihood: minimal run returns expected structure (1 left + 
 
   # ---- profile data.frame structure ----
   expect_true(is.data.frame(res$profile))
-  expect_true(all(c("param", "value_math", "loglik", "convergence") %in% names(res$profile)))
+  expect_true(all(c("param", "value_math", "loglik", "convergence") %in%
+                    names(res$profile)))
 
   # Exactly 3 rows: MLE + 1 left step + 1 right step
   expect_equal(nrow(res$profile), 3L)
@@ -54,7 +57,8 @@ test_that("profile_likelihood: minimal run returns expected structure (1 left + 
   # param column should repeat the profiled parameter name
   expect_true(all(res$profile$param == "mu1"))
 
-  # The profiled parameter values should be: mu1, mu1 - inc, mu1 + inc (in that order)
+  # The profiled parameter values should be:
+  # mu1, mu1 - inc, mu1 + inc (in that order)
   mu1_0 <- unname(optim_param_vector[["mu1"]])
   expect_equal(
     res$profile$value_math,
@@ -71,15 +75,17 @@ test_that("profile_likelihood: minimal run returns expected structure (1 left + 
 
   # convergence: first row is NA (seed MLE row), remaining are integerish or NA
   expect_true(is.na(res$profile$convergence[2]))
-  expect_true(all(is.na(res$profile$convergence[-2]) | is.integer(res$profile$convergence[-1]) | is.numeric(res$profile$convergence[-1])))
+  expect_true(all(is.na(res$profile$convergence[-2]) |
+                    is.integer(res$profile$convergence[-1]) |
+                    is.numeric(res$profile$convergence[-1])))
 
   # ---- parameters list of full vectors ----
   expect_true(is.list(res$parameters))
   expect_equal(nrow(res$parameters), 3L)
 
-  # Each entry should be a named numeric vector with same names as optim_param_vector
+  # Each entry should be a named numeric vector with same names as
+  # optim_param_vector
   for (k in seq_along(res$parameters)) {
-    # expect_true(is.numeric(res$parameters[, k]))
     expect_true(!is.null(names(res$parameters)[k]))
   }
   # Expect equal names
@@ -104,7 +110,7 @@ test_that("profile_likelihood: MLE row matches direct loglik_math evaluation", {
   ), dim = c(4, 3, 2))
   occ <- c(1, 0, 1, 0)
 
-  optim_param_vector <- example_1_optim_param_vector
+  opt_vec <- examples$optim_par_vec
 
   res <- profile_likelihood(
     profile_parameter = "mu1",
@@ -113,7 +119,7 @@ test_that("profile_likelihood: MLE row matches direct loglik_math evaluation", {
     num_steps_left = 1L,
     num_steps_right = 1L,
     alpha = 0.95,
-    optim_param_vector = optim_param_vector,
+    optim_param_vector = opt_vec,
     env_dat = env_dat,
     occ = occ,
     mask = NULL,
@@ -123,7 +129,7 @@ test_that("profile_likelihood: MLE row matches direct loglik_math evaluation", {
   )
 
   ll0 <- loglik_math(
-    param_vector = optim_param_vector,
+    param_vector = opt_vec,
     env_dat = env_dat,
     occ = occ,
     mask = NULL,
@@ -135,11 +141,12 @@ test_that("profile_likelihood: MLE row matches direct loglik_math evaluation", {
   expect_equal(res$profile$loglik[2], ll0, tolerance = 1e-10)
 
   # Check that the profiled parameters check with the optim vector
-  expect_equal(unlist(res$parameters[2, ]), optim_param_vector, tolerance = 0)
+  expect_equal(unlist(res$parameters[2, ]), opt_vec, tolerance = 0)
 })
 
 
-test_that("profile_likelihood: parameters length matches profile rows and preserves names", {
+test_that("profile_likelihood: parameters length matches profile rows and
+          preserves names", {
   env_dat <- array(0, dim = c(4, 3, 2))
   occ <- c(1, 0, 1, 0)
 
@@ -150,7 +157,7 @@ test_that("profile_likelihood: parameters length matches profile rows and preser
     num_steps_left = 1L,
     num_steps_right = 1L,
     alpha = 0.95,
-    optim_param_vector = example_1_optim_param_vector,
+    optim_param_vector = examples$optim_par_vec,
     env_dat = env_dat,
     occ = occ,
     mask = NULL,
@@ -162,7 +169,7 @@ test_that("profile_likelihood: parameters length matches profile rows and preser
   expect_equal(nrow(res$parameters), nrow(res$profile))
 
   # Names should be identical to canonical names
-  nm <- names(example_1_optim_param_vector)
+  nm <- names(examples$optim_par_vec)
   for (k in 1:nrow(res$parameters)) {
     # thest that each row in data frame is numeris
     expect_true(is.numeric(unlist(res$parameters[k, ])))
@@ -185,7 +192,7 @@ test_that("profile_likelihood: verbose emits progress messages", {
       num_steps_left = 1L,
       num_steps_right = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = NULL,
@@ -228,7 +235,8 @@ test_that("profile_likelihood: errors when no free parameters remain", {
 })
 
 
-test_that("profile_likelihood: input validation errors (bad profile_parameter, increments, alpha, env_dat, occ)", {
+test_that("profile_likelihood: input validation errors (bad profile_parameter,
+          increments, alpha, env_dat, occ)", {
   env_dat <- array(0, dim = c(4, 3, 2))
   occ <- c(1, 0, 1, 0)
 
@@ -312,12 +320,14 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter, i
 })
 
 
-test_that("profile_likelihood: mask != NULL currently errors at baseline if overlaps with full optim_param_vector", {
+test_that("profile_likelihood: mask != NULL currently errors at baseline if
+          overlaps with full optim_param_vector", {
   env_dat <- array(0, dim = c(4, 3, 2))
   occ <- c(1, 0, 1, 0)
 
   # Any overlap between mask names and full optim_param_vector can break if
-  # create_param_vector_masked enforces disjointness. This documents current behavior.
+  # create_param_vector_masked enforces disjointness.
+  # This documents current behavior.
   expect_error(
     profile_likelihood(
       profile_parameter = "mu1",
@@ -326,7 +336,7 @@ test_that("profile_likelihood: mask != NULL currently errors at baseline if over
       num_steps_left = 1L,
       num_steps_right = 1L,
       alpha = 0.95,
-      optim_param_vector = example_1_optim_param_vector,
+      optim_param_vector = examples$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = c(pd = 0), # overlaps name with full vector

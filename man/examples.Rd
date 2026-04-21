@@ -42,6 +42,8 @@ A list of 11 objects:
   \item{\code{par_vec_vsp}}{A named numeric vector of length 9,
     math‑scale parameters. Currently an alias for `par_vec` (retained
     for backward compatibility).}
+  \item{\code{par_table}}{A data.frame with 9 columns corresponding to
+  a parameter in math scale and 100 rows corresponding to 100 combinations.}
 }
 }
 \source{
