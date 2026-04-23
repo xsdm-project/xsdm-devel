@@ -42,7 +42,7 @@ are done on the math scale.}
 
 \item{num_threads}{Integer. Threads used internally by log-likelihood.}
 
-\item{base_control}{Named list. Control passed to \code{ucminf::ucminf(control = ...)}.
+\item{base_control}{Named list. Control passed to \code{ucminfcpp::ucminf_xptr(control = ...)}.
 User-specified entries should be merged in the caller (see \code{profile_likelihood}).}
 
 \item{start_full}{Named numeric. Full warm-start parameter vector.

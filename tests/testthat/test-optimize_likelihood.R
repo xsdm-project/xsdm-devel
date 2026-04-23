@@ -83,7 +83,7 @@ test_that("optimize_likelihood() is reproducible under fixed seed", {
     control = list(maxeval = 30), verbose = FALSE
   )
 
-  # Determinism: starting points (Sobol') + ucminf path should yield identical results
+  # Determinism: starting points (Sobol') + ucminfcpp path should yield identical results
   # for identical seeds and inputs
   expect_identical(a$solutions$loglik, b$solutions$loglik)
   expect_identical(a$solutions$convergence, b$solutions$convergence)
@@ -380,4 +380,3 @@ test_that("optimize_likelihood() reports failed-start count with verbose=TRUE", 
     .package = "xsdm"
   )
 })
-

@@ -178,7 +178,7 @@ loglik_math <- function(param_vector,
 
   # Flag to return negative or positive values. We invert the function
   # (i. e. returns negative) when want to maximize. Minimize is the standard
-  # behavior of ucminf optimizer thet we use in this package
+  # behavior of the ucminfcpp optimizer that we use in this package
   if(!negative) {
     res
   } else {

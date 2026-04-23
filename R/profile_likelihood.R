@@ -8,7 +8,7 @@
 #' @param direction Integer. -1 (left) or +1 (right).
 #' @param increment Numeric. Step size on math scale for this side.
 #' @param max_steps Integer. Maximum iterations for this side.
-#' @param base_control Named list. Control passed to \code{ucminf::ucminf(control = ...)}.
+#' @param base_control Named list. Control passed to \code{ucminfcpp::ucminf_xptr(control = ...)}.
 #'   User-specified entries should be merged in the caller (see \code{profile_likelihood}).
 #' @param start_full Named numeric. Full warm-start parameter vector.
 #'   Defaults to \code{optim_param_vector}.
@@ -28,7 +28,7 @@ profile_one_side_ <- function(
     env_dat, occ, mask, # data & fixed params
     num_threads, # threads for loglik
     optim_ll, thresh, # MLE loglik & LR threshold
-    base_control, # list passed to ucminf
+    base_control, # list passed to ucminfcpp
     start_full = optim_param_vector, # warm-start full vector
     invh_lt = NULL, # warm-start inverse Hessian (lower-tri vector)
     verbose = FALSE
@@ -64,15 +64,20 @@ profile_one_side_ <- function(
     # reuse invH if available
     ctrl <- base_control
     if (!is.null(invh_lt)) ctrl$invhessian.lt <- invh_lt
-    
-    res <- ucminf::ucminf(
-      par = par_init,
-      fn = loglik_math,
+
+    grad_ctrl <- resolve_xptr_grad_control_(ctrl)
+    loglik_xptr <- make_loglik_math_xptr(
       env_dat = env_dat,
-      mask = new_mask,
       occ = occ,
-      negative = TRUE,
+      mask = new_mask,
       num_threads = num_threads,
+      grad = grad_ctrl$grad,
+      gradstep = grad_ctrl$gradstep
+    )
+
+    res <- ucminfcpp::ucminf_xptr(
+      par = par_init,
+      xptr = loglik_xptr,
       control = ctrl,
       hessian = FALSE
     )
@@ -143,7 +148,7 @@ profile_one_side_ <- function(
 #' @param mask Named numeric or NULL. Parameters kept fixed (math scale).
 #' @param num_threads Integer. Threads used internally by log-likelihood.
 #' @param control Named list. Control passed to
-#' \code{ucminf::ucminf(control = ...)}.
+#' \code{ucminfcpp::ucminf_xptr(control = ...)}.
 #'   User-specified entries override defaults:
 #'   \itemize{
 #'     \item \code{grad = "central"}
@@ -153,7 +158,7 @@ profile_one_side_ <- function(
 #'     \item \code{stepmax = 5}
 #'     \item \code{maxeval = 2000}
 #'   }
-#'   If you want ucminf's own iteration trace, set \code{control$trace > 0}.
+#'   If you want optimizer iteration trace, set \code{control$trace > 0}.
 #' @param verbose Logical. If \code{TRUE}, prints compact progress messages; otherwise silent.
 #'
 #' @returns A list with:
@@ -262,7 +267,7 @@ profile_likelihood <- function(
   # num_threads: integerish scalar >= 1
   checkmate::assert_integerish(num_threads, lower = 1, any.missing = FALSE, len = 1)
   
-  # control: list (content validated by ucminf)
+  # control: list (content validated by ucminfcpp)
   checkmate::assert_list(control, any.missing = FALSE, null.ok = TRUE)
   
   # Ensure there is at least one free parameter to optimize at the MLE point

@@ -7,8 +7,9 @@ test_that("optimize_loglik_math_ injects invh_lt and restores names if optimizer
   invh    <- 1:3
   
   # Mock optimizer: check control has invhessian.lt, return par WITHOUT names
-  fake_opt <- function(par, fn, env_dat, mask, occ, negative, num_threads, control, hessian) {
+  fake_opt <- function(par, xptr, control, hessian) {
     expect_identical(control$invhessian.lt, invh)      # covers invh_lt injection
+    expect_true(inherits(xptr, "externalptr"))
     list(par = unname(par), value = 123, convergence = 0L)
   }
   
@@ -81,4 +82,3 @@ test_that("optimize_loglik_math_ returns structured error object on optimizer fa
   expect_identical(out$convergence, NA_integer_)
   expect_match(out$error, "boom")
 })
-

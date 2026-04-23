@@ -25,14 +25,14 @@ Imports:
     Rcpp (>= 1.1.0),
     RcppParallel (>= 5.1.10),
     stats,
-    ucminf,
+    ucminfcpp,
     furrr,
     future,
     future.callr,
     pomp,
     purrr
-LinkingTo: Rcpp, RcppParallel
-SystemRequirements: GNU make
+LinkingTo: Rcpp, RcppParallel, ucminfcpp
+SystemRequirements: GNU make, C++17
 RoxygenNote: 7.3.3
 Encoding: UTF-8
 Depends: 

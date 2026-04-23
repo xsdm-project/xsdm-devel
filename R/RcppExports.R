@@ -22,3 +22,6 @@ like_ltsg <- function(mu, env_m, dl_mat, drl_mat, ortho_m, q, r) {
     .Call(`_xsdm_like_ltsg`, mu, env_m, dl_mat, drl_mat, ortho_m, q, r)
 }
 
+make_loglik_math_xptr <- function(env_dat, occ, mask = NULL, num_threads = 1L, grad = "central", gradstep = c(1e-06, 1e-08)) {
+    .Call(`_xsdm_make_loglik_math_xptr`, env_dat, occ, mask, num_threads, grad, gradstep)
+}
