@@ -2,6 +2,7 @@
 // [[Rcpp::depends(ucminfcpp)]]
 #include <Rcpp.h>
 #include <cmath>
+#include <memory>
 #include <vector>
 #include "ucminf_core.hpp"
 
@@ -53,7 +54,7 @@ SEXP make_loglik_math_xptr(
   Rcpp::RObject occ_obj(occ);
   Rcpp::RObject mask_obj(mask);
 
-  auto* fn = new ucminf::ObjFun(
+  auto fn = std::make_unique<ucminf::ObjFun>(
     [loglik_math_fn, env_dat_obj, occ_obj, mask_obj, num_threads,
      gradstep_rel, gradstep_abs, use_central]
     (const std::vector<double>& x, std::vector<double>& g, double& f) {
@@ -91,5 +92,5 @@ SEXP make_loglik_math_xptr(
     }
   );
 
-  return Rcpp::XPtr<ucminf::ObjFun>(fn, true);
+  return Rcpp::XPtr<ucminf::ObjFun>(fn.release(), true);
 }

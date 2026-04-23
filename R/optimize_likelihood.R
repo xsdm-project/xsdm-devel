@@ -187,11 +187,11 @@ optimize_likelihood <- function(
     
     res_list <- furrr::future_map(
       list_of_pars, runner,
-        .options = furrr::furrr_options(
-          packages = c("xsdm", "ucminfcpp", "checkmate", "RcppParallel"),
-          seed     = TRUE
-        ),
-        .progress = TRUE
+      .options = furrr::furrr_options(
+        packages = c("xsdm", "ucminfcpp", "checkmate", "RcppParallel"),
+        seed     = TRUE
+      ),
+      .progress = TRUE
     )
   } else {
     if (!requireNamespace("purrr", quietly = TRUE)) {
