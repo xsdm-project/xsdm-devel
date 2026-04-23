@@ -28,7 +28,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // make_loglik_math_xptr
-SEXP make_loglik_math_xptr(SEXP env_dat, SEXP occ, SEXP mask, int num_threads, std::string grad, NumericVector gradstep);
+SEXP make_loglik_math_xptr(SEXP env_dat, SEXP occ, SEXP mask, int num_threads, std::string grad, Rcpp::NumericVector gradstep);
 RcppExport SEXP _xsdm_make_loglik_math_xptr(SEXP env_datSEXP, SEXP occSEXP, SEXP maskSEXP, SEXP num_threadsSEXP, SEXP gradSEXP, SEXP gradstepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -38,7 +38,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type mask(maskSEXP);
     Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
     Rcpp::traits::input_parameter< std::string >::type grad(gradSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type gradstep(gradstepSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type gradstep(gradstepSEXP);
     rcpp_result_gen = Rcpp::wrap(make_loglik_math_xptr(env_dat, occ, mask, num_threads, grad, gradstep));
     return rcpp_result_gen;
 END_RCPP
