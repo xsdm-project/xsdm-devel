@@ -256,6 +256,15 @@ optimize_likelihood <- function(
   )
 }
 
+#' Internal helper: normalize gradient-related optimizer controls
+#' @keywords internal
+resolve_xptr_grad_control_ <- function(ctrl) {
+  list(
+    grad = if (is.null(ctrl$grad)) "central" else ctrl$grad,
+    gradstep = if (is.null(ctrl$gradstep)) c(1e-6, 1e-8) else ctrl$gradstep
+  )
+}
+
 #' Internal helper: run ucminfcpp for one starting vector
 #' @keywords internal
 optimize_loglik_math_ <- function(
@@ -283,15 +292,14 @@ optimize_loglik_math_ <- function(
       checkmate::assert_numeric(v, any.missing = FALSE, finite = TRUE)
       param_vector <- v
 
-      grad_type <- if (is.null(ctrl$grad)) "central" else ctrl$grad
-      grad_step <- if (is.null(ctrl$gradstep)) c(1e-6, 1e-8) else ctrl$gradstep
+      grad_ctrl <- resolve_xptr_grad_control_(ctrl)
       loglik_xptr <- make_loglik_math_xptr(
         env_dat = env_dat,
         occ = occ,
         mask = mask,
         num_threads = num_threads,
-        grad = grad_type,
-        gradstep = grad_step
+        grad = grad_ctrl$grad,
+        gradstep = grad_ctrl$gradstep
       )
       
       res <- optimizer_fun(

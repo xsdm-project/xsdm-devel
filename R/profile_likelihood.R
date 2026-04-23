@@ -65,15 +65,14 @@ profile_one_side_ <- function(
     ctrl <- base_control
     if (!is.null(invh_lt)) ctrl$invhessian.lt <- invh_lt
 
-    grad_type <- if (is.null(ctrl$grad)) "central" else ctrl$grad
-    grad_step <- if (is.null(ctrl$gradstep)) c(1e-6, 1e-8) else ctrl$gradstep
+    grad_ctrl <- resolve_xptr_grad_control_(ctrl)
     loglik_xptr <- make_loglik_math_xptr(
       env_dat = env_dat,
       occ = occ,
       mask = new_mask,
       num_threads = num_threads,
-      grad = grad_type,
-      gradstep = grad_step
+      grad = grad_ctrl$grad,
+      gradstep = grad_ctrl$gradstep
     )
 
     res <- ucminfcpp::ucminf_xptr(
