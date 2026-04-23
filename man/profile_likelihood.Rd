@@ -48,7 +48,7 @@ likelihood ratio (LR) threshold: threshold = MLE_loglik - qchisq(alpha, 1)/2.}
 \item{num_threads}{Integer. Threads used internally by log-likelihood.}
 
 \item{control}{Named list. Control passed to
-\code{ucminf::ucminf(control = ...)}.
+\code{ucminfcpp::ucminf_xptr(control = ...)}.
   User-specified entries override defaults:
   \itemize{
     \item \code{grad = "central"}
@@ -58,7 +58,7 @@ likelihood ratio (LR) threshold: threshold = MLE_loglik - qchisq(alpha, 1)/2.}
     \item \code{stepmax = 5}
     \item \code{maxeval = 2000}
   }
-  If you want ucminf's own iteration trace, set \code{control$trace > 0}.}
+  If you want optimizer iteration trace, set \code{control$trace > 0}.}
 
 \item{verbose}{Logical. If \code{TRUE}, prints compact progress messages; otherwise silent.}
 }

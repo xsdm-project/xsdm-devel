@@ -149,7 +149,8 @@ occ <- examples$occ_df$presence
 
 `optimize_likelihood()` runs multiple optimizations from Latin-hypercube
 starting points (Sobolʼ design) and returns every solution sorted by
-decreasing log-likelihood.
+decreasing log-likelihood. Internally, optimization uses
+`ucminfcpp::ucminf_xptr()` with a compiled objective pointer.
 
 ```{r fit}
 result <- optimize_likelihood(
@@ -346,4 +347,3 @@ BibTeX:
 ## License
 
 xsdm is released under the [GNU General Public License v3 or later](LICENSE.md).
-

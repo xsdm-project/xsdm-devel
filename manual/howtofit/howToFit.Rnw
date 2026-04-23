@@ -580,7 +580,7 @@ names(prof1)
 head(prof1$profile)
 @
 \noindent Note that the convergence column is returning the convergence 
-flagged returned by the optimizer \texttt{ucminf::ucminf}; the value 1
+flagged returned by the optimizer \texttt{ucminfcpp::ucminf_xptr}; the value 1
 is among the values which indicate convergence to within the tolerances used.
 
 Two of the outputs of this function contain the profile itself, and the threshold.

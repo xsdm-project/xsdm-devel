@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimize_likelihood.R
 \name{optimize_loglik_math_}
 \alias{optimize_loglik_math_}
-\title{Internal helper: run ucminf for one starting vector}
+\title{Internal helper: run ucminfcpp for one starting vector}
 \usage{
 optimize_loglik_math_(
   param_vector,
@@ -12,10 +12,10 @@ optimize_loglik_math_(
   num_threads,
   base_control,
   invh_lt = NULL,
-  optimizer_fun = ucminf::ucminf
+  optimizer_fun = ucminfcpp::ucminf_xptr
 )
 }
 \description{
-Internal helper: run ucminf for one starting vector
+Internal helper: run ucminfcpp for one starting vector
 }
 \keyword{internal}
