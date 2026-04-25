@@ -75,11 +75,20 @@ optimize_likelihood <- function(
   # --------------------------
   # Merge ucminfcpp controls (user wins)
   # --------------------------
+  # Defaults match ucminfcpp::ucminf_control() / R's classical ucminf::ucminf
+  # canon — `grtol = 1e-6`, `xtol = 1e-12` — instead of the loose
+  # 1e-4 / 1e-8 used previously. With central differences on the xsdm
+  # likelihood the stricter tolerances prevent premature termination at
+  # points where |grad|_inf is in [1e-6, 1e-4]; in practice this gives much
+  # more consistent landing points across multi-start runs.
+  # `stepmax = 5` is kept (vs. ucminfcpp's default of 1) because the math-
+  # scale parameters (especially `ctil`, `pd`) live on a wide unconstrained
+  # range and we want the trust region to span it on the first iteration.
   default_ctrl <- list(
     grad     = "central",
     gradstep = c(1e-6, 1e-8),
-    grtol    = 1e-4,
-    xtol     = 1e-8,
+    grtol    = 1e-6,
+    xtol     = 1e-12,
     stepmax  = 5,
     maxeval  = 2000
   )
@@ -293,13 +302,21 @@ optimize_loglik_math_ <- function(
       param_vector <- v
 
       grad_ctrl <- resolve_xptr_grad_control_(ctrl)
-      loglik_xptr <- make_loglik_math_xptr(
-        env_dat = env_dat,
-        occ = occ,
-        mask = mask,
+      # Build the pure-C++ XPtr. All input validation (unnamed mask,
+      # non-canonical names, non-positive gradstep) is surfaced here
+      # at construction time as R errors. Errors raised during actual
+      # (f, g) evaluation inside ucminfcpp are caught at the closure
+      # boundary and converted to a sentinel f = +Inf so ucminfcpp's
+      # trust-region state stays consistent.
+      occ_i <- if (is.logical(occ)) as.integer(occ) else as.integer(occ)
+      loglik_xptr <- make_loglik_math_xptr_cpp(
+        env_dat     = env_dat,
+        occ         = occ_i,
+        mask        = mask,
+        free_names  = names(param_vector),
         num_threads = num_threads,
-        grad = grad_ctrl$grad,
-        gradstep = grad_ctrl$gradstep
+        grad        = grad_ctrl$grad,
+        gradstep    = grad_ctrl$gradstep
       )
       
       res <- optimizer_fun(

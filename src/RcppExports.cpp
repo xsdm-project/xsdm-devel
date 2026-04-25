@@ -10,6 +10,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// build_orthogonal_matrix_cpp
+Rcpp::NumericMatrix build_orthogonal_matrix_cpp(Rcpp::NumericVector entries);
+RcppExport SEXP _xsdm_build_orthogonal_matrix_cpp(SEXP entriesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type entries(entriesSEXP);
+    rcpp_result_gen = Rcpp::wrap(build_orthogonal_matrix_cpp(entries));
+    return rcpp_result_gen;
+END_RCPP
+}
 // like_ltsg
 NumericVector like_ltsg(NumericVector mu, NumericMatrix env_m, NumericMatrix dl_mat, NumericMatrix drl_mat, NumericMatrix ortho_m, int q, int r);
 RcppExport SEXP _xsdm_like_ltsg(SEXP muSEXP, SEXP env_mSEXP, SEXP dl_matSEXP, SEXP drl_matSEXP, SEXP ortho_mSEXP, SEXP qSEXP, SEXP rSEXP) {
@@ -24,6 +35,62 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type q(qSEXP);
     Rcpp::traits::input_parameter< int >::type r(rSEXP);
     rcpp_result_gen = Rcpp::wrap(like_ltsg(mu, env_m, dl_mat, drl_mat, ortho_m, q, r));
+    return rcpp_result_gen;
+END_RCPP
+}
+// log_prob_detect_cpp
+Rcpp::NumericVector log_prob_detect_cpp(Rcpp::NumericVector env_dat_vec, Rcpp::IntegerVector env_dat_dims, Rcpp::NumericVector mu, Rcpp::NumericVector sigltil, Rcpp::NumericVector sigrtil, Rcpp::NumericMatrix o_mat, double ctil, double pd, bool return_prob, int num_threads);
+RcppExport SEXP _xsdm_log_prob_detect_cpp(SEXP env_dat_vecSEXP, SEXP env_dat_dimsSEXP, SEXP muSEXP, SEXP sigltilSEXP, SEXP sigrtilSEXP, SEXP o_matSEXP, SEXP ctilSEXP, SEXP pdSEXP, SEXP return_probSEXP, SEXP num_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type env_dat_vec(env_dat_vecSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type env_dat_dims(env_dat_dimsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigltil(sigltilSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigrtil(sigrtilSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type o_mat(o_matSEXP);
+    Rcpp::traits::input_parameter< double >::type ctil(ctilSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    Rcpp::traits::input_parameter< bool >::type return_prob(return_probSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_prob_detect_cpp(env_dat_vec, env_dat_dims, mu, sigltil, sigrtil, o_mat, ctil, pd, return_prob, num_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// loglik_bio_cpp
+double loglik_bio_cpp(Rcpp::NumericVector env_dat_vec, Rcpp::IntegerVector env_dat_dims, Rcpp::IntegerVector occ, Rcpp::NumericVector mu, Rcpp::NumericVector sigltil, Rcpp::NumericVector sigrtil, Rcpp::NumericMatrix o_mat, double ctil, double pd, int num_threads);
+RcppExport SEXP _xsdm_loglik_bio_cpp(SEXP env_dat_vecSEXP, SEXP env_dat_dimsSEXP, SEXP occSEXP, SEXP muSEXP, SEXP sigltilSEXP, SEXP sigrtilSEXP, SEXP o_matSEXP, SEXP ctilSEXP, SEXP pdSEXP, SEXP num_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type env_dat_vec(env_dat_vecSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type env_dat_dims(env_dat_dimsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type occ(occSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigltil(sigltilSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigrtil(sigrtilSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type o_mat(o_matSEXP);
+    Rcpp::traits::input_parameter< double >::type ctil(ctilSEXP);
+    Rcpp::traits::input_parameter< double >::type pd(pdSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(loglik_bio_cpp(env_dat_vec, env_dat_dims, occ, mu, sigltil, sigrtil, o_mat, ctil, pd, num_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// loglik_math_cpp
+double loglik_math_cpp(Rcpp::NumericVector param_vector, Rcpp::NumericVector env_dat, Rcpp::IntegerVector occ, Rcpp::Nullable<Rcpp::NumericVector> mask, bool negative, int num_threads);
+RcppExport SEXP _xsdm_loglik_math_cpp(SEXP param_vectorSEXP, SEXP env_datSEXP, SEXP occSEXP, SEXP maskSEXP, SEXP negativeSEXP, SEXP num_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type param_vector(param_vectorSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type env_dat(env_datSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type occ(occSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type mask(maskSEXP);
+    Rcpp::traits::input_parameter< bool >::type negative(negativeSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(loglik_math_cpp(param_vector, env_dat, occ, mask, negative, num_threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -43,10 +110,58 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// make_loglik_math_xptr_cpp
+SEXP make_loglik_math_xptr_cpp(Rcpp::NumericVector env_dat, Rcpp::IntegerVector occ, Rcpp::Nullable<Rcpp::NumericVector> mask, Rcpp::CharacterVector free_names, int num_threads, std::string grad, Rcpp::NumericVector gradstep);
+RcppExport SEXP _xsdm_make_loglik_math_xptr_cpp(SEXP env_datSEXP, SEXP occSEXP, SEXP maskSEXP, SEXP free_namesSEXP, SEXP num_threadsSEXP, SEXP gradSEXP, SEXP gradstepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type env_dat(env_datSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type occ(occSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type mask(maskSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type free_names(free_namesSEXP);
+    Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type grad(gradSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type gradstep(gradstepSEXP);
+    rcpp_result_gen = Rcpp::wrap(make_loglik_math_xptr_cpp(env_dat, occ, mask, free_names, num_threads, grad, gradstep));
+    return rcpp_result_gen;
+END_RCPP
+}
+// math_to_bio_cpp
+Rcpp::List math_to_bio_cpp(Rcpp::NumericVector param_vector);
+RcppExport SEXP _xsdm_math_to_bio_cpp(SEXP param_vectorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type param_vector(param_vectorSEXP);
+    rcpp_result_gen = Rcpp::wrap(math_to_bio_cpp(param_vector));
+    return rcpp_result_gen;
+END_RCPP
+}
+// build_canonical_param_vector_cpp
+Rcpp::NumericVector build_canonical_param_vector_cpp(Rcpp::NumericVector param_vector, Rcpp::Nullable<Rcpp::NumericVector> mask, int p);
+RcppExport SEXP _xsdm_build_canonical_param_vector_cpp(SEXP param_vectorSEXP, SEXP maskSEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type param_vector(param_vectorSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type mask(maskSEXP);
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(build_canonical_param_vector_cpp(param_vector, mask, p));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_xsdm_build_orthogonal_matrix_cpp", (DL_FUNC) &_xsdm_build_orthogonal_matrix_cpp, 1},
     {"_xsdm_like_ltsg", (DL_FUNC) &_xsdm_like_ltsg, 7},
+    {"_xsdm_log_prob_detect_cpp", (DL_FUNC) &_xsdm_log_prob_detect_cpp, 10},
+    {"_xsdm_loglik_bio_cpp", (DL_FUNC) &_xsdm_loglik_bio_cpp, 10},
+    {"_xsdm_loglik_math_cpp", (DL_FUNC) &_xsdm_loglik_math_cpp, 6},
     {"_xsdm_make_loglik_math_xptr", (DL_FUNC) &_xsdm_make_loglik_math_xptr, 6},
+    {"_xsdm_make_loglik_math_xptr_cpp", (DL_FUNC) &_xsdm_make_loglik_math_xptr_cpp, 7},
+    {"_xsdm_math_to_bio_cpp", (DL_FUNC) &_xsdm_math_to_bio_cpp, 1},
+    {"_xsdm_build_canonical_param_vector_cpp", (DL_FUNC) &_xsdm_build_canonical_param_vector_cpp, 3},
     {NULL, NULL, 0}
 };
 

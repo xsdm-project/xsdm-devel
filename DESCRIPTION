@@ -17,7 +17,7 @@ Description: Integrates concepts of stochastic demography into species
     This is used to reconstruct species' fundamental ecological niches and to
     project their potential geographic range. Data requirements include species
     presence/absence records and a timeseries of environmental data. 
-License: GPL (>= 3)
+License: AGPL (>= 3)
 Imports: 
     checkmate,
     clue,
