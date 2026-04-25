@@ -156,8 +156,8 @@ decreasing log-likelihood. Internally, optimization uses
 result <- optimize_likelihood(
   env_dat    = env_dat,
   occ        = occ,
-  num_starts = 100L,       # increase for a real analysis
-  parallel   = FALSE,      # set TRUE to use future/furrr parallelism
+  num_starts = 20L,       # increase for a real analysis
+  parallel   = TRUE,       # set TRUE to use future/furrr parallelism
   verbose    = TRUE
 )
 
