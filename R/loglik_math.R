@@ -146,6 +146,25 @@ loglik_math <- function(param_vector,
   param_vector <- unlist(param_vector)
   checkmate::assert_vector(param_vector, any.missing = FALSE)
   p <- dim(env_dat)[3]
+
+  # When param_vector arrives unnamed (e.g. from a C++ optimizer callback),
+  # assign the canonical free-parameter names so that create_param_vector_masked
+  # can validate and overlay them correctly.
+  if (is.null(names(param_vector))) {
+    all_canonical <- names(make_mask_names(p))
+    free_names    <- if (!is.null(mask)) setdiff(all_canonical, names(mask)) else all_canonical
+    if (length(param_vector) == length(free_names)) {
+      names(param_vector) <- free_names
+    } else {
+      stop(
+        "`param_vector` is unnamed and its length (", length(param_vector), ") ",
+        "does not match the number of free parameters (", length(free_names), "). ",
+        "Expected free parameters: ", paste(free_names, collapse = ", "), ".",
+        call. = FALSE
+      )
+    }
+  }
+
   param_vector <- create_param_vector_masked(param_vector, mask, p)
 
   # Prepare parameters from math scale to biological scale----------------------
