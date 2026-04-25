@@ -155,6 +155,13 @@ loglik_math <- function(param_vector,
     free_names    <- if (!is.null(mask)) setdiff(all_canonical, names(mask)) else all_canonical
     if (length(param_vector) == length(free_names)) {
       names(param_vector) <- free_names
+    } else {
+      stop(
+        "`param_vector` is unnamed and its length (", length(param_vector), ") ",
+        "does not match the number of free parameters (", length(free_names), "). ",
+        "Expected free parameters: ", paste(free_names, collapse = ", "), ".",
+        call. = FALSE
+      )
     }
   }
 
