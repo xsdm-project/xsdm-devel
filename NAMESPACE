@@ -2,8 +2,6 @@
 
 export(bio_to_math)
 export(build_orthogonal_matrix)
-export(canonicalize_param_vector)
-export(canonicalize_solutions)
 export(convert_equivalence_class)
 export(create_mask)
 export(create_param_vector_masked)
