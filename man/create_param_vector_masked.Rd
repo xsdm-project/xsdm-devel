@@ -34,9 +34,10 @@ function throws an error listing which names are missing.
 Canonical names follow `loglik_math` conventions - see Details of that
 function for the canonical ordering we use.
 
-`create_mask(mask = mask, p)` returns the full skeleton (all `NA_real_`
-initially), optionally overlaying `mask`. This function overlays
-`param_vector` and ensures **all entries are filled** (no `NA`s remain).
+This is a thin R wrapper around the internal C++ implementation
+\code{xsdm:::.build_canonical_param_vector_cpp}. The pre-port pure-R
+implementation is preserved internally as
+\code{xsdm:::create_param_vector_masked_r} for parity testing.
 }
 \examples{
 ## --- p = 1 ---
