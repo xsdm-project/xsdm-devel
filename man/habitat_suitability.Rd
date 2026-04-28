@@ -58,7 +58,7 @@ memory-bounded blocks so that arbitrarily large grids can be handled
 without loading the entire dataset into R memory.  Each block is
 forwarded to \code{\link{log_prob_detect_cpp}}, the xtensor-backed C++
 kernel that consolidates the
-\code{like_neg_ltsgr_cpp() -> like_ltsg()} call chain.
+\code{like_neg_ltsgr() -> like_ltsg()} call chain.
 }
 \details{
 Internally the function uses \pkg{terra}'s streaming block-loop API:

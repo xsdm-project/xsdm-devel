@@ -7,7 +7,7 @@
 #' without loading the entire dataset into R memory.  Each block is
 #' forwarded to \code{\link{log_prob_detect_cpp}}, the xtensor-backed C++
 #' kernel that consolidates the
-#' \code{like_neg_ltsgr_cpp() -> like_ltsg()} call chain.
+#' \code{like_neg_ltsgr() -> like_ltsg()} call chain.
 #'
 #' @param param_list A named list of biological-scale parameters.  Must
 #'   contain \code{mu}, \code{sigltil}, \code{sigrtil}, \code{o_mat},

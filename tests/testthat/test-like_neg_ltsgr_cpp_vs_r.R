@@ -38,7 +38,7 @@ test_that("R and C++ likelihood workers are numerically identical on param_table
 
     # Compute outputs
     r_out <- xsdm:::like_neg_ltsgr_r(examples$env_array, mu, sigltil, sigrtil, o_mat)
-    cpp_out <- like_neg_ltsgr_cpp(examples$env_array, mu, sigltil, sigrtil, o_mat)
+    cpp_out <- xsdm:::like_neg_ltsgr_cpp(examples$env_array, mu, sigltil, sigrtil, o_mat)
 
     # Output should be a numeric vector of length equal to number of locations
     expect_type(r_out, "double")
@@ -67,21 +67,21 @@ test_that("R and C++ implementations agree with Inf in sigltil/sigrtil", {
   sigl <- Inf
   sigr <- 1
   r1 <- xsdm:::like_neg_ltsgr_r(env_dat_1d, mu, sigl, sigr, o_mat)
-  cpp1 <- like_neg_ltsgr_cpp(env_dat_1d, mu, sigl, sigr, o_mat, num_threads = 1)
+  cpp1 <- xsdm:::like_neg_ltsgr_cpp(env_dat_1d, mu, sigl, sigr, o_mat, num_threads = 1)
   expect_equal(cpp1, r1, tolerance = 1e-14)
   
   # Case 2: sigrtil = Inf, sigltil finite
   sigl <- 1
   sigr <- Inf
   r2 <- xsdm:::like_neg_ltsgr_r(env_dat_1d, mu, sigl, sigr, o_mat)
-  cpp2 <- like_neg_ltsgr_cpp(env_dat_1d, mu, sigl, sigr, o_mat, num_threads = 1)
+  cpp2 <- xsdm:::like_neg_ltsgr_cpp(env_dat_1d, mu, sigl, sigr, o_mat, num_threads = 1)
   expect_equal(cpp2, r2, tolerance = 1e-14)
   
   # Case 3: both Inf
   sigl <- Inf
   sigr <- Inf
   r3 <- xsdm:::like_neg_ltsgr_r(env_dat_1d, mu, sigl, sigr, o_mat)
-  cpp3 <- like_neg_ltsgr_cpp(env_dat_1d, mu, sigl, sigr, o_mat, num_threads = 1)
+  cpp3 <- xsdm:::like_neg_ltsgr_cpp(env_dat_1d, mu, sigl, sigr, o_mat, num_threads = 1)
   expect_equal(cpp3, r3, tolerance = 1e-14)
   
   # ---- 2D case (p = 2) ----
@@ -98,7 +98,7 @@ test_that("R and C++ implementations agree with Inf in sigltil/sigrtil", {
   sigl <- c(1, Inf)
   sigr <- c(Inf, 1)
   r4 <- xsdm:::like_neg_ltsgr_r(env_dat_2d, mu, sigl, sigr, o_mat)
-  cpp4 <- like_neg_ltsgr_cpp(env_dat_2d, mu, sigl, sigr, o_mat, num_threads = 1)
+  cpp4 <- xsdm:::like_neg_ltsgr_cpp(env_dat_2d, mu, sigl, sigr, o_mat, num_threads = 1)
   expect_equal(cpp4, r4, tolerance = 1e-14)
 })
 
