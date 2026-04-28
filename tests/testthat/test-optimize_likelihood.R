@@ -104,7 +104,7 @@ test_that("optimize_likelihood() errors when there are no presences", {
   occ <- rep(0L, n) # no presences
 
   expect_error(
-    optimize_likelihood(env_dat, occ, num_starts = 2L, num_threads = 1L),
+    optimize_likelihood(env_dat, occ, num_starts = 3L, num_threads = 1L),
     regexp = "No presences \\(occ==1\\) available",
     fixed = FALSE
   )
@@ -190,13 +190,16 @@ test_that("start_parms() returning 0 rows triggers informative error", {
     start_parms = function(env_dat,
                            mask = NULL,
                            breadth = 1,
-                           num_starts = 1L) {
+                           num_starts = 3L) {
       # 0 rows, 0 cols -> nrow(...) == 0 -> error path in optimize_likelihood()
       data.frame()[FALSE, ]
     },
     {
+      # num_starts must be >= 3 (validated by optimize_likelihood before
+      # start_parms is invoked); the mock then returns an empty data.frame
+      # so the downstream 'returned no starting points' error fires.
       expect_error(
-        optimize_likelihood(env_dat, occ, num_starts = 1L, num_threads = 1L, control = list()),
+        optimize_likelihood(env_dat, occ, num_starts = 3L, num_threads = 1L, control = list()),
         regexp = "start_parms\\(\\) returned no starting points\\.",
         fixed = FALSE
       )

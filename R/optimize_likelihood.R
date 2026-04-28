@@ -67,7 +67,13 @@ optimize_likelihood <- function(
     checkmate::assert_character(names(mask), any.missing = FALSE, min.len = length(mask), unique = TRUE)
   }
   
-  checkmate::assert_integerish(num_starts, lower = 1, any.missing = FALSE, len = 1)
+  # num_starts must be >= 3: pomp::sobol_design (called via start_parms ->
+  # get_start_parms_) requires at least 2 Sobol' rows, plus we always
+  # append the data-driven center row, so the minimum usable design has
+  # 3 starts. Lower values segfault (nseq = 0) or return a vector
+  # (nseq = 1), neither of which can be coerced into the expected
+  # rectangular design.
+  checkmate::assert_integerish(num_starts, lower = 3, any.missing = FALSE, len = 1)
   checkmate::assert_flag(parallel)
   checkmate::assert_integerish(num_threads, lower = 1, any.missing = FALSE, len = 1)
   checkmate::assert_list(control, any.missing = FALSE, null.ok = TRUE)
