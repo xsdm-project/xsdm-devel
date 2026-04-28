@@ -144,9 +144,9 @@ loglik_math_r <- function(param_vector,
     }
   }
 
-  param_vector <- create_param_vector_masked(param_vector, mask, p)
+  param_vector <- create_param_vector_masked_r(param_vector, mask, p)
 
-  param_list <- math_to_bio(param_vector)
+  param_list <- math_to_bio_r(param_vector)
 
   checkmate::assert_numeric(param_list$mu, any.missing = FALSE, min.len = 1)
   checkmate::assert_numeric(param_list$sigltil, any.missing = FALSE, min.len = 1)
@@ -167,4 +167,122 @@ loglik_math_r <- function(param_vector,
   )
 
   if (!negative) res else -res
+}
+
+# ---------------------------------------------------------------------------
+# Pure-R reference implementations for the math <-> bio scale machinery.
+#
+# `math_to_bio_r` and `create_param_vector_masked_r` are the pre-port pure-R
+# implementations. They are non-exported and exist solely as references for
+# the parity tests in tests/testthat/test-*_r_vs_cpp.R, which assert that
+# the C++ implementations (.math_to_bio_cpp, .build_canonical_param_vector_cpp)
+# produce identical results.
+# ---------------------------------------------------------------------------
+
+#' Pure-R reference for `math_to_bio`
+#'
+#' @keywords internal
+#' @noRd
+math_to_bio_r <- function(param_vector) {
+  # ---- Validate input structure ----
+  checkmate::assert_numeric(param_vector,
+                            names = "named",
+                            any.missing = FALSE,
+                            min.len = 5  # smallest possible length (p = 1)
+  )
+
+  # Infer p from the length
+  n <- length(param_vector)
+  p <- num_env_var(n)  # will error if n is not a valid num_par(p)
+
+  # Verify that names exactly match the canonical order
+  expected_names <- names(make_mask_names(p))
+  if (!identical(names(param_vector), expected_names)) {
+    stop(
+      "`param_vector` names do not match the canonical order for p = ", p, ".\n",
+      "Expected: ", paste(expected_names, collapse = ", "), "\n",
+      "Received: ", paste(names(param_vector), collapse = ", ")
+    )
+  }
+  param_vector <- unlist(param_vector)
+  # ---- Extract components using canonical names ----
+  mu       <- param_vector[grep("^mu[0-9]+$", names(param_vector))] |> as.numeric()
+  sigltil  <- param_vector[grep("^sigltil", names(param_vector))]   |> exp() |> as.numeric()
+  sigrtil  <- param_vector[grep("^sigrtil", names(param_vector))]   |> exp() |> as.numeric()
+  ctil     <- param_vector[grep("^ctil", names(param_vector))]      |> as.numeric()
+  pd       <- param_vector[grep("^pd", names(param_vector))]        |> as.numeric() |> expit()
+  o_par    <- param_vector[grep("^o_par", names(param_vector))]     |> as.numeric()
+
+  o_mat <- build_orthogonal_matrix(if (length(o_par) == 0) NULL else o_par)
+
+  list(
+    mu      = mu,
+    sigltil = sigltil,
+    sigrtil = sigrtil,
+    ctil    = ctil,
+    pd      = pd,
+    o_mat   = o_mat
+  )
+}
+
+#' Pure-R reference for `create_param_vector_masked`
+#'
+#' @keywords internal
+#' @noRd
+create_param_vector_masked_r <- function(param_vector, mask = NULL, p) {
+  checkmate::assert_count(p, positive = TRUE)
+
+  # Build full canonical skeleton (with mask applied first)
+  out <- create_mask(mask = mask, p = p)
+  allowed_names <- names(out)
+  if (is.null(allowed_names)) {
+    stop("`create_mask(mask = NULL, p)` must return a named vector;
+         names are canonical.")
+  }
+
+  # Validate param_vector (required)
+  if (is.null(param_vector)) {
+    stop("`param_vector` must not be NULL.")
+  }
+  checkmate::assert_numeric(param_vector, any.missing = FALSE, names = "named")
+  bad_pv <- setdiff(names(param_vector), allowed_names)
+  if (length(bad_pv) > 0) {
+    stop(
+      "Unexpected name(s) in `param_vector`: ", paste(bad_pv, collapse = ", "),
+      ". Allowed: ", paste(allowed_names, collapse = ", "), "."
+    )
+  }
+
+  # Validate mask when present and enforce disjointness
+  if (!is.null(mask)) {
+    checkmate::assert_numeric(mask, any.missing = FALSE, names = "named")
+    bad_mask <- setdiff(names(mask), allowed_names)
+    if (length(bad_mask) > 0) {
+      stop(
+        "Unexpected name(s) in `mask`: ", paste(bad_mask, collapse = ", "),
+        ". Allowed: ", paste(allowed_names, collapse = ", "), "."
+      )
+    }
+    overlap <- intersect(names(param_vector), names(mask))
+    if (length(overlap) > 0) {
+      stop(
+        "`param_vector` and `mask` must be complementary (disjoint). ",
+        "Overlapping names: ", paste(overlap, collapse = ", "), "."
+      )
+    }
+  }
+
+  out[names(param_vector)] <- param_vector
+
+  if (anyNA(out)) {
+    missing_names <- names(out)[is.na(out)]
+    stop(
+      "The final parameter vector contains NA values for: ",
+      paste(missing_names, collapse = ", "),
+      ". Provide values via `mask` and/or `param_vector` so all positions are
+      filled."
+    )
+  }
+
+  out
 }

@@ -47,6 +47,10 @@ The transformations applied are:
 }
 For \code{p = 1} there are no \code{o_par} entries; the orthogonal matrix
 is simply a 1-by-1 identity.
+
+This is a thin R wrapper around the internal C++ implementation
+\code{xsdm:::.math_to_bio_cpp}. The pre-port pure-R implementation is
+preserved internally as \code{xsdm:::math_to_bio_r} for parity testing.
 }
 \examples{
 # Create your own vector of parameter for p = 1 (no o_par entries),

@@ -23,9 +23,10 @@
 #' Canonical names follow `loglik_math` conventions - see Details of that
 #' function for the canonical ordering we use.
 #'
-#' `create_mask(mask = mask, p)` returns the full skeleton (all `NA_real_`
-#' initially), optionally overlaying `mask`. This function overlays
-#' `param_vector` and ensures **all entries are filled** (no `NA`s remain).
+#' This is a thin R wrapper around the internal C++ implementation
+#' \code{xsdm:::.build_canonical_param_vector_cpp}. The pre-port pure-R
+#' implementation is preserved internally as
+#' \code{xsdm:::create_param_vector_masked_r} for parity testing.
 #'
 #' @seealso [make_mask_names()], [create_mask()], and `loglik_math` (Details).
 #' @export
@@ -56,21 +57,23 @@
 #' mask3 <- c(mu1 = 0.1, mu2 = 0.2, mu3 = 0.3, pd = 0.01)
 #' out3 <- create_param_vector_masked(param_vector = pv3, mask = mask3, p = p3)
 create_param_vector_masked <- function(param_vector, mask = NULL, p) {
+  # R-side validation produces the user-facing checkmate-style error
+  # messages historically returned by this function. The actual merge
+  # (mask-first, then param_vector overrides into the canonical skeleton)
+  # is performed by the internal C++ kernel
+  # `xsdm:::.build_canonical_param_vector_cpp`.
   checkmate::assert_count(p, positive = TRUE)
+  if (is.null(param_vector)) {
+    stop("`param_vector` must not be NULL.")
+  }
+  checkmate::assert_numeric(param_vector, any.missing = FALSE, names = "named")
 
-  # Build full canonical skeleton (with mask applied first)
-  out <- create_mask(mask = mask, p = p)
-  allowed_names <- names(out)
+  allowed_names <- names(create_mask(mask = NULL, p = p))
   if (is.null(allowed_names)) {
     stop("`create_mask(mask = NULL, p)` must return a named vector;
          names are canonical.")
   }
 
-  # Validate param_vector (required)
-  if (is.null(param_vector)) {
-    stop("`param_vector` must not be NULL.")
-  }
-  checkmate::assert_numeric(param_vector, any.missing = FALSE, names = "named")
   bad_pv <- setdiff(names(param_vector), allowed_names)
   if (length(bad_pv) > 0) {
     stop(
@@ -79,13 +82,13 @@ create_param_vector_masked <- function(param_vector, mask = NULL, p) {
     )
   }
 
-  # Validate mask when present and enforce disjointness
   if (!is.null(mask)) {
     checkmate::assert_numeric(mask, any.missing = FALSE, names = "named")
     bad_mask <- setdiff(names(mask), allowed_names)
     if (length(bad_mask) > 0) {
       stop(
-        "Unexpected name(s) in `mask`: ", paste(bad_mask, collapse = ", "),
+        "Unexpected parameter name(s) in `mask`: ",
+        paste(bad_mask, collapse = ", "),
         ". Allowed: ", paste(allowed_names, collapse = ", "), "."
       )
     }
@@ -98,12 +101,12 @@ create_param_vector_masked <- function(param_vector, mask = NULL, p) {
     }
   }
 
-  # Overlay param_vector (no overlaps with mask at this point)
-  out[names(param_vector)] <- param_vector
-
-  # Final check: ensure no NA remains
-  if (anyNA(out)) {
-    missing_names <- names(out)[is.na(out)]
+  # Detect missing canonical slots up front so we can produce the
+  # historical "contains NA values" error message instead of the
+  # per-slot message produced by the C++ kernel on the first hit.
+  provided <- union(names(param_vector), names(mask))
+  missing_names <- setdiff(allowed_names, provided)
+  if (length(missing_names) > 0) {
     stop(
       "The final parameter vector contains NA values for: ",
       paste(missing_names, collapse = ", "),
@@ -112,5 +115,11 @@ create_param_vector_masked <- function(param_vector, mask = NULL, p) {
     )
   }
 
-  out
+  .build_canonical_param_vector_cpp(
+    param_vector = as.numeric(param_vector) |>
+      stats::setNames(names(param_vector)),
+    mask         = if (is.null(mask)) NULL else
+      as.numeric(mask) |> stats::setNames(names(mask)),
+    p            = as.integer(p)
+  )
 }
