@@ -286,3 +286,107 @@ create_param_vector_masked_r <- function(param_vector, mask = NULL, p) {
 
   out
 }
+
+# ---------------------------------------------------------------------------
+# Small non-exported helpers consolidated from individual R/*.R files.
+#
+# These were previously each in their own file (R/check_env_array.R,
+# R/logit.R, R/permutations.R). They are kept internal-only and grouped
+# here for ease of maintenance.
+# ---------------------------------------------------------------------------
+
+#' Validate the environmental data array
+#'
+#' Checks that \code{env_dat} is a 3-dimensional array with dimensions
+#' \code{n_loc x n_time x p} (number of locations x time-series length x
+#' number of environmental variables) and contains no missing values.
+#' Throws an informative error if any condition is violated.
+#'
+#' @keywords internal
+#' @noRd
+check_env_array <- function(env_dat, name = "env_dat") {
+  checkmate::assert_array(
+    env_dat,
+    d = 3,
+    any.missing = FALSE,
+    .var.name = name
+  )
+  invisible(env_dat)
+}
+
+#' Logit function. Inverse of the expit function.
+#'
+#' @keywords internal
+#' @noRd
+logit <- function(x) {
+  no <- (x < 0) | (x > 1)
+  out <- numeric(length(x))
+  out[no] <- NaN
+  out[!no] <- log(x[!no] / (1 - x[!no]))
+  dim(out) <- dim(x)
+  out
+}
+
+#' Enumerate Permutations of Vector Elements
+#'
+#' Adapted from \pkg{gtools::permutations} (Bill Venables; extended by
+#' Gregory R. Warnes to handle \code{repeats.allowed}). Used internally
+#' by \code{distance_between_params} for the orthogonal-matrix
+#' equivalence-class search.
+#'
+#' @keywords internal
+#' @noRd
+permutations <- function(n, r, v = 1:n, set = TRUE, repeats.allowed = FALSE) {
+  if (mode(n) != "numeric" || length(n) != 1 || n < 1 || (n %% 1) !=
+    0) {
+    stop("bad value of n")
+  }
+  if (mode(r) != "numeric" || length(r) != 1 || r < 1 || (r %% 1) !=
+    0) {
+    stop("bad value of r")
+  }
+  if (!is.atomic(v) || length(v) < n) {
+    stop("v is either non-atomic or too short")
+  }
+  if ((r > n) & repeats.allowed == FALSE) {
+    stop("r > n and repeats.allowed=FALSE")
+  }
+  if (set) {
+    v <- unique(sort(v))
+    if (length(v) < n) {
+      stop("too few different elements")
+    }
+  }
+  v0 <- vector(mode(v), 0)
+  if (repeats.allowed) {
+    sub <- function(n, r, v) {
+      if (r == 1) {
+        matrix(v, n, 1)
+      } else if (n == 1) {
+        matrix(v, 1, r)
+      } else {
+        inner <- Recall(n, r - 1, v)
+        cbind(rep(v, rep(nrow(inner), n)), matrix(t(inner),
+          ncol = ncol(inner), nrow = nrow(inner) * n,
+          byrow = TRUE
+        ))
+      }
+    }
+  } else {
+    sub <- function(n, r, v) {
+      if (r == 1) {
+        matrix(v, n, 1)
+      } else if (n == 1) {
+        matrix(v, 1, r)
+      } else {
+        X <- NULL
+        for (i in 1:n) {
+          X <- rbind(X, cbind(v[i], Recall(n -
+            1, r - 1, v[-i])))
+        }
+        X
+      }
+    }
+  }
+  sub(n, r, v[1:n])
+}
