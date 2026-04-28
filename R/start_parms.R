@@ -169,7 +169,7 @@ get_range_df_ <- function(env_dat,
   mu_star <- ranges[mu_inds, 2]
   sigl_star <- exp(ranges[sigl_inds, 2])
   sigr_star <- exp(ranges[sigr_inds, 2])
-  h_star <- like_neg_ltsgr_cpp(
+  h_star <- like_neg_ltsgr(
     env_dat = env_dat,
     mu = mu_star,
     sigltil = sigl_star,
