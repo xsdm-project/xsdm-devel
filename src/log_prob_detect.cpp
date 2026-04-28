@@ -2,7 +2,7 @@
 #include <Rcpp.h>
 #include <RcppParallel.h>
 
-#include "log_prob_detect.hpp"
+#include "log_prob_detect.h"
 
 #include <algorithm>
 #include <cmath>

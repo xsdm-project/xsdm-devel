@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "loglik_math.hpp"
+#include "loglik_math.h"
 #include "ucminf_core.hpp"
 
 namespace {

@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "loglik_bio.hpp"
+#include "loglik_bio.h"
 
 //' Pure-C++ log-likelihood for the xsdm model (biological-scale parameters)
 //'
