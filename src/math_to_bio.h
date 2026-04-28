@@ -1,4 +1,4 @@
-// src/math_to_bio.hpp
+// src/math_to_bio.h
 //
 // Pure-C++ port of R/math_to_bio.R + (mask + free params) -> canonical vector
 // assembly from R/create_param_vector_masked.R.
@@ -21,7 +21,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "expm_skew.hpp"
+#include "expm_skew.h"
 
 namespace xsdm {
 

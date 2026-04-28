@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "math_to_bio.hpp"
+#include "math_to_bio.h"
 
 // ---------------------------------------------------------------------------
 // Canonical parameter-name schema, matching R/make_mask_names.R:
