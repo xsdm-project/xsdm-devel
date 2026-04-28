@@ -4,7 +4,7 @@ test_that(".onLoad sets future.globals.maxSize correctly", {
   old_option <- getOption("future.globals.maxSize")
 
   # Call .onLoad
-  .onLoad(libname = NULL, pkgname = NULL)
+  xsdm:::.onLoad(libname = NULL, pkgname = NULL)
 
   # Check if the option was set to 2 GB
   expect_equal(getOption("future.globals.maxSize"), 8.0 * 1024^3)
