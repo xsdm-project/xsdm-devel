@@ -25,6 +25,8 @@ Imports:
     Rcpp (>= 1.1.0),
     RcppParallel (>= 5.1.10),
     stats,
+    terra,
+    tibble,
     ucminfcpp,
     furrr,
     future,
@@ -40,6 +42,4 @@ Depends:
 LazyData: true
 LazyDataCompression: xz
 Suggests: 
-    terra,
-    testthat (>= 3.0.0),
-    tibble
+    testthat (>= 3.0.0)
