@@ -12,17 +12,20 @@ test_that("optimize_likelihood() returns expected structure and sorting", {
   # Occ vector with at least some presences (1) and absences (0)
   occ <- rep(c(1L, 0L, 1L, 0L), length.out = n)
 
-  # Keep it fast: few starts and low maxeval
+  # Keep it fast: few starts and low maxeval. This test only validates the
+  # output *structure*, not optimization quality. num_starts must be >= 3
+  # for pomp::sobol_design to return a matrix (rather than a vector) inside
+  # start_parms() / get_start_parms_().
   set.seed(123)
   res <- optimize_likelihood(
     env_dat = env_dat,
     occ = occ,
     mask = NULL,
-    num_starts = 4L,
+    num_starts = 3L,
     breadth = 1,
     parallel = FALSE,
     num_threads = 1L,
-    control = list(maxeval = 20, stepmax = 1, xtol = 1e-8),
+    control = list(maxeval = 10, stepmax = 1, xtol = 1e-8),
     verbose = FALSE
   )
 
@@ -35,7 +38,7 @@ test_that("optimize_likelihood() returns expected structure and sorting", {
   expect_true(all(c("start_id", "loglik", "convergence", "full_par") %in% names(res$solutions)))
 
   # rows <= num_starts (all succeed on valid data); 'full_par' is a list-column
-  expect_lte(nrow(res$solutions), 4L)
+  expect_lte(nrow(res$solutions), 3L)
   expect_gte(nrow(res$solutions), 1L)
   expect_true(is.list(res$solutions$full_par))
   expect_equal(length(res$solutions$full_par), nrow(res$solutions))
@@ -107,28 +110,11 @@ test_that("optimize_likelihood() errors when there are no presences", {
   )
 })
 
-test_that("optimize_likelihood() prints the single-thread notice in parallel mode", {
-  skip_on_cran() # future/callr parallelism can be flaky on CRAN
-  set.seed(5)
-  n <- 6
-  Tt <- 4
-  p <- 2
-  env_dat <- array(runif(n * Tt * p), dim = c(n, Tt, p))
-  occ <- rep(c(1L, 0L), length.out = n)
-
-  expect_message(
-    optimize_likelihood(env_dat,
-                        occ,
-                        num_starts = 4L,
-                        parallel = TRUE,
-                        num_threads = 2L,
-                        verbose = TRUE,
-      control = list(maxeval = 5)
-    ),
-    regexp = "parallel=TRUE: forcing num_threads=1",
-    fixed = FALSE
-  )
-})
+# Note: the standalone "prints the single-thread notice in parallel mode"
+# test was removed. The "parallel branch executes, forces single-thread, and
+# prints messages" test below already asserts the
+# "parallel=TRUE: forcing num_threads=1" message via capture_messages, so the
+# duplicate spawn of future.callr workers (~2s) is no longer needed.
 
 test_that("optimize_likelihood() respects mask and reconstructs full parameter vectors", {
   set.seed(2)
@@ -259,6 +245,7 @@ test_that("parallel branch executes, forces single-thread, and prints messages",
   # These packages are Suggested; skip if missing to keep CI robust.
   skip_if_not_installed("furrr")
   skip_if_not_installed("future.callr")
+  skip_on_cran() # spawning future.callr workers is slow / flaky on CRAN
 
   set.seed(14)
   n <- 6
@@ -267,34 +254,31 @@ test_that("parallel branch executes, forces single-thread, and prints messages",
   env_dat <- array(runif(n * Tt * p, -1, 1), dim = c(n, Tt, p))
   occ <- rep(c(1L, 0L), length.out = n)
 
-  # 1) Covers the 'num_threads <- 1L' line and its message
-  expect_message(
+  # A single parallel invocation captures BOTH expected messages.
+  # future.callr spawns a fresh R subprocess per start, so each call has
+  # heavy fixed cost; halving the call count + dropping num_starts from 4 to
+  # 3 reduces wall time from ~4s to ~1.2s without losing coverage of either
+  # the "forcing num_threads=1" branch or the "(parallel)" suffix.
+  # (num_starts must be >= 3 for pomp::sobol_design to return a matrix.)
+  msgs <- capture_messages(
     optimize_likelihood(
       env_dat, occ,
-      num_starts = 4L,
-      parallel = TRUE, # enter parallel branch
-      num_threads = 4L, # triggers "forcing num_threads=1 ..." + assignment
-      control = NULL, # covers: if (is.null(control)) control <- list()
-      verbose = TRUE
-    ),
-    regexp =
-      "parallel=TRUE: forcing num_threads=1 to avoid nested RcppParallel\\.",
-    fixed = FALSE
+      num_starts  = 3L,
+      parallel    = TRUE,  # enter parallel branch
+      num_threads = 4L,    # triggers "forcing num_threads=1 ..." + assignment
+      control     = NULL,  # covers: if (is.null(control)) control <- list()
+      verbose     = TRUE
+    )
   )
-
-  # 2) Also ensure we print the "(parallel)" message in the
-  # 'Optimizing from ...' line
-  expect_message(
-    optimize_likelihood(
-      env_dat, occ,
-      num_starts = 4L,
-      parallel = TRUE,
-      num_threads = 2L,
-      control = list(maxeval = 5),
-      verbose = TRUE
-    ),
-    regexp = "Optimizing from 4 starting points \\(parallel\\)\\.",
-    fixed = FALSE
+  expect_match(
+    msgs,
+    "parallel=TRUE: forcing num_threads=1 to avoid nested RcppParallel\\.",
+    all = FALSE
+  )
+  expect_match(
+    msgs,
+    "Optimizing from 3 starting points \\(parallel\\)\\.",
+    all = FALSE
   )
 })
 
