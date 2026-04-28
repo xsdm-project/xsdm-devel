@@ -203,7 +203,6 @@ std::vector<double> log_prob_detect_tile(
 //' @param num_threads Integer.  Number of parallel threads.  \code{0}
 //'   (default) uses \code{RcppParallel::defaultNumThreads()}.
 //' @return Numeric vector of length \code{n_loc}.
-//' @export
 // [[Rcpp::export]]
 Rcpp::NumericVector log_prob_detect_cpp(
     Rcpp::NumericVector env_dat_vec,

@@ -88,7 +88,7 @@ test_that("pure-C++ XPtr: initial objective agrees with loglik_math_cpp", {
   par_final <- res$par
   names(par_final) <- names(par0)
 
-  f_ref <- loglik_math_cpp(par_final, env_dat, as.integer(occ),
+  f_ref <- xsdm:::loglik_math_cpp(par_final, env_dat, as.integer(occ),
                            negative = TRUE)
   expect_equal(res$value, f_ref, tolerance = 1e-8)
 })
@@ -167,7 +167,7 @@ test_that("pure-C++ XPtr: works with a non-empty mask", {
   par_final <- res$par
   names(par_final) <- names(free0)
 
-  f_ref <- loglik_math_cpp(par_final, env_dat, as.integer(occ),
+  f_ref <- xsdm:::loglik_math_cpp(par_final, env_dat, as.integer(occ),
                            mask = mask, negative = TRUE)
   expect_equal(res$value, f_ref, tolerance = 1e-8)
 })

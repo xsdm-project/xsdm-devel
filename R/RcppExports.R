@@ -56,7 +56,6 @@ like_ltsg <- function(mu, env_m, dl_mat, drl_mat, ortho_m, q, r) {
 #' @param num_threads Integer.  Number of parallel threads.  \code{0}
 #'   (default) uses \code{RcppParallel::defaultNumThreads()}.
 #' @return Numeric vector of length \code{n_loc}.
-#' @export
 log_prob_detect_cpp <- function(env_dat_vec, env_dat_dims, mu, sigltil, sigrtil, o_mat, ctil, pd, return_prob = FALSE, num_threads = 0L) {
     .Call(`_xsdm_log_prob_detect_cpp`, env_dat_vec, env_dat_dims, mu, sigltil, sigrtil, o_mat, ctil, pd, return_prob, num_threads)
 }
@@ -79,7 +78,6 @@ log_prob_detect_cpp <- function(env_dat_vec, env_dat_dims, mu, sigltil, sigrtil,
 #' @param num_threads Number of threads for the inner xtensor kernel
 #'   (0 = RcppParallel default).
 #' @return Scalar log-likelihood.
-#' @export
 loglik_bio_cpp <- function(env_dat_vec, env_dat_dims, occ, mu, sigltil, sigrtil, o_mat, ctil, pd, num_threads = 0L) {
     .Call(`_xsdm_loglik_bio_cpp`, env_dat_vec, env_dat_dims, occ, mu, sigltil, sigrtil, o_mat, ctil, pd, num_threads)
 }
@@ -102,7 +100,6 @@ loglik_bio_cpp <- function(env_dat_vec, env_dat_dims, occ, mu, sigltil, sigrtil,
 #' @param num_threads Integer; 0 leaves the RcppParallel default.
 #'
 #' @returns A scalar double.
-#' @export
 loglik_math_cpp <- function(param_vector, env_dat, occ, mask = NULL, negative = TRUE, num_threads = 0L) {
     .Call(`_xsdm_loglik_math_cpp`, param_vector, env_dat, occ, mask, negative, num_threads)
 }
