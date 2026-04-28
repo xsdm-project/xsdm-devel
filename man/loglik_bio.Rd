@@ -63,6 +63,16 @@ Computes the log-likelihood for the xsdm model given environmental data, a
 vector of occurrences and pseudo-absences, and model parameters on the
 biological scale.
 }
+\details{
+This is a thin R wrapper around the C++ implementation \code{loglik_bio_cpp};
+the optimizer hot path (\code{sum_log_p = TRUE}, \code{return_prob = FALSE})
+is pure C++. The non-default flag combinations
+(\code{sum_log_p = FALSE} or \code{return_prob = TRUE}) are computed by
+delegating to the C++-backed \code{log_prob_detect} and reducing in R.
+A pure-R reference implementation, \code{loglik_bio_r}, is kept internal
+to the package and is used only by the parity tests in
+\code{tests/testthat/test-loglik_bio_r_vs_cpp.R}.
+}
 \examples{
 ll <- loglik_bio(
   env_dat = examples$env_array,

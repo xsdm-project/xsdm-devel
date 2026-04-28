@@ -117,6 +117,15 @@ to \code{pd} can be \code{Inf} (on the math scale, corresponding to a
 biological-scale value of 1). This functionality is used to fit boundary
 models. Entries of \code{param_vector} must be finite.
 }
+\section{Implementation}{
+
+This is a thin R wrapper around the C++ implementation
+\code{loglik_math_cpp}; the optimizer hot path is pure C++. A pure-R
+reference, \code{loglik_math_r}, is kept internal to the package and is
+used only by the parity tests in
+\code{tests/testthat/test-loglik_math_r_vs_cpp.R}.
+}
+
 \examples{
 # Testing the function with the example data
 loglik_math(

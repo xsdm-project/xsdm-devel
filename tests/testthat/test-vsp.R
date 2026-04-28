@@ -14,7 +14,7 @@ test_that("vsp returns tibble when return_raster = FALSE", {
     mu = c(10, 100),
     sigltil = c(2, 10),
     sigrtil = c(2, 10),
-    ctil = c(0.5, 0.5),
+    ctil = 0.5,
     pd = 0.8,
     o_mat = matrix(0, nrow = 2, ncol = 2)
   )
@@ -37,7 +37,7 @@ test_that("vsp returns SpatRaster when return_raster = TRUE", {
     mu = c(10, 100),
     sigltil = c(2, 10),
     sigrtil = c(2, 10),
-    ctil = c(0.5, 0.5),
+    ctil = 0.5,
     pd = 0.8,
     o_mat = matrix(0, nrow = 2, ncol = 2)
   )

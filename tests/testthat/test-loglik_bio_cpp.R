@@ -1,6 +1,6 @@
 # tests/testthat/test-loglik_bio_cpp.R
 #
-# Parity: loglik_bio_cpp() must match loglik_bio(..., sum_log_p = TRUE,
+# Parity: xsdm:::loglik_bio_cpp() must match loglik_bio(..., sum_log_p = TRUE,
 # return_prob = FALSE) to near machine precision.
 
 env_flat <- function(env_dat) {
@@ -23,7 +23,7 @@ test_that("loglik_bio_cpp: matches loglik_bio on examples fixture", {
     pd      = examples$par_list$pd
   )
 
-  got <- loglik_bio_cpp(
+  got <- xsdm:::loglik_bio_cpp(
     env_dat_vec  = env$vec,
     env_dat_dims = env$dims,
     occ          = as.integer(examples$occ_vec),
@@ -54,7 +54,7 @@ test_that("loglik_bio_cpp: matches loglik_bio on a small p = 1 fixture", {
 
   ref <- loglik_bio(env_dat, occ, mu, sigltil, sigrtil, o_mat, ctil, pd)
   env <- env_flat(env_dat)
-  got <- loglik_bio_cpp(env$vec, env$dims, occ,
+  got <- xsdm:::loglik_bio_cpp(env$vec, env$dims, occ,
                        mu, sigltil, sigrtil, o_mat, ctil, pd)
   expect_equal(got, ref, tolerance = 1e-10)
 })
@@ -77,7 +77,7 @@ test_that("loglik_bio_cpp: matches loglik_bio on random p = 2 draws", {
                       bp$o_mat, bp$ctil, bp$pd)
 
     env <- env_flat(env_dat)
-    got <- loglik_bio_cpp(env$vec, env$dims, as.integer(occ),
+    got <- xsdm:::loglik_bio_cpp(env$vec, env$dims, as.integer(occ),
                           bp$mu, bp$sigltil, bp$sigrtil,
                           bp$o_mat, bp$ctil, bp$pd)
     expect_equal(got, ref, tolerance = 1e-10)
@@ -96,10 +96,10 @@ test_that("loglik_bio_cpp: honours num_threads and matches 1-thread result", {
   bp <- math_to_bio(pv)
   env <- env_flat(env_dat)
 
-  r1 <- loglik_bio_cpp(env$vec, env$dims, as.integer(occ),
+  r1 <- xsdm:::loglik_bio_cpp(env$vec, env$dims, as.integer(occ),
                        bp$mu, bp$sigltil, bp$sigrtil, bp$o_mat,
                        bp$ctil, bp$pd, num_threads = 1L)
-  r2 <- loglik_bio_cpp(env$vec, env$dims, as.integer(occ),
+  r2 <- xsdm:::loglik_bio_cpp(env$vec, env$dims, as.integer(occ),
                        bp$mu, bp$sigltil, bp$sigrtil, bp$o_mat,
                        bp$ctil, bp$pd, num_threads = 2L)
   expect_equal(r1, r2, tolerance = 1e-12)

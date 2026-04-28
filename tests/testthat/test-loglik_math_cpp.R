@@ -1,6 +1,6 @@
 # tests/testthat/test-loglik_math_cpp.R
 #
-# Parity: loglik_math_cpp() must agree with loglik_math() — including the
+# Parity: xsdm:::loglik_math_cpp() must agree with loglik_math() — including the
 # `negative` flag and mask handling.
 
 test_that("loglik_math_cpp: matches loglik_math on examples fixture", {
@@ -10,7 +10,7 @@ test_that("loglik_math_cpp: matches loglik_math on examples fixture", {
 
   for (neg in c(TRUE, FALSE)) {
     ref <- loglik_math(pv, env_dat, occ, negative = neg)
-    got <- loglik_math_cpp(pv, env_dat, occ, negative = neg)
+    got <- xsdm:::loglik_math_cpp(pv, env_dat, occ, negative = neg)
     expect_equal(got, ref, tolerance = 1e-10,
                  info = paste0("negative = ", neg))
   }
@@ -28,7 +28,7 @@ test_that("loglik_math_cpp: matches loglik_math on a small p = 1 fixture", {
             ctil = -0.5, pd = 0.3)
 
   ref <- loglik_math(pv, env_dat, occ, negative = TRUE)
-  got <- loglik_math_cpp(pv, env_dat, occ, negative = TRUE)
+  got <- xsdm:::loglik_math_cpp(pv, env_dat, occ, negative = TRUE)
   expect_equal(got, ref, tolerance = 1e-10)
 })
 
@@ -46,7 +46,7 @@ test_that("loglik_math_cpp: matches loglik_math with a mask", {
   mask <- c(pd = -1.0)
 
   ref <- loglik_math(free, env_dat, occ, mask = mask, negative = TRUE)
-  got <- loglik_math_cpp(free, env_dat, occ, mask = mask, negative = TRUE)
+  got <- xsdm:::loglik_math_cpp(free, env_dat, occ, mask = mask, negative = TRUE)
   expect_equal(got, ref, tolerance = 1e-10)
 })
 
@@ -63,7 +63,7 @@ test_that("loglik_math_cpp: random p = 2 parity", {
     pv[] <- rnorm(length(pv), sd = 0.5)
 
     ref <- loglik_math(pv, env_dat, occ, negative = TRUE)
-    got <- loglik_math_cpp(pv, env_dat, occ, negative = TRUE)
+    got <- xsdm:::loglik_math_cpp(pv, env_dat, occ, negative = TRUE)
     expect_equal(got, ref, tolerance = 1e-10)
   }
 })
@@ -72,7 +72,7 @@ test_that("loglik_math_cpp: num_threads determinism", {
   pv <- examples$par_vec
   env_dat <- examples$env_array
   occ <- as.integer(examples$occ_vec)
-  r1 <- loglik_math_cpp(pv, env_dat, occ, num_threads = 1L)
-  r2 <- loglik_math_cpp(pv, env_dat, occ, num_threads = 2L)
+  r1 <- xsdm:::loglik_math_cpp(pv, env_dat, occ, num_threads = 1L)
+  r2 <- xsdm:::loglik_math_cpp(pv, env_dat, occ, num_threads = 2L)
   expect_equal(r1, r2, tolerance = 1e-12)
 })

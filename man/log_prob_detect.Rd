@@ -52,6 +52,13 @@ probabilities of detection (or their logs) of the species in each location.
 Computes the probability of detection of the species in each location for the
 xsdm model, given environmental data and model parameters.
 }
+\details{
+This is a thin R wrapper around the C++ implementation
+\code{log_prob_detect_cpp}; the optimizer hot path is pure C++.
+A pure-R reference implementation, \code{log_prob_detect_r}, is kept
+internal to the package and is used only by the parity tests in
+\code{tests/testthat/test-log_prob_detect_r_vs_cpp.R}.
+}
 \examples{
 mu <- c(-1, 5.046939)
 sigltil <- c(1.036834, 1.556083)

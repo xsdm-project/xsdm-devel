@@ -11,7 +11,7 @@ test_that("log_prob_detect_cpp matches R log_prob_detect() on example data", {
     o_mat = pl$o_mat, ctil = pl$ctil, pd = pl$pd
   )
 
-  cpp_result <- log_prob_detect_cpp(
+  cpp_result <- xsdm:::log_prob_detect_cpp(
     env_dat_vec  = as.vector(env),
     env_dat_dims = as.integer(dim(env)),
     mu      = pl$mu,
@@ -31,11 +31,11 @@ test_that("log_prob_detect_cpp return_prob=TRUE matches exp(log result)", {
   env <- examples$env_array
   pl  <- examples$par_list
 
-  log_result  <- log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
+  log_result  <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                       pl$mu, pl$sigltil, pl$sigrtil,
                                       pl$o_mat, pl$ctil, pl$pd,
                                       return_prob = FALSE)
-  prob_result <- log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
+  prob_result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                       pl$mu, pl$sigltil, pl$sigrtil,
                                       pl$o_mat, pl$ctil, pl$pd,
                                       return_prob = TRUE)
@@ -49,7 +49,7 @@ test_that("log_prob_detect_cpp returns vector of length n_loc", {
   pl  <- examples$par_list
   n_loc <- dim(env)[1]
 
-  result <- log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
+  result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd)
   expect_length(result, n_loc)
@@ -59,7 +59,7 @@ test_that("log_prob_detect_cpp returns vector of length n_loc", {
 test_that("log_prob_detect_cpp output is <= 0 (log probabilities)", {
   env <- examples$env_array
   pl  <- examples$par_list
-  result <- log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
+  result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd,
                                  return_prob = FALSE)
@@ -70,7 +70,7 @@ test_that("log_prob_detect_cpp output is <= 0 (log probabilities)", {
 test_that("log_prob_detect_cpp probabilities are in [0,1]", {
   env <- examples$env_array
   pl  <- examples$par_list
-  result <- log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
+  result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd,
                                  return_prob = TRUE)
@@ -81,7 +81,7 @@ test_that("log_prob_detect_cpp probabilities are in [0,1]", {
 test_that("log_prob_detect_cpp works for single location", {
   env <- examples$env_array[1, , , drop = FALSE]
   pl  <- examples$par_list
-  result <- log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
+  result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd)
   expect_length(result, 1)
