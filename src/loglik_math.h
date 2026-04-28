@@ -1,4 +1,4 @@
-// src/loglik_math.hpp
+// src/loglik_math.h
 //
 // Pure-C++ math-scale log-likelihood for the xsdm model. Composed of
 // math_to_bio_apply + loglik_bio_tile. The R-callable wrapper is in
@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "loglik_bio.hpp"
-#include "math_to_bio.hpp"
+#include "loglik_bio.h"
+#include "math_to_bio.h"
 
 namespace xsdm {
 

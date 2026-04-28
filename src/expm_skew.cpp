@@ -7,7 +7,7 @@
 // matrices built by build_orthogonal_matrix().
 
 #include <Rcpp.h>
-#include "expm_skew.hpp"
+#include "expm_skew.h"
 
 // [[Rcpp::export(.build_orthogonal_matrix_cpp)]]
 Rcpp::NumericMatrix build_orthogonal_matrix_cpp(Rcpp::NumericVector entries) {

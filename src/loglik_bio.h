@@ -1,4 +1,4 @@
-// src/loglik_bio.hpp
+// src/loglik_bio.h
 //
 // Pure-C++ log-likelihood for the xsdm model, biological-scale parameters.
 // Mirrors R/loglik_bio.R with sum_log_p = TRUE, return_prob = FALSE — the
@@ -17,8 +17,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "log_prob_detect.hpp"
-#include "math_to_bio.hpp"
+#include "log_prob_detect.h"
+#include "math_to_bio.h"
 
 namespace xsdm {
 
