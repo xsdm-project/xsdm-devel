@@ -1,0 +1,95 @@
+---
+title: "End-to-end MLE workflow with xsdm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{End-to-end MLE workflow with xsdm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width  = 7,
+  fig.height = 5
+)
+set.seed(123)
+```
+
+## Overview
+
+`xsdm` reconstructs a species' fundamental ecological niche by maximising
+a likelihood that combines:
+
+* an **environmental time-series** (locations × time × variables),
+* **presence / absence** records on the same locations.
+
+This vignette walks through the complete workflow on the bundled
+`examples` fixture: build a starting design, run multi-start MLE, inspect
+results, and project them spatially.
+
+## Setup
+
+```{r setup}
+library(xsdm)
+
+# The examples object ships with the package and provides a small,
+# fully-formed environmental array + occurrence vector.
+str(examples, max.level = 1)
+```
+
+## 1. Multi-start maximum-likelihood estimation
+
+`optimize_likelihood()` is the user-facing entry point. It builds a
+Sobol' multi-start design of `num_starts` parameter vectors over a
+data-driven range, runs each start through the C++ engine, and returns
+both the per-start solutions and the best one.
+
+```{r optimize}
+fit <- optimize_likelihood(
+  env_dat     = examples$env_array,
+  occ         = examples$occ_vec,
+  num_starts  = 8L,        # use 50-200 for real analyses
+  parallel    = FALSE,     # set TRUE on multi-core machines
+  control     = list(maxeval = 200),
+  verbose     = FALSE
+)
+
+# Best solution and its log-likelihood
+fit$best$loglik
+fit$best$full_par
+```
+
+## 2. Habitat-suitability projection
+
+```{r vsp, eval = FALSE}
+# The `vsp` function projects the best-fit niche onto a raster grid.
+# Skipped at vignette-build time because terra requires a raster on disk.
+hs <- vsp(
+  param_list = interpret_parameters(fit$best$full_par,
+                                    p = dim(examples$env_array)[3]),
+  env_layers = list(examples$bio01, examples$bio12)
+)
+```
+
+## 3. Profile likelihood
+
+```{r profile, eval = FALSE}
+# Profile the detection probability `pd` around the MLE.
+prof <- profile_likelihood(
+  env_dat = examples$env_array,
+  occ     = examples$occ_vec,
+  param   = "pd",
+  best    = fit$best$full_par,
+  n_grid  = 7,
+  span    = 0.5
+)
+```
+
+## See also
+
+* `vignette("xsdm")` — package overview *(TODO)*.
+* `?optimize_likelihood` — full argument reference.
+* `?profile_likelihood` — uncertainty estimation.
+* `?make_mask_names` — fixing specific parameters during optimization.
