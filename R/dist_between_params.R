@@ -10,11 +10,12 @@
 #' \code{sigrtil} are inverted before comparison (that is the scale on which
 #' distance is most meaningful for those parameters).
 #'
-#' The numerical backbone of this function is a pure-C++ implementation in
-#' \code{src/dist_between_params.cpp} that (a) builds the cost matrix over
-#' column pairings and (b) solves the assignment problem. A pure-R reference
-#' implementation is kept as \code{xsdm:::dist_between_params_r} and is used
-#' by the parity tests in \code{tests/testthat/test-dist_between_params_r_vs_cpp.R}.
+#' All numerics besides the linear sum assignment are computed in R. The
+#' assignment problem itself is solved by an in-package C++ implementation of
+#' the classical O(n^3) Hungarian algorithm, exposed (unexported) as
+#' \code{xsdm:::.solve_lsap_cpp}. An R-level alternative is
+#' \code{clue::solve_LSAP}; the two are compared in
+#' \code{tests/testthat/test-solve_lsap_cpp.R}.
 #'
 #' @param p1 First set of parameters. May be math-scale (a named numeric
 #'   vector whose names complement \code{mask}) or biological-scale (a named
@@ -45,9 +46,8 @@
 #' Dense and Sparse Linear Assignment Problems. \emph{Computing} 38, 325--340.
 #'
 #' K. Hornik (2005). A CLUE for CLUster Ensembles. \emph{Journal of
-#' Statistical Software} 14(12). (See also the \pkg{clue} package for an
-#' alternative R-level implementation of the same LSAP algorithm that
-#' \code{xsdm:::dist_between_params_r} calls via \code{clue::solve_LSAP}.)
+#' Statistical Software} 14(12). (See also the \pkg{clue} package on CRAN
+#' for an alternative R-level LSAP implementation.)
 #'
 #' @export
 #'
@@ -66,7 +66,7 @@
 #'   p2 = example_1$optim_par_vec_equivalent
 #' )
 dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
-  # --- basic input checks -------------------------------------------------
+  # --- basic input checks -----------------------------------------------
   checkmate::assert_flag(give_closest_rep)
   if (!((is.null(mask)) || (is.numeric(mask) && (sum(is.na(mask)) == 0)))) {
     stop("mask must be NULL or a numeric vector with no missing values")
@@ -74,7 +74,7 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
   checkmate::assert_true(is.list(p1) || is.numeric(p1))
   checkmate::assert_true(is.list(p2) || is.numeric(p2))
 
-  # --- math -> biological conversion (identical to legacy behaviour) ------
+  # --- math -> biological conversion ------------------------------------
   if (is.numeric(p1)) {
     checkmate::assert_integerish(sqrt(9 + 8 * (length(p1) + length(mask))))
     p <- round((-5 + sqrt(9 + 8 * (length(p1) + length(mask)))) / 2)
@@ -98,63 +98,74 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
     p2 <- math_to_bio(create_param_vector_masked(p2, mask, p))
   }
 
-  # --- biological-scale checks -------------------------------------------
-  for (obj in list(p1, p2)) {
-    checkmate::assert_names(names(obj),
-      must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
-    checkmate::assert_numeric(obj$mu, finite = TRUE, any.missing = FALSE)
-    checkmate::assert_numeric(obj$sigltil, any.missing = FALSE)
-    checkmate::assert_numeric(obj$sigrtil, any.missing = FALSE)
-    checkmate::assert_numeric(obj$o_mat, finite = TRUE, any.missing = FALSE)
-    checkmate::assert_numeric(obj$ctil, finite = TRUE, any.missing = FALSE, len = 1)
-    checkmate::assert_numeric(obj$pd, finite = TRUE, any.missing = FALSE, len = 1)
-  }
+  # --- biological-scale checks -----------------------------------------
+  checkmate::assert_names(names(p1),
+    must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
+  checkmate::assert_numeric(p1$mu, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p1$sigltil, any.missing = FALSE)
+  checkmate::assert_numeric(p1$sigrtil, any.missing = FALSE)
+  checkmate::assert_numeric(p1$o_mat, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p1$ctil, finite = TRUE, any.missing = FALSE, len = 1)
+  checkmate::assert_numeric(p1$pd, finite = TRUE, any.missing = FALSE, len = 1)
   p <- length(p1$mu)
   checkmate::assert_true(length(p1$sigltil) == p)
   checkmate::assert_true(length(p1$sigrtil) == p)
   checkmate::assert_true(all(dim(p1$o_mat) == c(p, p)))
+
+  checkmate::assert_names(names(p2),
+    must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
+  checkmate::assert_numeric(p2$mu, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p2$sigltil, any.missing = FALSE)
+  checkmate::assert_numeric(p2$sigrtil, any.missing = FALSE)
+  checkmate::assert_numeric(p2$o_mat, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p2$ctil, finite = TRUE, any.missing = FALSE, len = 1)
+  checkmate::assert_numeric(p2$pd, finite = TRUE, any.missing = FALSE, len = 1)
   checkmate::assert_true(length(p2$mu) == p)
   checkmate::assert_true(length(p2$sigltil) == p)
   checkmate::assert_true(length(p2$sigrtil) == p)
   checkmate::assert_true(all(dim(p2$o_mat) == c(p, p)))
 
-  # --- C++ backend: cost matrix + LSAP + distance ------------------------
-  res <- .dist_between_params_cpp(
-    mu1      = as.numeric(p1$mu),
-    sigltil1 = as.numeric(p1$sigltil),
-    sigrtil1 = as.numeric(p1$sigrtil),
-    o_mat1   = as.matrix(p1$o_mat),
-    ctil1    = as.numeric(p1$ctil),
-    pd1      = as.numeric(p1$pd),
-    mu2      = as.numeric(p2$mu),
-    sigltil2 = as.numeric(p2$sigltil),
-    sigrtil2 = as.numeric(p2$sigrtil),
-    o_mat2   = as.matrix(p2$o_mat),
-    ctil2    = as.numeric(p2$ctil),
-    pd2      = as.numeric(p2$pd)
-  )
+  sigdistsq <- function(x, y) (1 / x - 1 / y) ^ 2
 
-  if (!give_closest_rep) {
-    return(res$distance)
+  dd <- dim(p1$o_mat)[1]
+  cost <- matrix(NA_real_, dd, dd)
+  posneg <- matrix(NA_integer_, dd, dd)
+  for (cc2 in seq_len(dd)) {
+    for (cc1 in seq_len(dd)) {
+      pos <- sum((p2$o_mat[, cc2] - p1$o_mat[, cc1]) ^ 2) +
+        sigdistsq(p2$sigltil[cc2], p1$sigltil[cc1]) +
+        sigdistsq(p2$sigrtil[cc2], p1$sigrtil[cc1])
+      neg <- sum((p2$o_mat[, cc2] + p1$o_mat[, cc1]) ^ 2) +
+        sigdistsq(p2$sigltil[cc2], p1$sigrtil[cc1]) +
+        sigdistsq(p2$sigrtil[cc2], p1$sigltil[cc1])
+      cost[cc2, cc1] <- min(pos, neg)
+      posneg[cc2, cc1] <- if (neg < pos) -1L else 1L
+    }
   }
 
-  # --- reconstruct the closest equivalence-class representative ----------
-  perm    <- as.integer(res$perm)
-  posneg  <- res$posneg
-  pairing <- cbind(seq_len(nrow(posneg)), perm)
+  perm <- as.integer(.solve_lsap_cpp(cost))
+  sq_dist_other_params <- sum((p1$mu - p2$mu) ^ 2) +
+    (p1$ctil - p2$ctil) ^ 2 +
+    (p1$pd - p2$pd) ^ 2
+
+  pairing <- cbind(seq_len(nrow(cost)), perm)
+  distance <- sqrt(sum(cost[pairing]) + sq_dist_other_params)
+  if (!give_closest_rep) {
+    return(distance)
+  }
+
+  perm_inv <- order(as.numeric(perm))
   posnegs <- posneg[pairing]
-  perm_inv <- order(perm)
   posnegs <- posnegs[perm_inv]
   flip <- (posnegs == -1)
-
   rep_ec <- convert_equivalence_class(p1, flip = flip, perm = perm)
   rep_out <- list(
-    mu      = p1$mu,
+    mu = p1$mu,
     sigltil = rep_ec$sigltil,
     sigrtil = rep_ec$sigrtil,
-    ctil    = p1$ctil,
-    pd      = p1$pd,
-    o_mat   = rep_ec$o_mat
+    ctil = p1$ctil,
+    pd = p1$pd,
+    o_mat = rep_ec$o_mat
   )
-  list(distance = res$distance, representative = rep_out)
+  list(distance = distance, representative = rep_out)
 }
