@@ -13,7 +13,7 @@ test_that("profile_likelihood:
   occ <- c(1, 0, 1, 0)
 
   # Use packaged named vector on math scale (p = 2)
-  optim_param_vector <- examples$optim_par_vec
+  optim_param_vector <- example_1$optim_par_vec
 
   inc <- 0.2
 
@@ -110,7 +110,7 @@ test_that("profile_likelihood: MLE row matches direct loglik_math evaluation", {
   ), dim = c(4, 3, 2))
   occ <- c(1, 0, 1, 0)
 
-  opt_vec <- examples$optim_par_vec
+  opt_vec <- example_1$optim_par_vec
 
   res <- profile_likelihood(
     profile_parameter = "mu1",
@@ -157,7 +157,7 @@ test_that("profile_likelihood: parameters length matches profile rows and
     num_steps_left = 1L,
     num_steps_right = 1L,
     alpha = 0.95,
-    optim_param_vector = examples$optim_par_vec,
+    optim_param_vector = example_1$optim_par_vec,
     env_dat = env_dat,
     occ = occ,
     mask = NULL,
@@ -169,7 +169,7 @@ test_that("profile_likelihood: parameters length matches profile rows and
   expect_equal(nrow(res$parameters), nrow(res$profile))
 
   # Names should be identical to canonical names
-  nm <- names(examples$optim_par_vec)
+  nm <- names(example_1$optim_par_vec)
   for (k in 1:nrow(res$parameters)) {
     # thest that each row in data frame is numeris
     expect_true(is.numeric(unlist(res$parameters[k, ])))
@@ -192,7 +192,7 @@ test_that("profile_likelihood: verbose emits progress messages", {
       num_steps_left = 1L,
       num_steps_right = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = NULL,
@@ -211,9 +211,9 @@ test_that("profile_likelihood: errors when no free parameters remain", {
   occ <- c(1, 0, 1, 0)
 
   # Mask all parameters except the profiled one -> zero free parameters
-  all_names <- names(examples$optim_par_vec)
+  all_names <- names(example_1$optim_par_vec)
   mask_names <- setdiff(all_names, "mu1")
-  mask <- examples$optim_par_vec[mask_names]
+  mask <- example_1$optim_par_vec[mask_names]
 
   expect_error(
     profile_likelihood(
@@ -221,7 +221,7 @@ test_that("profile_likelihood: errors when no free parameters remain", {
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = mask,
@@ -247,7 +247,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = NULL,
@@ -265,7 +265,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = occ
     ),
@@ -280,7 +280,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 1,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = occ
     ),
@@ -295,7 +295,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = 1:10,
       occ = occ
     ),
@@ -310,7 +310,7 @@ test_that("profile_likelihood: input validation errors (bad profile_parameter,
       increment_left = 0.1,
       num_steps_left = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = c(1, 0) # wrong length
     ),
@@ -336,7 +336,7 @@ test_that("profile_likelihood: mask != NULL currently errors at baseline if
       num_steps_left = 1L,
       num_steps_right = 1L,
       alpha = 0.95,
-      optim_param_vector = examples$optim_par_vec,
+      optim_param_vector = example_1$optim_par_vec,
       env_dat = env_dat,
       occ = occ,
       mask = c(pd = 0), # overlaps name with full vector

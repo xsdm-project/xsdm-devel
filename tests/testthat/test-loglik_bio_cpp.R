@@ -10,29 +10,29 @@ env_flat <- function(env_dat) {
   )
 }
 
-test_that("loglik_bio_cpp: matches loglik_bio on examples fixture", {
-  env <- env_flat(examples$env_array)
+test_that("loglik_bio_cpp: matches loglik_bio on example_1 fixture", {
+  env <- env_flat(example_1$env_array)
   ref <- loglik_bio(
-    env_dat = examples$env_array,
-    occ     = examples$occ_vec,
-    mu      = examples$par_list$mu,
-    sigltil = examples$par_list$sigltil,
-    sigrtil = examples$par_list$sigrtil,
-    o_mat   = examples$par_list$o_mat,
-    ctil    = examples$par_list$ctil,
-    pd      = examples$par_list$pd
+    env_dat = example_1$env_array,
+    occ     = example_1$occ_vec,
+    mu      = example_1$par_list$mu,
+    sigltil = example_1$par_list$sigltil,
+    sigrtil = example_1$par_list$sigrtil,
+    o_mat   = example_1$par_list$o_mat,
+    ctil    = example_1$par_list$ctil,
+    pd      = example_1$par_list$pd
   )
 
   got <- xsdm:::loglik_bio_cpp(
     env_dat_vec  = env$vec,
     env_dat_dims = env$dims,
-    occ          = as.integer(examples$occ_vec),
-    mu           = examples$par_list$mu,
-    sigltil      = examples$par_list$sigltil,
-    sigrtil      = examples$par_list$sigrtil,
-    o_mat        = examples$par_list$o_mat,
-    ctil         = examples$par_list$ctil,
-    pd           = examples$par_list$pd
+    occ          = as.integer(example_1$occ_vec),
+    mu           = example_1$par_list$mu,
+    sigltil      = example_1$par_list$sigltil,
+    sigrtil      = example_1$par_list$sigrtil,
+    o_mat        = example_1$par_list$o_mat,
+    ctil         = example_1$par_list$ctil,
+    pd           = example_1$par_list$pd
   )
 
   expect_equal(got, ref, tolerance = 1e-10)

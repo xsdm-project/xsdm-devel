@@ -61,7 +61,7 @@
 #' math_to_bio(math_vec)
 #'
 #' # For p = 2 (includes o_par1) -- using the shipped example vector
-#' math_to_bio(examples$par_vec)
+#' math_to_bio(example_1$par_vec)
 math_to_bio <- function(param_vector) {
   # R-side validation preserves the historical checkmate-style error
   # messages (which the existing test suite asserts against). The

@@ -7,9 +7,9 @@ tol <- 1e-6
 
 canonical_for_p <- function(p) names(make_mask_names(p))
 
-test_that("create_param_vector_masked: examples fixture parity (p = 2)", {
+test_that("create_param_vector_masked: example_1 fixture parity (p = 2)", {
   full_names <- canonical_for_p(2L)
-  vals <- as.numeric(examples$par_vec)
+  vals <- as.numeric(example_1$par_vec)
   names(vals) <- full_names
   pv   <- vals[setdiff(full_names, c("mu1", "pd"))]
   mask <- vals[c("mu1", "pd")]

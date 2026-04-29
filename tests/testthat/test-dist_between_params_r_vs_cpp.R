@@ -70,8 +70,8 @@ test_that("dist_between_params: give_closest_rep matches _r (distance + rep)", {
 
 test_that("dist_between_params: math-scale inputs match _r", {
   skip_if_not_clue()
-  v1 <- examples$optim_par_vec
-  v2 <- examples$optim_par_vec_equivalent
+  v1 <- example_1$optim_par_vec
+  v2 <- example_1$optim_par_vec_equivalent
 
   expect_equal(dist_between_params(v1, v2),
                xsdm:::dist_between_params_r(v1, v2),
@@ -103,10 +103,10 @@ test_that(".solve_lsap_cpp matches clue::solve_LSAP on random cost matrices", {
   }
 })
 
-test_that("dist_between_params: canonical == unexported _r for examples fixture", {
+test_that("dist_between_params: canonical == unexported _r for example_1 fixture", {
   skip_if_not_clue()
-  par_list            <- math_to_bio(examples$optim_par_vec)
-  par_list_equivalent <- math_to_bio(examples$optim_par_vec_equivalent)
+  par_list            <- math_to_bio(example_1$optim_par_vec)
+  par_list_equivalent <- math_to_bio(example_1$optim_par_vec_equivalent)
 
   expect_equal(
     dist_between_params(par_list, par_list_equivalent),

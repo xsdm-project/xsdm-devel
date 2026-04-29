@@ -7,16 +7,16 @@ library(testthat)
 # Test 1: habitat_suitability matches vsp() on example rasters
 test_that("habitat_suitability matches vsp() output", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
   env_list <- list(bio1 = bio1, bio12 = bio12)
 
   # reference using existing vsp()
-  ref <- vsp(env_list, examples$par_list, return_raster = TRUE)
+  ref <- vsp(env_list, example_1$par_list, return_raster = TRUE)
 
   # new tiled function
   out <- habitat_suitability(
-    param_list  = examples$par_list,
+    param_list  = example_1$par_list,
     env_list    = env_list,
     return_prob = TRUE
   )
@@ -32,11 +32,11 @@ test_that("habitat_suitability matches vsp() output", {
 # Test 2: returns SpatRaster with correct dimensions
 test_that("habitat_suitability returns SpatRaster with 1 layer", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
 
   out <- habitat_suitability(
-    examples$par_list,
+    example_1$par_list,
     list(bio1, bio12),
     return_prob = TRUE
   )
@@ -49,11 +49,11 @@ test_that("habitat_suitability returns SpatRaster with 1 layer", {
 # Test 3: log-probability output is <= 0
 test_that("habitat_suitability log-prob output is <= 0", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
 
   out <- habitat_suitability(
-    examples$par_list,
+    example_1$par_list,
     list(bio1, bio12),
     return_prob = FALSE
   )
@@ -66,11 +66,11 @@ test_that("habitat_suitability log-prob output is <= 0", {
 # Test 4: probability output is in [0, 1]
 test_that("habitat_suitability probabilities are in [0, 1]", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
 
   out <- habitat_suitability(
-    examples$par_list,
+    example_1$par_list,
     list(bio1, bio12),
     return_prob = TRUE
   )
@@ -82,12 +82,12 @@ test_that("habitat_suitability probabilities are in [0, 1]", {
 # Test 5: write to file works
 test_that("habitat_suitability writes to file", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
 
   tmp <- tempfile(fileext = ".tif")
   habitat_suitability(
-    examples$par_list,
+    example_1$par_list,
     list(bio1, bio12),
     output    = tmp,
     overwrite = TRUE
@@ -102,13 +102,13 @@ test_that("habitat_suitability writes to file", {
 # Test 6: geometry mismatch is caught
 test_that("habitat_suitability errors on geometry mismatch", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
   # crop bio12 to a different extent
   bio12_crop <- terra::crop(bio12, terra::ext(bio12) * 0.5)
 
   expect_error(
-    habitat_suitability(examples$par_list, list(bio1, bio12_crop)),
+    habitat_suitability(example_1$par_list, list(bio1, bio12_crop)),
     regexp = "geometry"
   )
 })
@@ -116,12 +116,12 @@ test_that("habitat_suitability errors on geometry mismatch", {
 # Test 7: log and probability outputs are consistent via exp()
 test_that("habitat_suitability return_prob=FALSE is log of return_prob=TRUE", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
 
-  hs_log  <- habitat_suitability(examples$par_list, list(bio1, bio12),
+  hs_log  <- habitat_suitability(example_1$par_list, list(bio1, bio12),
                                  return_prob = FALSE)
-  hs_prob <- habitat_suitability(examples$par_list, list(bio1, bio12),
+  hs_prob <- habitat_suitability(example_1$par_list, list(bio1, bio12),
                                  return_prob = TRUE)
 
   v_log  <- as.vector(terra::values(hs_log))
@@ -133,12 +133,12 @@ test_that("habitat_suitability return_prob=FALSE is log of return_prob=TRUE", {
 # Test 8: output layer name reflects return_prob
 test_that("habitat_suitability layer name reflects return_prob", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
 
-  r_prob <- habitat_suitability(examples$par_list, list(bio1, bio12),
+  r_prob <- habitat_suitability(example_1$par_list, list(bio1, bio12),
                                 return_prob = TRUE)
-  r_log  <- habitat_suitability(examples$par_list, list(bio1, bio12),
+  r_log  <- habitat_suitability(example_1$par_list, list(bio1, bio12),
                                 return_prob = FALSE)
 
   expect_equal(terra::names(r_prob), "habitat_suitability")
@@ -148,11 +148,11 @@ test_that("habitat_suitability layer name reflects return_prob", {
 # Test 9: output geometry matches input
 test_that("habitat_suitability output geometry matches input", {
   skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(examples$bio01) / 100
-  bio12 <- terra::unwrap(examples$bio12) / 100
+  bio1  <- terra::unwrap(example_1$bio01) / 100
+  bio12 <- terra::unwrap(example_1$bio12) / 100
   env_list <- list(bio1, bio12)
 
-  result <- habitat_suitability(examples$par_list, env_list)
+  result <- habitat_suitability(example_1$par_list, env_list)
   ref    <- env_list[[1]]
 
   expect_equal(terra::nrow(result), terra::nrow(ref))
@@ -178,7 +178,7 @@ test_that("habitat_suitability fails with non-SpatRaster env_list", {
 
 test_that("habitat_suitability fails with missing param_list keys", {
   skip_if_not_installed("terra")
-  bio1 <- terra::unwrap(examples$bio01) / 100
+  bio1 <- terra::unwrap(example_1$bio01) / 100
   bad_params <- list(mu = 1)
   expect_error(
     habitat_suitability(bad_params, list(bio1)),

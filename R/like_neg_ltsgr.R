@@ -43,11 +43,11 @@
 #'
 #' @examples
 #' # Example usage:
-#' like_neg_ltsgr(env_dat = examples$env_array,
-#'                mu      = examples$par_list$mu,
-#'                sigltil = examples$par_list$sigltil,
-#'                sigrtil = examples$par_list$sigrtil,
-#'                o_mat   = examples$par_list$o_mat)
+#' like_neg_ltsgr(env_dat = example_1$env_array,
+#'                mu      = example_1$par_list$mu,
+#'                sigltil = example_1$par_list$sigltil,
+#'                sigrtil = example_1$par_list$sigrtil,
+#'                o_mat   = example_1$par_list$o_mat)
 like_neg_ltsgr <- function(env_dat,
                            mu,
                            sigltil,

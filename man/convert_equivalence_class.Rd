@@ -27,7 +27,7 @@ of equivalent parameters.
 }
 \examples{
 convert_equivalence_class(
-  p = examples$optim_par_list,
+  p = example_1$optim_par_list,
   flip = c(1, 0),
   perm = c(1, 2)
 )

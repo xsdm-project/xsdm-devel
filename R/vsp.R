@@ -35,11 +35,11 @@
 #' @examples
 #' \donttest{
 #' # Load the consolidated example data (provided by the package)
-#' data("examples", package = "xsdm")
+#' data("example_1", package = "xsdm")
 #'
 #' # Unpack the raster time series (they are stored as packed SpatRasters)
-#' bio1_ts  <- terra::unwrap(examples$bio01)
-#' bio12_ts <- terra::unwrap(examples$bio12)
+#' bio1_ts  <- terra::unwrap(example_1$bio01)
+#' bio12_ts <- terra::unwrap(example_1$bio12)
 #'
 #' # Scale to match typical units (CHELSA data are often in 0.1 units)
 #' bio1_ts  <- bio1_ts / 100
@@ -49,11 +49,11 @@
 #' env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
 #'
 #' # Return a tibble (the default)
-#' prob_tbl <- vsp(env_data, examples$par_list)
+#' prob_tbl <- vsp(env_data, example_1$par_list)
 #' head(prob_tbl)
 #'
 #' # Return a SpatRaster
-#' prob_rast <- vsp(env_data, examples$par_list, return_raster = TRUE)
+#' prob_rast <- vsp(env_data, example_1$par_list, return_raster = TRUE)
 #' # Quick plot (commented to avoid plotting in examples)
 #' # plot(prob_rast)
 #' }

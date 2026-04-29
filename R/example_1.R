@@ -48,7 +48,7 @@
 #' All rasters (`bio01`, `bio12`) are stored as packed `SpatRaster`
 #' objects to reduce package size. Before using them, unpack with
 #' `terra::unwrap()`, e.g.:
-#' \code{bio1 <- terra::unwrap(examples$bio01)}.
+#' \code{bio1 <- terra::unwrap(example_1$bio01)}.
 #'
 #' The environmental data are originally from CHELSA v2.1
 #' (<https://www.chelsa-climate.org/>). The virtual species was
@@ -56,15 +56,15 @@
 #'
 #' @examples
 #' # Access the list
-#' names(examples)
+#' names(example_1)
 #'
 #' # Unpack a raster
 #' \donttest{
-#' bio1 <- terra::unwrap(examples$bio01)
+#' bio1 <- terra::unwrap(example_1$bio01)
 #' }
 #'
 #' # Use a parameter set
-#' math_to_bio(examples$par_vec)
+#' math_to_bio(example_1$par_vec)
 #'
 #' @source Berti e al,  2024 (<https://doi.org/10.1101/2024.10.30.621023>)
-"examples"
+"example_1"
