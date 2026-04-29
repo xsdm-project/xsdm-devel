@@ -32,7 +32,7 @@
 // implementation independent avoids the GPL-2 / AGPL-3 licence mismatch and
 // lets the package remain under its declared AGPL (>= 3).
 //
-// Users interested in the original R-level implementation of the same LSAP
+// Users interested in the original R implementation of the same LSAP
 // algorithm are encouraged to look at the `clue` package on CRAN.
 // -----------------------------------------------------------------------------
 
