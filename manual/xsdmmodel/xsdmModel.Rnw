@@ -34,6 +34,7 @@
 \newcommand{\Rp}{\text{Re}}
 \newcommand{\E}{\text{E}}
 \newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\iv}{\text{iv}}
 \newcommand{\expit}{\text{expit}}
 \newcommand{\logit}{\text{logit}}
 
@@ -129,21 +130,19 @@ a ``growth-environment function" model component postulates that
 $\lambda_t$ is a function of $\vec{e}_t$ and a first set 
 of model parameters, $\theta_1$. 
 Second, the long-term stochastic growth rate 
-(ltsgr) for the location is computed as 
-\begin{equation}
-\ltsgr = \mean{\log(\lambda_t)},
-\end{equation}
-where the overbar represents the average through time. All 
-logarithms in xsdm documentation are natural logarithms. The ltsgr is a fundamental
-concept of stochastic demography \cite{caswell2000matrix,Morris2002,Lande2003,tuljapurkar1990}
-which characterizes an average rate at which a population grows 
+(ltsgr) and the infinitesimal variance (iv) for the location are computed. 
+These are fundamental
+quantities of stochastic demography \cite{caswell2000matrix,Morris2002,Lande2003,tuljapurkar1990}.
+The ltsgr characterizes an average rate at which a population grows 
 from low density in a stochastic environment. 
 %DAN: You later may want to have a Background document among the manual material 
 %where we give some background. Or at least cite out to places where they can get
 %the relevant background quickly and relatively easily. 
 Third, the habitat suitability of
-the location is assumed to be a sigmoid function of the ltsgr, with the specific
-shape of the sigmoid controlled by a second set of model parameters, $\theta_2$.
+the location is assumed to take one of two forms: 1) a logistic function of the ltsgr;
+or 2) a logistic-like function of both the ltsgr and the iv. The specific
+shape of these  logistics is controlled by a second set of model parameters, $\theta_2$,
+which comprises different parameters in the two cases listed (see below).
 This component of the model is called the ``detection link''.
 For model confrontation with species occurrence data and (pseudo-)absences, 
 habitat suitability is assumed to represent a probability of occurrence/detection
@@ -345,19 +344,85 @@ mtext("D", side = 3, adj = 0, line = 0.5, font = 2)
 \label{fig:ge_func_examples}
 \end{figure}
 
+\subsection{Computing the long-term stochastic growth rate and infinitesimal variance}
+
+The population model $p_{t+1} = \lambda_t p_t$ defines a scalar multiplicative stochastic process \cite{tuljapurkar1990}. For a stationary sequence $\{\lambda_t\}$, the \textit{long-term stochastic growth rate} (ltsgr) is defined as
+\begin{equation}
+\log\lambda_s = \lim_{T\to\infty} \frac{1}{T}\sum_{t=1}^T \log\lambda_t = \E[\log\lambda_t].
+\label{eq:ltsgr_def}
+\end{equation}
+This is the asymptotic per-capita exponential growth rate \cite{Lande2003}. Given 
+a finite environmental time series $\vec{e}_1, \ldots, \vec{e}_T$ at a location 
+and a parameter vector, we approximate the ltsgr by its the sample mean
+\begin{equation}
+\ltsgr = \mean{\log(\lambda_t)},
+\label{eq:ltsgr_comp}
+\end{equation}
+where each $\lambda_t$ is evaluated from (\ref{eq:gefunc}).
+
+The \textit{infinitesimal variance} (iv; \cite{Lande2003}) is
+\begin{equation}
+\sigma^2 = \lim_{T\to\infty} \frac{1}{T}\,\var\!\left(\sum_{t=1}^T \log\lambda_t\right).
+\label{eq:iv_def}
+\end{equation}
+Under stationarity with summable autocovariances $\gamma_k = \cov(\log\lambda_t, \log\lambda_{t+k})$, this equals a quantity called the long-run variance:
+\begin{equation}
+\sigma^2 = \gamma_0 + 2\sum_{k=1}^\infty \gamma_k.
+\label{eq:iv_lrv}
+\end{equation}
+Given finite data, we estimate the iv by the Bartlett-weighted truncated sum of sample autocovariances \cite{neweywest1987},
+\begin{equation}
+\hat\sigma^2 = \hat\gamma_0 + 2\sum_{k=1}^{M}\left(1 - \frac{k}{M+1}\right)\hat\gamma_k,
+\label{eq:iv_comp}
+\end{equation}
+where $\hat\gamma_k$ is the sample autocovariance of $\{\log\lambda_t\}$ at lag 
+$k$ and $M$ is a non-negative integer truncation lag. Truncation at $M$ is 
+unavoidable with finite data. The Bartlett weights $1 - k/(M+1)$ guarantee 
+$\hat\sigma^2 \geq 0$ \cite{neweywest1987}, and the default $M = \lfloor T^{1/3}\rfloor$ achieves an asymptotically optimal bias-variance tradeoff for the estimator \cite{andrews1991}.
+
 \subsection{The detection link}
 
-The detection link is 
+The first option for the detection link postulates that detection probability depends
+on ltsgr, i.e.,
 \begin{equation}
-\frac{p_d}{1+\exp(-b(\ltsgr-c))},
+P(X = 1) = \frac{p_d}{1+\exp(-b(\ltsgr-c))},\label{detect1}
 \end{equation}
-where $0<p_d \leq 1$, $b>0$, and $c$ is an unconstrained real number. Thus,
-the complete list of parameters for xsdm is $\lambda_{\text{max}}$, $\vec{\mu}$, $\vec{\sigma}_L$,
-$\vec{\sigma}_R$, $O$, $p_d$, $b$, and $c$, though the model as presented so
+where $0<p_d \leq 1$, $b>0$, and $c$ is an unconstrained real number. This is a
+reasonable modeling choice since the ltsgr is a growth rate from rarity of a median 
+or typical population simulated from the model under a stochastic environment,
+and one important determinant of a species geographic range should be where 
+populations can increase from rarity \cite{holt2009bringing,holt2022variability}.
+Under this option, parameters of the detection link are $p_d$, $b$, and $c$. 
+
+The second option for the detection link postulates that detection probability 
+depends on both ltsgr and iv following
+\begin{equation}
+P(X = 1) = \frac{p_d}{1 + \exp\left(-\alpha\,\dfrac{\mathrm{ltsgr}}{\mathrm{iv}} + \beta - \gamma\,\dfrac{1}{\mathrm{iv}}\right)}, 
+\end{equation}
+where $0<p_d \leq 1$ and $\alpha$, $\beta$, and  $\gamma$ are positive. 
+If iv is the same everywhere, this reduces to (\ref{detect1}). 
+Algebraic manipulation leads to 
+\begin{equation}
+P(X = 1) = \frac{p_d}{1+\exp \left( -\frac{\alpha}{\mathrm{iv}} \left( \mathrm{ltsgr} -
+\left( \frac{\beta}{\alpha} \mathrm{iv} - \frac{\gamma}{\alpha} \right) \right) \right)},
+\end{equation}
+which is a sigmoid in ltsgr with center $\frac{\beta}{\alpha} \mathrm{iv} - \frac{\gamma}{\alpha}$ 
+and slope at the center $\alpha/\mathrm{iv}$. It makes sense that larger 
+iv should move the center of the sigmoid to the right, since larger iv should 
+make it more difficult for a population to persist, and thus require a larger 
+ltsgr for persistence. It also makes sense that larger iv should make the 
+sigmoid less steep, since larger iv should make it more difficult to distinguish 
+between locations with different ltsgrs. A numeric study of the extinction 
+risk formula of \cite{landeOrzack1988} showed that it has related properties.
+
+Thus, the complete list of parameters for xsdm is: $\lambda_{\text{max}}$, 
+$\vec{\mu}$, $\vec{\sigma}_L$,
+$\vec{\sigma}_R$, $O$, $p_d$; and either $b$, and $c$, or $\alpha$, $\beta$ and
+$\gamma$. However, the model as presented so
 far is over-parameterized (structurally non-identifiable), as we describe 
 in the next section.
 
-\section{The likelihood function}
+\section{The likelihood function using the ltsgr-only detection link}
 
 The long-term stochastic growth rate (ltsgr) for a given location is 
 \begin{align}
@@ -387,7 +452,103 @@ detection, just defined, for location $i$, then the likelihood is
 $\prod_i P_i \prod_j (1-P_j)$, where the first product is over all detection locations
 and the second is over all locations of absence or pseudo-absence.
 
-\section{Interpretation of parameters}
+\section{The likelihood function using the detection link that takes both the ltsgr
+and the iv}
+
+For a given location, let
+\begin{equation}
+S_t = \sum_{i=1}^n \left(\frac{u_{t,i}}{\sigma_i(u_{t,i})}\right)^2,
+\label{eq:St}
+\end{equation}
+where $\vec{u}_t = O^{-1}(\vec{e}_t - \vec{\mu})$ and $\sigma_i(u_{t,i})$ is as in
+(\ref{eq:gefunc}). Then $\log(\lambda_t) = \log(\lambda_{\text{max}}) - S_t/2$, so
+\begin{equation}
+\ltsgr = \log(\lambda_{\text{max}}) - \frac{1}{2}\mean{S_t}.
+\label{eq:ltsgr}
+\end{equation}
+Also, 
+\begin{equation}
+\iv = \frac{1}{4}W,
+\label{eq:iv_W}
+\end{equation}
+where $W$ is the long-run variance of $\{S_t\}$; this follows from
+(\ref{eq:iv_lrv}). Substituting (\ref{eq:ltsgr}) and (\ref{eq:iv_W})
+into the second of our two detection link options gives
+\begin{align}
+P(X = 1) &= \frac{p_d}{1+\exp\!\left(-\alpha\,\frac{\ltsgr}{\iv}+\beta
+           -\gamma\,\frac{1}{\iv}\right)} \nonumber \\
+&= \frac{p_d}{1+\exp\!\left(\beta
+   - \frac{4\bigl(\alpha\log(\lambda_{\text{max}})+\gamma\bigr)}{W}
+   + \frac{2\alpha\mean{S_t}}{W}\right)}.
+\label{eq:detect_iv_expanded}
+\end{align}
+
+The first structural non-identifiability is visible in (\ref{eq:detect_iv_expanded}):
+$\lambda_{\text{max}}$ and $\gamma$ enter the detection probability only through the
+combination $\alpha\log(\lambda_{\text{max}})+\gamma$. For any $\delta\in\mathbb{R}$, the
+substitution $\lambda_{\text{max}} \mapsto e^\delta\lambda_{\text{max}}$,
+$\gamma \mapsto \gamma - \alpha\delta$ leaves every $P(X=1)$ unchanged. Defining
+\begin{equation}
+\tilde{\gamma} = \gamma + \alpha\log(\lambda_{\text{max}}),
+\label{eq:gammatilde_iv}
+\end{equation}
+the detection exponent in (\ref{eq:detect_iv_expanded}) reduces to
+$\beta - 4\tilde{\gamma}/W + 2\alpha\mean{S_t}/W$, and $\lambda_{\text{max}}$ no longer
+appears.
+
+The second structural non-identifiability arises from width scaling. The substitution
+$\sigma_{L,i} \to c\sigma_{L,i}$, $\sigma_{R,i} \to c\sigma_{R,i}$ for any $c>0$
+maps $S_t \to S_t/c^2$, hence $\mean{S_t} \to \mean{S_t}/c^2$ and $W \to W/c^4$.
+Inspection shows that the one-parameter family of transformations
+\begin{equation}
+(\vec{\sigma}_L,\, \vec{\sigma}_R,\, \alpha,\, \tilde{\gamma})
+\;\longmapsto\;
+(c\vec{\sigma}_L,\, c\vec{\sigma}_R,\, \alpha/c^2,\, \tilde{\gamma}/c^4), \qquad c>0,
+\label{eq:scaling_iv}
+\end{equation}
+leaves the detection exponent unchanged at every location. Setting $c = \sqrt{\alpha}$
+in (\ref{eq:scaling_iv}) maps $\alpha \to 1$ and yields the canonical reparametrization
+\begin{equation}
+\hat{\sigma}_{L,i} = \sqrt{\alpha}\,\sigma_{L,i},
+\qquad
+\hat{\sigma}_{R,i} = \sqrt{\alpha}\,\sigma_{R,i},
+\qquad
+\hat{\gamma} = \frac{\tilde{\gamma}}{\alpha^2} = \frac{\gamma + \alpha\log(\lambda_{\text{max}})}{\alpha^2}.
+\label{eq:canonical_iv}
+\end{equation}
+Let $\hat{S}_t = \sum_{i=1}^n (u_{t,i}/\hat{\sigma}_i(u_{t,i}))^2 = S_t/\alpha$, and let
+$\hat{W}$ be the long-run variance of $\{\hat{S}_t\}$. Then
+$\mean{\hat{S}_t} = \mean{S_t}/\alpha$ and $\hat{W} = W/\alpha^2$. Substituting into the
+detection exponent,
+\begin{align}
+\beta - \frac{4\tilde{\gamma}}{W} + \frac{2\alpha\mean{S_t}}{W}
+&= \beta
+   - \frac{4\alpha^2\hat{\gamma}}{\alpha^2\hat{W}}
+   + \frac{2\alpha^2\mean{\hat{S}_t}}{\alpha^2\hat{W}}
+= \beta - \frac{4\hat{\gamma}}{\hat{W}} + \frac{2\mean{\hat{S}_t}}{\hat{W}},
+\label{eq:exponent_canonical_iv}
+\end{align}
+confirming that both $\lambda_{\text{max}}$ and $\alpha$ have been absorbed. The
+detection probability is
+\begin{equation}
+P(X = 1) = \frac{p_d}{1+\exp\!\left(\beta
+           - \frac{4\hat{\gamma}}{\hat{W}}
+           + \frac{2\mean{\hat{S}_t}}{\hat{W}}\right)},
+\label{eq:probdetect_iv}
+\end{equation}
+where $\mean{\hat{S}_t}$ is the time mean of $\hat{S}_t$ and $\hat{W}$ is its
+long-run variance, estimated via the Bartlett-weighted truncated autocovariance sum
+(\ref{eq:iv_comp}) applied to $\{\hat{S}_t\}$ in place of $\{\log\lambda_t\}$.
+
+As a result of these two parameter reductions, the detection probability
+(\ref{eq:probdetect_iv}) is a function of $\vec{e}_t$, $\vec{\mu}$, $O$,
+$\hat{\vec{\sigma}}_L$, $\hat{\vec{\sigma}}_R$, $\beta$, $\hat{\gamma}$, and $p_d$
+only. Neither $\lambda_{\text{max}}$ nor $\alpha$ nor $\gamma$ nor the unscaled widths
+appear. If $P_i$ is the probability of detection for location $i$, the likelihood is
+$\prod_i P_i \prod_j (1-P_j)$, where the first product is over all detection locations
+and the second is over all locations of absence or pseudo-absence.
+
+\section{Interpretation of parameters using the ltsgr-only detection link}
 
 The \texttt{xsdm} package facilitates inferences of the parameters 
 $\vec{\mu}$, $O$, $\tilde{\vec{\sigma}}_L$,
@@ -429,6 +590,9 @@ various changes in the environment. The indeterminancy of the growth-environment
 function essentially springs from the fact that it is not possible to distinguish a
 species which is capable of thriving in a location but is difficult to detect, 
 from a species which is less capable of thriving but easier to detect.
+
+\section{Interpretation of parameters using the detection link that takes both the
+ltsgr and the iv}
 
 \section{What to read next}
 
