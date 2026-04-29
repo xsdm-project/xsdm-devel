@@ -62,7 +62,7 @@ knitr::opts_chunk$set(
 \noindent This document
 is the intended point of entry
 for the statistically and computationally sophisticated researcher to begin using the 
-xsdmMle package.
+xsdm package.
 We state the scientific purpose of the xsdm approach. We then introduce
 the main statistical model that xsdm is built on. And we derive the likelihood
 function for the model. 
@@ -89,7 +89,7 @@ frequency, and duration of extreme events such as heat waves and floods
 Thus, adressing the shortcomings of current SDMs with respect to climate variability 
 seems important for better understanding the impacts of climate change on biodiversity,
 and is the first main purpose of the xsdm model. The 
-xsdmMle package, to which this 
+xsdm package, to which this 
 document is a partial introduction, is an frequentist implementation of the xsdm
 modelling approach. 
 
@@ -231,7 +231,7 @@ orthonormal basis.
 \begin{figure}
 
 <<growht-env-funct, echo=FALSE>>=
-library(xsdmMle)
+library(xsdm)
 
 # univariate growth-environment function
 gr <- function(pars, e) {
@@ -386,7 +386,7 @@ and the second is over all locations of absence or pseudo-absence.
 
 \section{Interpretation of parameters}
 
-The \texttt{xsdmMle} package facilitates inferences of the parameters 
+The \texttt{xsdm} package facilitates inferences of the parameters 
 $\vec{\mu}$, $O$, $\tilde{\vec{\sigma}}_L$,
 $\tilde{\vec{\sigma}}_R$, $\tilde{c}$, and $p_d$ and of quantities which can be
 derived from these parameters. But what does an inference about these parameters
@@ -431,7 +431,7 @@ from a species which is less capable of thriving but easier to detect.
 
 \section{What to read next}
 
-Next steps may include the ``xsdmMle quickstart'' document (for the impatient user), 
+Next steps may include the ``xsdm quickstart'' document (for the impatient user), 
 or the document ``How to fit xsdm with species occurrence data using xsdmlMLe'',
 which is more thorough and aimed more at statistically and computationally 
 sophisticated users.
