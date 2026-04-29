@@ -62,10 +62,10 @@ knitr::opts_chunk$set(
 \noindent This document
 is the intended point of entry
 for the statistically and computationally sophisticated researcher to begin using the 
-xsdmMle package.
+xsdm package.
 We state the scientific purpose of the xsdm approach. We then introduce
-the main statistical model that xsdm is built on. And we derive the likelihood
-function for the model. 
+the main statistical models that xsdm is built on. And we derive the likelihood
+functions for those models. 
 \end{abstract}
 
 \section{Scientific purpose of xsdm}
@@ -76,26 +76,27 @@ relate environmental conditions (mostly climate) to observation
 records of a species, and are widely used to estimate the current and future 
 geographic distributions of species \cite{peterson2012species}.
 However, most classic SDM methods examine spatial relationships between temporally
-averaged climate and species occurrences. 
-A major limitation of current SDMs is they do not account for 
+averaged climate variables and species occurrences. 
+An  important limitation of current SDMs is they do not account for 
 inter-annual climate variability, even though variability is known by 
 ecological demographers 
 to play a crucial role in population dynamics and therefore probably also in species 
-geographic distributions \cite{gardner2021accounting, perez2021temporal, stewart2021climate, ingenloff2021incorporating, barve2014role}.
+geographic distributions \cite{gardner2021accounting, perez2021temporal, stewart2021climate, ingenloff2021incorporating, barve2014role}; and theory is well developed indicating
+ways in which variability should influence species ranges \cite{holt2022variability}.
 Additionally, global change is altering patterns of 
 climate variability, e.g. by modifying the intensity, 
 frequency, and duration of extreme events such as heat waves and floods 
-\cite{hirabayashi2013global, meehl2004more}.
-Thus, adressing the shortcomings of current SDMs with respect to climate variability 
+\cite{hirabayashi2013global, meehl2004more}, which contribute to variability.
+Thus, addressing the shortcomings of current SDMs with respect to climate variability 
 seems important for better understanding the impacts of climate change on biodiversity,
 and is the first main purpose of the xsdm model. The 
-xsdmMle package, to which this 
-document is a partial introduction, is an frequentist implementation of the xsdm
+xsdm package, to which this 
+document is a partial introduction, is a frequentist implementation of the xsdm
 modelling approach. 
 
-To give an intuitive sense of how variability must influence species distributions, 
+To give a sense of how variability must influence species distributions, 
 we give an idealized but conceptually accurate example. 
-Polar bears' diets consist largely of ringed and bearded seals, which they attack from the 
+Polar bears' diets consist largely of ringed and bearded seals, which they attack from a 
 platform of sea ice. Polar bear populations are thus heavily dependent
 on sea ice, especially in spring when mother bears and their new cubs emerge from 
 hibernation. Because of this dependence, it is easy to imagine that a polar bear population
@@ -105,16 +106,16 @@ spring temperatures are  -15°C in half the years and 5°C in the other half
 of the years, even though both locations have the same average spring temperature.
 Reference \cite{bertiXSDM1} makes this intuition somewhat more formal with a 
 modelling example (their Fig. 1) prior to formally developing the statistics
-behind the xsdm model. 
+behind (an earlier version of) the xsdm model. 
 
-The second main goal of the xsdm approach is to begin incorporate population dynamic
+The second main goal of the xsdm approach is to help incorporate population dynamic
 processes into SDMs. Although it is population dynamics that mediates the relationship
 between environmental fluctuations and whether a population of a given species 
-can persist in a location, traditional SDMs ignore populations dynamics. 
+can persist in a location, traditional SDMs mostly ignore populations dynamics. 
 Several important studies have advocated for population-process-explicit SDMs, and 
 have helped inspire our work \cite{nadeau2017coarse,holt2009bringing,Evans2016,normand2014demography,pagel2012forecasting,Ehrlen2015,Briscoe2019}. The xsdm 
-approach builds on those earlier efforts, in part by emphasizing an approach 
-that can be practically applied to available data.
+approach builds on those earlier efforts, in part by emphasizing a computationally tractable 
+approach that can be practically applied to commonly available data.
 
 \section{The xsdm model}
 
@@ -135,7 +136,7 @@ Second, the long-term stochastic growth rate
 where the overbar represents the average through time. All 
 logarithms in xsdm documentation are natural logarithms. The ltsgr is a fundamental
 concept of stochastic demography \cite{caswell2000matrix,Morris2002,Lande2003,tuljapurkar1990}
-which characterizes and average or typical rate at which a population grows 
+which characterizes an average rate at which a population grows 
 from low density in a stochastic environment. 
 %DAN: You later may want to have a Background document among the manual material 
 %where we give some background. Or at least cite out to places where they can get
@@ -146,9 +147,10 @@ shape of the sigmoid controlled by a second set of model parameters, $\theta_2$.
 This component of the model is called the ``detection link''.
 For model confrontation with species occurrence data and (pseudo-)absences, 
 habitat suitability is assumed to represent a probability of occurrence/detection
-in a location to which the species could have access (i.e., it geographically 
+in a location to which the species could have access (i.e., it is geographically 
 accessible). Details of the model are presented below. See also \cite{bertiXSDM1}
-for additional model details.
+for additional details (though that publication uses a different growth-environment
+function and a Bayesian approach).
 We recognize that the xsdm model is an idealization, and many
 complexities can be added in future work which may or may not statistically improve the 
 degree to which the model describes data. The model described here is a starting point.
@@ -164,8 +166,9 @@ $\vec{e}_t$. Let $\vec{\mu}=(\mu_1,\ldots,\mu_n)$ be an $n$-vector of unconstrai
 real values representing the optimal values for growth of each environmental variable. 
 Let $\vec{\sigma}_L=(\sigma_{L,1},\ldots,\sigma_{L,n})$ and $\vec{\sigma}_R=(\sigma_{R,1},\ldots,\sigma_{R,n})$ be $n$-vectors of strictly positive real
 values representing widths of the growth-environment function to the left and to 
-the right, respectively, with respect to the corresponding environmental variable.
-Let $O$ be an $n \times n$ orthogonal matrix (i.e., $OO^\tau = I$, where the $\tau$ represents matrix transpose). Let $\lambda_{\text{max}}$ represent 
+the right, respectively, with respect to some axes.
+Let $O$ be an $n \times n$ orthogonal matrix (i.e., $OO^\tau = I$, where the 
+$\tau$ represents matrix transpose) encoding the axes used. Let $\lambda_{\text{max}}$ represent 
 population growth under optimal conditions, i.e., the maximum possible annual net
 growth rate. The growth-environment function is defined as
 \begin{equation}
@@ -231,7 +234,7 @@ orthonormal basis.
 \begin{figure}
 
 <<growht-env-funct, echo=FALSE>>=
-library(xsdmMle)
+library(xsdm)
 
 # univariate growth-environment function
 gr <- function(pars, e) {
@@ -386,7 +389,7 @@ and the second is over all locations of absence or pseudo-absence.
 
 \section{Interpretation of parameters}
 
-The \texttt{xsdmMle} package facilitates inferences of the parameters 
+The \texttt{xsdm} package facilitates inferences of the parameters 
 $\vec{\mu}$, $O$, $\tilde{\vec{\sigma}}_L$,
 $\tilde{\vec{\sigma}}_R$, $\tilde{c}$, and $p_d$ and of quantities which can be
 derived from these parameters. But what does an inference about these parameters
@@ -427,12 +430,11 @@ function essentially springs from the fact that it is not possible to distinguis
 species which is capable of thriving in a location but is difficult to detect, 
 from a species which is less capable of thriving but easier to detect.
 
-
-
 \section{What to read next}
 
-Next steps may include the ``xsdmMle quickstart'' document (for the impatient user), 
-or the document ``How to fit xsdm with species occurrence data using xsdmlMLe'',
+Next steps may include the ``quickstart'' in the package readme at 
+\url{https://github.com/xsdm-project/xsdm}, 
+or the document ``How to fit xsdm with species occurrence data using xsdml'',
 which is more thorough and aimed more at statistically and computationally 
 sophisticated users.
 
