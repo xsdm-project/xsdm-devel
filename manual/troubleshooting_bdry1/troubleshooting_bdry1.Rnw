@@ -154,11 +154,11 @@ all_model_results = list()
 for (i in 1:nrow(models)) 
 {
   env_dat = env_array[,,models[i,]==1,drop=FALSE]
-  starts = xsdmMle::start_parms(env_dat,num_starts=25)
+  starts = xsdm::start_parms(env_dat,num_starts=25)
   all_optim_results = list()
   for (j in 1:nrow(starts)) 
   {
-    all_optim_results[[j]] = optim(par=starts[j,],fn=xsdmMle::loglik_math, 
+    all_optim_results[[j]] = optim(par=starts[j,],fn=xsdm::loglik_math, 
                                    method="BFGS",
                                    env_dat=env_dat, occ=occ,negative=TRUE,
                                    control=list(trace=0))
@@ -210,11 +210,11 @@ Let's use the best model. Optimize it a bit harder:
 <<check_best_model,cache=TRUE>>=
 i=9
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
-starts = xsdmMle::start_parms(env_dat,num_starts=100)
+starts = xsdm::start_parms(env_dat,num_starts=100)
 best_model_results = list()
 for (j in 1:nrow(starts)) 
 {
-  best_model_results[[j]] = optim(par=starts[j,],fn=xsdmMle::loglik_math, 
+  best_model_results[[j]] = optim(par=starts[j,],fn=xsdm::loglik_math, 
                                  method="BFGS",
                                  env_dat=env_dat, occ=occ,negative=TRUE,
                                  control=list(trace=0))
@@ -246,7 +246,7 @@ examine_optim_results = function(optim_results,mask=NULL)
   parms_dists_to_best = lapply(
     X=optim_results,
     FUN=function(x){
-      xsdmMle::distance_between_params_hungarian(
+      xsdm::distance_between_params_hungarian(
         x$par,
         best_parms_math,
         mask=mask,
@@ -273,14 +273,14 @@ that $p_d$ is very close to $1$.
 
 Let's profile this model and see what we get:
 <<profile_first, cache=TRUE>>=
-pnames=names(xsdmMle::make_mask_names(2))
+pnames=names(xsdm::make_mask_names(2))
 
 all_profiles=list()
 linc = c(rep(0.05,8),0.01)
 rinc = c(rep(0.05,8),0.01)
 for (counter in 1:9)
 {
-  all_profiles[[counter]] = xsdmMle::profile_likelihood(
+  all_profiles[[counter]] = xsdm::profile_likelihood(
                               profile_parameter=pnames[counter],
                               increment_left=linc[counter],
                               increment_right=rinc[counter],
@@ -334,14 +334,14 @@ env_dat = env_array[,,models[i,]==1,drop=FALSE]
 dim(env_dat)
 mask=c(pd=Inf) #use Inf because masks are given on the math scale
 mask
-new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],
+new_starts = xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],
                                   mask=mask,num_starts=100)
 head(new_starts)
 
 bdry_optim_results = list()
 for (j in 1:nrow(new_starts)) 
 {
-  bdry_optim_results[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+  bdry_optim_results[[j]] = optim(par=new_starts[j,],fn=xsdm::loglik_math, 
                                 method="BFGS",
                                 env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
                                 control=list(trace=0,maxit=500))
@@ -390,7 +390,7 @@ earlier model, and by the expected amounts. We go with the simpler model.
 
 Let's profile this boundary model and see what we get:
 <<profile_bdry, cache=TRUE>>=
-pnames=names(xsdmMle::make_mask_names(2))
+pnames=names(xsdm::make_mask_names(2))
 pnames=pnames[pnames!="pd"]
 mask
 
@@ -399,7 +399,7 @@ linc = c(rep(0.05,7),0.01)
 rinc = c(rep(0.05,7),0.01)
 for (counter in 1:8)
 {
-  all_bdry_profiles[[counter]] = xsdmMle::profile_likelihood(
+  all_bdry_profiles[[counter]] = xsdm::profile_likelihood(
                               profile_parameter=pnames[counter],
                               increment_left=linc[counter],
                               increment_right=rinc[counter],
@@ -434,7 +434,7 @@ in the vacinity of the maximum we found, and inferences can be made. Note these
 profiles look essentially the same as those obtained previously, except 
 $\vec{\sigma}_L$ and $\vec{\sigma}_R$ have been switched (which can happen, given 
 redundancy in parameters explained in ``How to fit xsdm models with species 
-occurrence data using xsdmMle"). The overall lesson is, when optimizing the xsdm 
+occurrence data using xsdm"). The overall lesson is, when optimizing the xsdm 
 likelihood function gives a best model with $p_d$ close to $1$ and a 
 non-dome-shaped profile for $p_d$, use the boundary model with $p_d = 1$.
 
