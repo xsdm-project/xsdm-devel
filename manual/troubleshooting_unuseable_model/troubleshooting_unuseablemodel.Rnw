@@ -80,6 +80,7 @@ University of Kansas}
 
 % --- start the doc ---
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 <<setup, include=FALSE>>=
 knitr::opts_chunk$set(
@@ -156,11 +157,11 @@ all_model_results = list()
 for (i in 1:nrow(models)) 
 {
   env_dat = env_array[,,models[i,]==1,drop=FALSE]
-  starts = xsdmMle::start_parms(env_dat,num_starts=25)
+  starts = xsdm::start_parms(env_dat,num_starts=25)
   all_optim_results = list()
   for (j in 1:nrow(starts)) 
   {
-    all_optim_results[[j]] = optim(par=starts[j,],fn=xsdmMle::loglik_math, 
+    all_optim_results[[j]] = optim(par=starts[j,],fn=xsdm::loglik_math, 
                                    method="BFGS",
                                    env_dat=env_dat, occ=occ,negative=TRUE,
                                    control=list(trace=0))
@@ -217,11 +218,11 @@ do any better.
 <<check_model_11,cache=TRUE>>=
 i=11
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
-starts = xsdmMle::start_parms(env_dat,num_starts=100)
+starts = xsdm::start_parms(env_dat,num_starts=100)
 model_11_results = list()
 for (j in 1:nrow(starts)) 
 {
-  model_11_results[[j]] = optim(par=starts[j,],fn=xsdmMle::loglik_math, 
+  model_11_results[[j]] = optim(par=starts[j,],fn=xsdm::loglik_math, 
                                  method="BFGS",
                                  env_dat=env_dat, occ=occ,negative=TRUE,
                                  control=list(trace=0))
@@ -248,7 +249,7 @@ examine_optim_results = function(optim_results,mask=NULL)
   parms_dists_to_best = lapply(
     X=optim_results,
     FUN=function(x){
-      xsdmMle::distance_between_params_hungarian(
+      xsdm::distance_between_params_hungarian(
         x$par,
         best_parms_math,
         mask=mask,
@@ -276,7 +277,7 @@ i
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
 mask=c(sigltil2=Inf)
 
-new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],
+new_starts = xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],
                                   mask=mask,num_starts=100)
 new_starts
 
@@ -284,7 +285,7 @@ bdry_optim_results = list()
 for (j in 1:nrow(new_starts)) 
 {
   #print(j)
-  bdry_optim_results[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+  bdry_optim_results[[j]] = optim(par=new_starts[j,],fn=xsdm::loglik_math, 
                                 method="BFGS",
                                 env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
                                 control=list(trace=0,maxit=500))
@@ -312,7 +313,7 @@ successfully optimized.
 
 To investigate the model further, we profile:
 <<profile, cache=TRUE>>=
-pnames=names(xsdmMle::make_mask_names(2))
+pnames=names(xsdm::make_mask_names(2))
 pnames=pnames[pnames!="sigltil2"]
 
 values = sapply(X=bdry_optim_results, FUN=function(x){x$value})
@@ -326,7 +327,7 @@ linc[8] = 0.001
 rinc[8] = 0.001
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] = xsdmMle::profile_likelihood(
+  all_profiles[[counter]] = xsdm::profile_likelihood(
                               profile_parameter=pnames[counter],
                               increment_left=linc[counter],
                               increment_right=rinc[counter],
@@ -383,7 +384,7 @@ The \texttt{mu2} profile, in particular, shows problems.
 % i
 % env_dat = env_array[,,models[i,]==1,drop=FALSE]
 % mask=c(sigltil2=Inf)
-% new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],
+% new_starts = xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],
 %                                   mask=mask,num_starts=100)
 % 
 % parscale = c(3,3,1,1,1,5,0.1,0.01)
@@ -391,7 +392,7 @@ The \texttt{mu2} profile, in particular, shows problems.
 % bdry_optim_results2 = list()
 % for (j in 1:nrow(new_starts)) 
 % {
-%   bdry_optim_results2[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+%   bdry_optim_results2[[j]] = optim(par=new_starts[j,],fn=xsdm::loglik_math, 
 %                                 method="BFGS",
 %                                 env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
 %                                 control=list(trace=0,maxit=500,parscale=parscale))
@@ -409,7 +410,7 @@ The \texttt{mu2} profile, in particular, shows problems.
 % 
 % Redo the profiles to investigate further:
 % <<redo_profiles, cache=TRUE>>=
-% pnames=names(xsdmMle::make_mask_names(2))
+% pnames=names(xsdm::make_mask_names(2))
 % pnames=pnames[pnames!="sigltil2"]
 % mask = c(sigltil2=Inf)
 %   
@@ -424,7 +425,7 @@ The \texttt{mu2} profile, in particular, shows problems.
 % all_profiles=list()
 % for (counter in 1:length(pnames))
 % {
-%   all_profiles[[counter]] = xsdmMle::profile_likelihood(
+%   all_profiles[[counter]] = xsdm::profile_likelihood(
 %                               profile_parameter=pnames[counter],
 %                               increment_left=linc[counter],
 %                               increment_right=rinc[counter],
@@ -477,7 +478,7 @@ is going wrong.
 param_list = bdry_optim_results[[1]]$par
 param_list["sigltil2"] = Inf
 param_list
-param_list_b = xsdmMle::math_to_bio(param_list)
+param_list_b = xsdm::math_to_bio(param_list)
 param_list_b
 plot_lims = list(quantile(env_dat[,,1]-param_list_b$mu[1],c(0.01,0.99)),
                    quantile(env_dat[,,2]-param_list_b$mu[2],c(0.01,0.99)))
@@ -534,12 +535,12 @@ should be considered:
 i=5
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
 mask=c(sigrtil1=Inf)
-new_starts = xsdmMle::start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,num_starts=100)
+new_starts = xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,num_starts=100)
 
 bdry_optim_results5 = list()
 for (j in 1:nrow(new_starts)) 
 {
-  bdry_optim_results5[[j]] = optim(par=new_starts[j,],fn=xsdmMle::loglik_math, 
+  bdry_optim_results5[[j]] = optim(par=new_starts[j,],fn=xsdm::loglik_math, 
                                 method="BFGS",
                                 env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
                                 control=list(trace=0,maxit=500))
@@ -561,14 +562,14 @@ i=5
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
 
 all_profiles=list()
-pnames=names(xsdmMle::make_mask_names(1))
+pnames=names(xsdm::make_mask_names(1))
 pnames = pnames[pnames!="sigrtil1"]
 bdry_optim_results5[[1]]$par
 linc = c(0.05,0.025,0.05,0.05)
 rinc = c(0.15,0.025,0.05,0.05)
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] = xsdmMle::profile_likelihood(
+  all_profiles[[counter]] = xsdm::profile_likelihood(
                               profile_parameter=pnames[counter],
                               increment_left=linc[counter],
                               increment_right=rinc[counter],
@@ -599,7 +600,7 @@ suitable model should tend to be preferred.
 Examining the growth-environment function for this model:
 <<now interpret these parameters>>=
 param_list = bdry_optim_results5[[1]]$par
-param_list_b = xsdmMle::math_to_bio(param_list)
+param_list_b = xsdm::math_to_bio(param_list)
 param_list_b$sigrtil = Inf
 plot_lims = list(quantile(env_dat[,,1]-param_list_b$mu[1],c(0.01,0.99)))
 interpret_parameters(param_list=param_list_b,
