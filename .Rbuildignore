@@ -20,3 +20,4 @@
 ^src/.*\.so$
 ^src/.*\.o$
 ^src/.*\.obj$
+^scripts$
