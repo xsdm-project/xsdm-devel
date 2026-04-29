@@ -69,6 +69,10 @@ the main statistical models that xsdm is built on. And we derive the likelihood
 functions for those models. 
 \end{abstract}
 
+%***DAN: It may be possible to unify sections 5 and 6 (the two sections in 
+%*interpreting parameters) into one section. There is a lot of parallel text.
+%*Think about it after some time has passed.
+
 \section{Scientific purpose of xsdm}
 
 Ecological niche models (ENMs) and species 
@@ -135,9 +139,6 @@ These are fundamental
 quantities of stochastic demography \cite{caswell2000matrix,Morris2002,Lande2003,tuljapurkar1990}.
 The ltsgr characterizes an average rate at which a population grows 
 from low density in a stochastic environment. 
-%DAN: You later may want to have a Background document among the manual material 
-%where we give some background. Or at least cite out to places where they can get
-%the relevant background quickly and relatively easily. 
 Third, the habitat suitability of
 the location is assumed to take one of two forms: 1) a logistic function of the ltsgr;
 or 2) a logistic-like function of both the ltsgr and the iv. The specific
@@ -153,9 +154,6 @@ function and a Bayesian approach).
 We recognize that the xsdm model is an idealization, and many
 complexities can be added in future work which may or may not statistically improve the 
 degree to which the model describes data. The model described here is a starting point.
-%DAN: You may want to have a "future improvements" document or something. 
-%I suppose you could talk about improvements to the code/package, and also
-%improvements to the model. 
 
 \subsection{The growth-environment function}
 
@@ -586,13 +584,55 @@ the levels/labels of those contours will differ according to the values of $a$ a
 $b$. In any case, much of the interpretive value of the growth-environment function
 is available through these contours, since they specify the inferred optimal 
 environmental conditions for growth, and the relative sensitivities of growth to
-various changes in the environment. The indeterminancy of the growth-environment
+various changes in the environment. The indeterminacy of the growth-environment
 function essentially springs from the fact that it is not possible to distinguish a
 species which is capable of thriving in a location but is difficult to detect, 
 from a species which is less capable of thriving but easier to detect.
 
 \section{Interpretation of parameters using the detection link that takes both the
 ltsgr and the iv}
+
+The \texttt{xsdm} package facilitates inferences of the parameters
+$\vec{\mu}$, $O$, $\hat{\vec{\sigma}}_L$,
+$\hat{\vec{\sigma}}_R$, $\beta$, $\hat{\gamma}$, and $p_d$ and of quantities which can be
+derived from these parameters. But what does an inference about these parameters
+imply about the structure of the original growth-environment function?
+
+The log growth-environment function is
+\begin{equation}
+\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{1}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\sigma_i(u_{t,i})} \right)^2,
+\end{equation}
+where $\vec{u}_t = O^{-1}(\vec{e}_t-\vec{\mu})$ and where $\sigma_i(u_{t,i}) = \sigma_{L,i}$
+if $u_{t,i} \leq 0$ and $\sigma_i(u_{t,i}) = \sigma_{R,i}$ if $u_{t,i} > 0$.
+But inference only provides estimates of $\hat{\vec{\sigma}}_L$ and $\hat{\vec{\sigma}}_R$,
+where $\hat{\vec{\sigma}}_L = \sqrt{\alpha}\,\vec{\sigma}_L$ and
+$\hat{\vec{\sigma}}_R = \sqrt{\alpha}\,\vec{\sigma}_R$ and $\alpha$ is unknown. So
+\begin{equation}
+\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{1}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\hat{\sigma}_i(u_{t,i})/\sqrt{\alpha}} \right)^2,
+\end{equation}
+where $\hat{\sigma}_i(u_{t,i}) = \hat{\sigma}_{L,i}$ if $u_{t,i} \leq 0$ and
+$\hat{\sigma}_i(u_{t,i}) = \hat{\sigma}_{R,i}$ if $u_{t,i} > 0$. This equals
+\begin{equation}
+\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{\alpha}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\hat{\sigma}_i(u_{t,i})} \right)^2.
+\end{equation}
+Defining
+\begin{equation}
+\hat{f}(\vec{e}_t) = - \sum_{i=1}^n \left( \frac{u_{t,i}}{\hat{\sigma}_i(u_{t,i})} \right)^2,
+\end{equation}
+the function $\hat{f}$ is determined by inference, and the growth-environment function is
+$g = a\hat{f}+b$ for some unknown scalars $a$ and $b$ with $a>0$. We plot evenly spaced
+contours of $\hat{f}$ as a means of displaying what can be inferred using the xsdm model
+about the nature of the dependence of growth rate on the environment. The contours
+of the true growth environment function will be the same as those of $\hat{f}$, though
+the levels/labels of those contours will differ according to the values of $a$ and
+$b$. In any case, much of the interpretive value of the growth-environment function
+is available through these contours, since they specify the inferred optimal
+environmental conditions for growth, and the relative sensitivities of growth to
+various changes in the environment. The indeterminacy of the growth-environment
+function essentially springs from the fact that it is not possible to distinguish a
+species which is capable of thriving in a location but is difficult to detect,
+from a species which is less capable of thriving but easier to detect.
+
 
 \section{What to read next}
 
