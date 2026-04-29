@@ -80,6 +80,7 @@ University of Kansas}
 
 % --- start the doc ---
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 <<setup, include=FALSE>>=
 knitr::opts_chunk$set(
@@ -480,7 +481,7 @@ linc = c(0.05,0.025,0.05,0.05)
 rinc = c(0.15,0.025,0.05,0.05)
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] = xsdmMle::profile_likelihood(
+  all_profiles[[counter]] = xsdm::profile_likelihood(
                               profile_parameter=pnames[counter],
                               increment_left=linc[counter],
                               increment_right=rinc[counter],

@@ -65,14 +65,22 @@ profile_one_side_ <- function(
     ctrl <- base_control
     if (!is.null(invh_lt)) ctrl$invhessian.lt <- invh_lt
 
+    # Use the pure-C++ XPtr factory (same one optimize_likelihood() uses).
+    # The legacy R-callback factory `make_loglik_math_xptr()` does not
+    # propagate `free_names` through the ucminfcpp -> loglik_math() boundary,
+    # which makes every profile_likelihood() step error out with
+    # "param_vector must have names". Switching to make_loglik_math_xptr_cpp
+    # both fixes the bug and removes per-evaluation R-callback overhead.
     grad_ctrl <- resolve_xptr_grad_control_(ctrl)
-    loglik_xptr <- make_loglik_math_xptr(
-      env_dat = env_dat,
-      occ = occ,
-      mask = new_mask,
+    occ_i <- as.integer(occ)
+    loglik_xptr <- make_loglik_math_xptr_cpp(
+      env_dat     = env_dat,
+      occ         = occ_i,
+      mask        = new_mask,
+      free_names  = free_names,
       num_threads = num_threads,
-      grad = grad_ctrl$grad,
-      gradstep = grad_ctrl$gradstep
+      grad        = grad_ctrl$grad,
+      gradstep    = grad_ctrl$gradstep
     )
 
     res <- ucminfcpp::ucminf_xptr(

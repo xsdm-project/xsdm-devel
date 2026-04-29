@@ -204,9 +204,14 @@ get_start_parms_ <- function(ranges, numstarts = 100) {
   if (!requireNamespace("tibble", quietly = TRUE)) {
     stop("Package 'tibble' is required for this function. Install it with install.packages('tibble').")
   }
-  # Check parameters
+  # Check parameters. numstarts must be >= 3: we call
+  # pomp::sobol_design(..., nseq = numstarts - 1) and then append the
+  # data-driven center row. nseq = 0 segfaults pomp, nseq = 1 returns a
+  # vector instead of a matrix and downstream colnames<- fails.
   checkmate::assert_data_frame(ranges, any.missing = FALSE, ncols = 3)
-  checkmate::assert_number(numstarts)
+  checkmate::assert_integerish(numstarts, lower = 3, any.missing = FALSE,
+                               len = 1,
+                               .var.name = "numstarts")
   checkmate::assert_names(names(ranges),
                           must.include = c("lower", "center", "upper")
   )
@@ -227,6 +232,17 @@ get_start_parms_ <- function(ranges, numstarts = 100) {
     upper = upper,
     nseq = numstarts - 1
   )
+  # Defensive coercion: pomp::sobol_design has historically returned a
+  # bare numeric vector (instead of a data.frame) for very small nseq.
+  # The validation above already rules out nseq < 2, but the cast keeps
+  # us safe against future pomp behavior changes and produces a clearer
+  # error if the contract ever drifts.
+  if (!is.data.frame(startparms_math) && !is.matrix(startparms_math)) {
+    startparms_math <- as.data.frame(
+      matrix(startparms_math, nrow = numstarts - 1L,
+             dimnames = list(NULL, names(lower)))
+    )
+  }
   startparms_math <- rbind(startparms_math, center)
   tibble::as_tibble(startparms_math)
 }
@@ -276,7 +292,10 @@ start_parms <- function(env_dat,
                         num_starts = 100) {
   check_env_array(env_dat)
   checkmate::assert_numeric(breadth ,  null.ok = FALSE, )
-  checkmate::assert_number(num_starts)
+  # num_starts >= 3 is required: pomp::sobol_design (called by
+  # get_start_parms_) needs nseq = num_starts - 1 >= 2.
+  checkmate::assert_integerish(num_starts, lower = 3, any.missing = FALSE,
+                               len = 1)
   
   range_df <- get_range_df_(env_dat, breadth)
   

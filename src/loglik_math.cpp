@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-#include "loglik_math.hpp"
+#include "loglik_math.h"
 
 // Forward-declare the canonical-vector assembler from math_to_bio.cpp.
 Rcpp::NumericVector build_canonical_param_vector_cpp(
@@ -36,7 +36,6 @@ Rcpp::NumericVector build_canonical_param_vector_cpp(
 //' @param num_threads Integer; 0 leaves the RcppParallel default.
 //'
 //' @returns A scalar double.
-//' @export
 // [[Rcpp::export]]
 double loglik_math_cpp(
     Rcpp::NumericVector param_vector,

@@ -43,6 +43,13 @@
 #' if \code{negative} is TRUE).
 #' @export
 #'
+#' @section Implementation:
+#' This is a thin R wrapper around the C++ implementation
+#' \code{loglik_math_cpp}; the optimizer hot path is pure C++. A pure-R
+#' reference, \code{loglik_math_r}, is kept internal to the package and is
+#' used only by the parity tests in
+#' \code{tests/testthat/test-loglik_math_r_vs_cpp.R}.
+#'
 #' @details
 #' Optimizing the likelihood and profiling requires conventions for transforming
 #' parameters from unconstrained spaces to the constrained space of possible
@@ -127,29 +134,25 @@ loglik_math <- function(param_vector,
                         mask = NULL,
                         num_threads = RcppParallel::defaultNumThreads(),
                         negative = TRUE) {
+  # Input validation (kept in R so the user-facing error messages and
+  # checkmate-style asserts continue to match the historical API surface;
+  # the math itself runs entirely in C++ via `loglik_math_cpp`).
 
-  # Validate inputs for modeling function --------------------------------------
-  # occ: must be either a logical vector (TRUE/FALSE) with no NAs or a numeric
-  # or integer  vector containing only 0 and 1 with no NA
-
-  # Using a disjunctive assert so either condition is acceptable
   checkmate::assert(
     checkmate::check_logical(occ, any.missing = FALSE),
     checkmate::check_integerish(occ, lower = 0, upper = 1, any.missing = FALSE),
     .var.name = "occ"
   )
 
-  # env_dat: must be a 3-dimensional array (n_loc x n_time x p) with no NAs.
   check_env_array(env_dat)
 
-  # param_vector: numeric vector (length >= 1) with no missing values.
   param_vector <- unlist(param_vector)
   checkmate::assert_vector(param_vector, any.missing = FALSE)
   p <- dim(env_dat)[3]
 
-  # When param_vector arrives unnamed (e.g. from a C++ optimizer callback),
-  # assign the canonical free-parameter names so that create_param_vector_masked
-  # can validate and overlay them correctly.
+  # When `param_vector` arrives unnamed (e.g. from a C++ optimizer callback),
+  # assign canonical free-parameter names so the C++ side can validate and
+  # overlay them correctly.
   if (is.null(names(param_vector))) {
     all_canonical <- names(make_mask_names(p))
     free_names    <- if (!is.null(mask)) setdiff(all_canonical, names(mask)) else all_canonical
@@ -165,42 +168,12 @@ loglik_math <- function(param_vector,
     }
   }
 
-  param_vector <- create_param_vector_masked(param_vector, mask, p)
-
-  # Prepare parameters from math scale to biological scale----------------------
-  param_list <- math_to_bio(param_vector)
-
-  # Now validate biological parameters (mu, sigltil, sigrtil, ctil, pd)---------
-  checkmate::assert_numeric(param_list$mu, any.missing = FALSE, min.len = 1)
-  checkmate::assert_numeric(param_list$sigltil,
-                            any.missing = FALSE,
-                            min.len = 1)
-  checkmate::assert_numeric(param_list$sigrtil,
-                            any.missing = FALSE,
-                            min.len = 1)
-  checkmate::assert_numeric(param_list$ctil, any.missing = FALSE, len = 1)
-  checkmate::assert_numeric(param_list$pd, any.missing = FALSE, len = 1)
-
-  res <- loglik_bio(
-      env_dat = env_dat,
-      occ = occ,
-      mu = param_list$mu,
-      sigltil = param_list$sigltil,
-      sigrtil = param_list$sigrtil,
-      ctil = param_list$ctil,
-      pd = param_list$pd,
-      o_mat = param_list$o_mat,
-      num_threads = num_threads
-    )
-
-
-
-  # Flag to return negative or positive values. We invert the function
-  # (i. e. returns negative) when want to maximize. Minimize is the standard
-  # behavior of the ucminfcpp optimizer that we use in this package
-  if(!negative) {
-    res
-  } else {
-    -res
-  }
+  loglik_math_cpp(
+    param_vector = param_vector,
+    env_dat      = env_dat,
+    occ          = as.integer(occ),
+    mask         = mask,
+    negative     = isTRUE(negative),
+    num_threads  = as.integer(num_threads)
+  )
 }

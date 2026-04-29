@@ -1,4 +1,4 @@
-// src/expm_skew.hpp
+// src/expm_skew.h
 //
 // Matrix exponential of a real skew-symmetric p x p matrix S = L - L^T,
 // where L is the strictly-lower-triangular matrix whose entries are taken

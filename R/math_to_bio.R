@@ -40,6 +40,10 @@
 #' For \code{p = 1} there are no \code{o_par} entries; the orthogonal matrix
 #' is simply a 1-by-1 identity.
 #'
+#' This is a thin R wrapper around the internal C++ implementation
+#' \code{xsdm:::.math_to_bio_cpp}. The pre-port pure-R implementation is
+#' preserved internally as \code{xsdm:::math_to_bio_r} for parity testing.
+#'
 #' @seealso \code{\link{make_mask_names}}, \code{\link{num_par}},
 #'   \code{\link{num_env_var}}, \code{\link{loglik_math}},
 #'   \code{\link{bio_to_math}}
@@ -59,18 +63,21 @@
 #' # For p = 2 (includes o_par1) -- using the shipped example vector
 #' math_to_bio(examples$par_vec)
 math_to_bio <- function(param_vector) {
-  # ---- Validate input structure ----
-  checkmate::assert_numeric(param_vector,
-                            names = "named",
-                            any.missing = FALSE,
-                            min.len = 5  # smallest possible length (p = 1)
+  # R-side validation preserves the historical checkmate-style error
+  # messages (which the existing test suite asserts against). The
+  # numeric transformations and orthogonal-matrix construction are
+  # then delegated to the internal C++ kernel
+  # `xsdm:::.math_to_bio_cpp`.
+  checkmate::assert_numeric(
+    param_vector,
+    names = "named",
+    any.missing = FALSE,
+    min.len = 5  # smallest possible length (p = 1)
   )
-  
-  # Infer p from the length
+
   n <- length(param_vector)
-  p <- num_env_var(n)  # will error if n is not a valid num_par(p)
-  
-  # Verify that names exactly match the canonical order (ignoring attribute differences)
+  p <- num_env_var(n)  # errors if n is not a valid num_par(p)
+
   expected_names <- names(make_mask_names(p))
   if (!identical(names(param_vector), expected_names)) {
     stop(
@@ -79,24 +86,9 @@ math_to_bio <- function(param_vector) {
       "Received: ", paste(names(param_vector), collapse = ", ")
     )
   }
-  param_vector <- unlist(param_vector)
-  # ---- Extract components using canonical names ----
-  mu       <- param_vector[grep("^mu[0-9]+$", names(param_vector))] |> as.numeric()
-  sigltil  <- param_vector[grep("^sigltil", names(param_vector))]   |> exp() |> as.numeric()
-  sigrtil  <- param_vector[grep("^sigrtil", names(param_vector))]   |> exp() |> as.numeric()
-  ctil     <- param_vector[grep("^ctil", names(param_vector))]      |> as.numeric()
-  pd       <- param_vector[grep("^pd", names(param_vector))]        |> as.numeric() |> expit()
-  o_par    <- param_vector[grep("^o_par", names(param_vector))]     |> as.numeric()
-  
-  # For p=1, o_par is empty; build_orthogonal_matrix(NULL) returns 1x1 identity
-  o_mat <- build_orthogonal_matrix(if (length(o_par) == 0) NULL else o_par)
-  
-  list(
-    mu      = mu,
-    sigltil = sigltil,
-    sigrtil = sigrtil,
-    ctil    = ctil,
-    pd      = pd,
-    o_mat   = o_mat
+
+  .math_to_bio_cpp(
+    as.numeric(unlist(param_vector)) |>
+      stats::setNames(names(param_vector))
   )
 }

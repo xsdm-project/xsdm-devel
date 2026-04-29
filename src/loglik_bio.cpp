@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "loglik_bio.hpp"
+#include "loglik_bio.h"
 
 //' Pure-C++ log-likelihood for the xsdm model (biological-scale parameters)
 //'
@@ -30,7 +30,6 @@
 //' @param num_threads Number of threads for the inner xtensor kernel
 //'   (0 = RcppParallel default).
 //' @return Scalar log-likelihood.
-//' @export
 // [[Rcpp::export]]
 double loglik_bio_cpp(
     Rcpp::NumericVector env_dat_vec,
