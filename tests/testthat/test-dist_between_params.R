@@ -90,7 +90,7 @@ test_that("dist_between_params: basic structure, correctness,
   pd <- runif(1)
   p2 <- list(mu = mu, sigltil = sigltil, sigrtil = sigrtil, ctil = ctil, pd = pd, o_mat = o_mat)
   
-  res_slow <- xsdm:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
+  res_slow <- xsdm:::distance_between_params_r(p1, p2, GiveClosestRep = TRUE)
   res_fast <- dist_between_params(p1, p2, give_closest_rep = TRUE)
   expect_equal(res_slow$distance, res_fast$distance, tolerance = 1e-12)
   expect_equal(res_slow$representative$mu, res_fast$representative$mu)
@@ -124,7 +124,7 @@ test_that("dist_between_params: basic structure, correctness,
   pd <- runif(1)
   p2 <- list(mu = mu, sigltil = sigltil, sigrtil = sigrtil, ctil = ctil, pd = pd, o_mat = o_mat)
   
-  res_slow <- xsdm:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
+  res_slow <- xsdm:::distance_between_params_r(p1, p2, GiveClosestRep = TRUE)
   res_fast <- dist_between_params(p1, p2, give_closest_rep = TRUE)
   expect_equal(res_slow$distance, res_fast$distance, tolerance = 1e-12)
   expect_equal(res_slow$representative$mu, res_fast$representative$mu)
@@ -323,7 +323,7 @@ test_that("dist_between_params", {
   p2 <- list(mu = runif(3), sigltil = runif(3), sigrtil = runif(3),
              ctil = rnorm(1), pd = runif(1), o_mat = o2)
   
-  res_slow <- xsdm:::distance_between_params(p1, p2, GiveClosestRep = TRUE)
+  res_slow <- xsdm:::distance_between_params_r(p1, p2, GiveClosestRep = TRUE)
   res_fast <- dist_between_params(p1, p2, give_closest_rep = TRUE)
   expect_equal(res_slow$distance, res_fast$distance, tolerance = 1e-12)
   expect_equal(res_slow$representative$o_mat, res_fast$representative$o_mat,

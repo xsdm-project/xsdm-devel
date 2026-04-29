@@ -1,6 +1,6 @@
 library(testthat)
 
-test_that("tests for the function distance_between_params", {
+test_that("tests for the function distance_between_params_r", {
   # generate some example inputs
   ang <- -46 * pi / 180
   o_mat1 <- matrix(c(cos(ang), sin(ang), -sin(ang), cos(ang)), 2, 2)
@@ -18,8 +18,8 @@ test_that("tests for the function distance_between_params", {
   p2 <- list(mu = mu, ctil = ctil, pd = pd, o_mat = o_mat2, sigltil = sigltil2, sigrtil = sigrtil2)
 
   # check format
-  res1 <- xsdm:::distance_between_params(p1, p2, FALSE)
-  res2 <- xsdm:::distance_between_params(p1, p2, TRUE)
+  res1 <- xsdm:::distance_between_params_r(p1, p2, FALSE)
+  res2 <- xsdm:::distance_between_params_r(p1, p2, TRUE)
   expect_equal(class(res1), "numeric")
   expect_equal(length(res1), 1)
   expect_equal(class(res2), "list")
@@ -39,7 +39,7 @@ test_that("tests for the function distance_between_params", {
   p2$mu <- c(1, 1)
   p2$ctil <- 3
   p2$pd <- .1
-  res2 <- xsdm:::distance_between_params(p1, p2, TRUE)
+  res2 <- xsdm:::distance_between_params_r(p1, p2, TRUE)
   expect_equal(res2$distance, sqrt(res1^2 + 1 + 1 + (10 - 3)^2 + (.98 - .1)^2))
 
   # ANGEL to consider adding some more tests

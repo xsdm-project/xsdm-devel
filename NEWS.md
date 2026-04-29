@@ -33,10 +33,23 @@ First public release.
   | `math_to_bio` | `xsdm:::math_to_bio_r` |
   | `create_param_vector_masked` | `xsdm:::create_param_vector_masked_r` |
   | `like_neg_ltsgr` | `xsdm:::like_neg_ltsgr_r` |
+  | `dist_between_params` | `xsdm:::dist_between_params_r` |
 
 * `like_neg_ltsgr_cpp` is no longer exported; it remains as an unexported
   back-compat alias (`xsdm:::like_neg_ltsgr_cpp`) that forwards to
   `like_neg_ltsgr`. New code should call `like_neg_ltsgr` directly.
+
+* `dist_between_params()` is now backed by a pure-C++ implementation in
+  `src/dist_between_params.cpp` that builds the pairing cost matrix and
+  solves the linear sum assignment problem via a clean-room Hungarian /
+  Kuhn--Munkres routine (O(n^3) potentials variant from Kuhn 1955,
+  Munkres 1957, Jonker & Volgenant 1987). No code is taken from the
+  `clue` package, avoiding the GPL-2 / AGPL-3 licence mismatch. The
+  pure-R reference `xsdm:::dist_between_params_r` continues to call
+  `clue::solve_LSAP()` and is used by the parity tests in
+  `tests/testthat/test-dist_between_params_r_vs_cpp.R`. The legacy
+  brute-force reference `distance_between_params()` is also preserved
+  (non-exported) as `xsdm:::distance_between_params_r`.
 
 ## Validation & robustness
 
