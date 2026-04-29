@@ -79,6 +79,7 @@ University of Kansas}
 
 % --- start the doc ---
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 <<setup, include=FALSE>>=
 knitr::opts_chunk$set(

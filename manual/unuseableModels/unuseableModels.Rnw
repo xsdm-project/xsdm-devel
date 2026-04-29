@@ -109,10 +109,14 @@ of its genus, growing up to 108cm in total length.
 
 We start by loading the data:
 <<bring_in_the_data>>=
-env_array = readRDS("ophisaurus_ventralis_env.Rds")
+library(xsdm)
+env_array <-  example_2$env_array
+
+#We divide by 100 to get the correct units in the example
+env_array <-  example_2$env_array/100
 dim(env_array)
 dimnames(env_array)[[3]]
-occ = readRDS("ophisaurus_ventralis_occ.Rds")
+occ <-  example_2$occ_vec
 length(occ)
 @
 %ANGEL: Once these data are in the package, the above needs to be changed. 
@@ -154,15 +158,20 @@ models = matrix(c(1,0,0,0,0,0,
 all_model_results = list()
 for (i in 1:nrow(models)) 
 {
-  env_dat = env_array[,,models[i,]==1,drop=FALSE]
-  starts = xsdm::start_parms(env_dat,num_starts=25)
-  all_optim_results = list()
+  print(i)
+  env_dat <-  env_array[ , , models[i,]==1, drop = FALSE]
+  starts <-  xsdm::start_parms(env_dat,num_starts=25)
+  all_optim_results <-  list()
   for (j in 1:nrow(starts)) 
   {
-    all_optim_results[[j]] = optim(par=starts[j,],fn=xsdm::loglik_math, 
-                                   method="BFGS",
-                                   env_dat=env_dat, occ=occ,negative=TRUE,
-                                   control=list(trace=0))
+    all_optim_results[[j]] <-  optim(par = starts[j,],
+                                   fn = xsdm::loglik_math, 
+                                   method = "BFGS",
+                                   env_dat = env_dat,
+                                   occ = occ,
+                                   negative=TRUE,
+                                   control = list(trace=0)
+                                   )
   }
   all_model_results[[i]] = all_optim_results
 }
@@ -172,9 +181,9 @@ for (i in 1:nrow(models))
 <<rank_optim_results>>=
 for (i in 1:length(all_model_results))
 {
-  values = sapply(X=all_model_results[[i]], FUN=function(x){x$value})
-  inds = order(values)
-  all_model_results[[i]] = all_model_results[[i]][inds]
+  values <-  sapply(X = all_model_results[[i]], FUN=function(x){x$value})
+  inds <-  order(values)
+  all_model_results[[i]] <-  all_model_results[[i]][inds]
 }
 @
 

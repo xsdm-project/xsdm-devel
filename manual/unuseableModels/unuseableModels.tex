@@ -1,0 +1,116 @@
+\documentclass[11pt]{article}
+
+% --- Packages for math & formatting ---
+\usepackage{amsmath, amssymb, amsthm} % advanced math
+\usepackage{listings}                  % code formatting
+\usepackage{xcolor}                     % color for code
+\usepackage{graphicx}                   % include figures
+\usepackage{hyperref}                   % clickable links
+\usepackage{authblk}                    % author affiliations
+\usepackage[margin=1in]{geometry}
+\usepackage{fvextra} % better verbatim with line wrapping
+\usepackage{float}
+
+% --- Configure code display ---
+\lstset{
+  language=R,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  breaklines=true,
+  captionpos=b
+}
+
+% --- Theorem environment ---
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% --- New commands ---
+\newcommand*\mean[1]{\overline{#1}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}}
+\newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}}
+
+% --- Header material ---
+\title{Unusable models: when a model does not have a maximum likelihood}
+\author[1]{Daniel C. Reuman}
+\author[2]{Angel Luis Robles Fern\'{a}ndez}
+\affil[1]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
+University of Kansas}
+\affil[2]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
+University of Kansas}
+\date{}
+
+% --- Make Sweave code/output blocks obey text margins and wrap nicely ---
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+% Optional: if you have Scode blocks too
+\DefineVerbatimEnvironment{Scode}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+% --- start the doc ---
+\usepackage{Sweave}
+\begin{document}
+\input{unuseableModels-concordance}
+
+\begin{Schunk}
+\begin{Sinput}
+> knitr::opts_chunk$set(
++   echo=TRUE,
++   message=FALSE,
++   warning=FALSE,
++   cache=FALSE
++ )
+\end{Sinput}
+\end{Schunk}
+
+\maketitle
+
+\begin{abstract}
+\noindent When an xsdm model does not have a maximum likelihood, it should not be used. 
+This document shows an example of how that can occur, and how to diagnose it. 
+Along the way, another type of boundary model (in addition to the $p_d=1$ case
+described elsewhere) is 
+illustrated, where sigma parameters are set to infinity, corresponding to 
+insensitivity of annual net growth to environmental changes in a certain direction
+in environment space. 
+\end{abstract}
+
+\noindent The Eastern glass lizard, \emph{Ophisaurus ventralis}, is a legless lizard
+found in the southeastern United States. It is the longest and heaviest species 
+of its genus, growing up to 108cm in total length. 
+
+We start by loading the data:
+\begin{Schunk}
+\begin{Sinput}
+> env_array = readRDS("ophisaurus_ventralis_env.Rds")
