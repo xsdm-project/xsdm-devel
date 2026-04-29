@@ -17,8 +17,8 @@ test_that(".math_to_bio_cpp: matches R on p = 1 (no o_par)", {
   expect_equal(cpp$o_mat,   ref$o_mat,   tolerance = 1e-14)
 })
 
-test_that(".math_to_bio_cpp: matches R on examples$par_vec (p = 2)", {
-  pv  <- examples$par_vec
+test_that(".math_to_bio_cpp: matches R on example_1$par_vec (p = 2)", {
+  pv  <- example_1$par_vec
   ref <- math_to_bio(pv)
   cpp <- xsdm:::.math_to_bio_cpp(pv)
 
@@ -47,7 +47,7 @@ test_that(".math_to_bio_cpp: matches R on random p = 3 draws", {
 })
 
 test_that(".math_to_bio_cpp: errors on out-of-order names", {
-  pv <- examples$par_vec
+  pv <- example_1$par_vec
   perm <- pv[c(2, 1, 3:length(pv))]
   expect_error(xsdm:::.math_to_bio_cpp(perm), "canonical order")
 })

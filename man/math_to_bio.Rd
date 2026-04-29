@@ -63,7 +63,7 @@ math_vec[] <- c(11, log(1.2), log(0.8), -6.7, -1.13)
 math_to_bio(math_vec)
 
 # For p = 2 (includes o_par1) -- using the shipped example vector
-math_to_bio(examples$par_vec)
+math_to_bio(example_1$par_vec)
 }
 \seealso{
 \code{\link{make_mask_names}}, \code{\link{num_par}},

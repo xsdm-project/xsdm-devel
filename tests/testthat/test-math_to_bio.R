@@ -24,7 +24,7 @@ test_that("math_to_bio converts p=1 correctly (no o_par)", {
 })
 
 test_that("math_to_bio converts p=2 correctly (with o_par1)", {
-  math_vec <- examples$optim_par_vec
+  math_vec <- example_1$optim_par_vec
   bio <- math_to_bio(math_vec)
   
   expect_type(bio, "list")
@@ -96,7 +96,7 @@ test_that("math_to_bio errors on malformed inputs", {
 test_that("math_to_bio works with create_param_vector_masked output", {
   p <- 2
   full <- create_param_vector_masked(
-    param_vector = examples$optim_par_vec,
+    param_vector = example_1$optim_par_vec,
     mask = NULL,
     p = p
   )

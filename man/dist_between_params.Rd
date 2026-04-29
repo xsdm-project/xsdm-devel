@@ -49,8 +49,8 @@ by the parity tests in \code{tests/testthat/test-dist_between_params_r_vs_cpp.R}
 }
 \examples{
 # Using lists on the biological scale
-par_list <- math_to_bio(examples$optim_par_vec)
-par_list_equivalent <- math_to_bio(examples$optim_par_vec_equivalent)
+par_list <- math_to_bio(example_1$optim_par_vec)
+par_list_equivalent <- math_to_bio(example_1$optim_par_vec_equivalent)
 dist_between_params(
   p1 = par_list,
   p2 = par_list_equivalent
@@ -58,8 +58,8 @@ dist_between_params(
 
 # Using vectors on the math scale
 dist_between_params(
-  p1 = examples$optim_par_vec,
-  p2 = examples$optim_par_vec_equivalent
+  p1 = example_1$optim_par_vec,
+  p2 = example_1$optim_par_vec_equivalent
 )
 }
 \references{

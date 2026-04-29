@@ -190,9 +190,9 @@ profile_one_side_ <- function(
 #'  num_steps_left = 1L, # one iteration on the left
 #'  num_steps_right = 1L, # one iteration on the right
 #'  alpha = 0.95,
-#'  optim_param_vector = examples$optim_par_vec,
-#'  env_dat = examples$env_array,
-#'  occ = examples$occ_vec,
+#'  optim_param_vector = example_1$optim_par_vec,
+#'  env_dat = example_1$env_array,
+#'  occ = example_1$occ_vec,
 #'  num_threads = 1L, # keep it fast and deterministic
 #'  control = list(maxeval = 20),
 #'  verbose = FALSE
