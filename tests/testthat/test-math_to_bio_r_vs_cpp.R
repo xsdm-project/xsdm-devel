@@ -25,8 +25,8 @@ expect_bio_equal <- function(a, b, tol) {
                unname(as.numeric(b$o_mat)), tolerance = tol)
 }
 
-test_that("math_to_bio: examples fixture parity (p = 2)", {
-  pv <- examples$par_vec
+test_that("math_to_bio: example_1 fixture parity (p = 2)", {
+  pv <- example_1$par_vec
   cpp <- math_to_bio(pv)
   r   <- xsdm:::math_to_bio_r(pv)
   expect_bio_equal(cpp, r, tol)

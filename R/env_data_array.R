@@ -12,10 +12,10 @@
 #' @export
 #'
 #' @examples
-#' bio1_ts <- terra::unwrap(examples$bio01)
-#' bio12_ts <- terra::unwrap(examples$bio12)
+#' bio1_ts <- terra::unwrap(example_1$bio01)
+#' bio12_ts <- terra::unwrap(example_1$bio12)
 #' env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
-#' occ <- examples$occ_df[1:5, ]
+#' occ <- example_1$occ_df[1:5, ]
 #' # Return array correspoding to each presence absence provided
 #' env_data_array(env_data, occ)
 #' # Return all the environmental in the rasters

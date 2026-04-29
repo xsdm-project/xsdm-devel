@@ -283,7 +283,7 @@ get_start_parms_ <- function(ranges, numstarts = 100) {
 #' start parameters.
 #'
 #' @examples
-#' env_dat <- examples$env_array[examples$occ_vec == 1, , ]
+#' env_dat <- example_1$env_array[example_1$occ_vec == 1, , ]
 #' start_parms(env_dat)
 #' start_parms(env_dat, mask = c(mu2 = 5, pd = 1))
 start_parms <- function(env_dat,

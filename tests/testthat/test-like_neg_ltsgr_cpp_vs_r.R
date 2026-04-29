@@ -7,8 +7,8 @@ library(testthat)
 
 test_that("R and C++ likelihood workers are numerically identical on param_table_example", {
   # Load packaged parameter table
-  data("examples", package = "xsdm")
-  param_table_example <- examples$par_table
+  data("example_1", package = "xsdm")
+  param_table_example <- example_1$par_table
 
   set.seed(123)
 
@@ -37,14 +37,14 @@ test_that("R and C++ likelihood workers are numerically identical on param_table
 
 
     # Compute outputs
-    r_out <- xsdm:::like_neg_ltsgr_r(examples$env_array, mu, sigltil, sigrtil, o_mat)
-    cpp_out <- xsdm:::like_neg_ltsgr_cpp(examples$env_array, mu, sigltil, sigrtil, o_mat)
+    r_out <- xsdm:::like_neg_ltsgr_r(example_1$env_array, mu, sigltil, sigrtil, o_mat)
+    cpp_out <- xsdm:::like_neg_ltsgr_cpp(example_1$env_array, mu, sigltil, sigrtil, o_mat)
 
     # Output should be a numeric vector of length equal to number of locations
     expect_type(r_out, "double")
     expect_type(cpp_out, "double")
-    expect_equal(length(r_out), dim(examples$env_array)[1])
-    expect_equal(length(cpp_out), dim(examples$env_array)[1])
+    expect_equal(length(r_out), dim(example_1$env_array)[1])
+    expect_equal(length(cpp_out), dim(example_1$env_array)[1])
 
     # Parity check with tight tolerance
     expect_equal(cpp_out, r_out,

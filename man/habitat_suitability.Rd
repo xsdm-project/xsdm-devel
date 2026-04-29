@@ -84,12 +84,12 @@ the function suitable for continental or global rasters.
 }
 \examples{
 \donttest{
-data("examples", package = "xsdm")
-bio01 <- terra::unwrap(examples$bio01) / 100
-bio12 <- terra::unwrap(examples$bio12) / 100
+data("example_1", package = "xsdm")
+bio01 <- terra::unwrap(example_1$bio01) / 100
+bio12 <- terra::unwrap(example_1$bio12) / 100
 env_list <- list(bio01 = bio01, bio12 = bio12)
 suit <- habitat_suitability(
-  param_list  = examples$par_list,
+  param_list  = example_1$par_list,
   env_list    = env_list,
   return_prob = TRUE
 )

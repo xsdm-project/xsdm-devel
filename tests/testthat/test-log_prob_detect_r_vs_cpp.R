@@ -18,24 +18,24 @@ draw_bio <- function(p, seed) {
   )
 }
 
-test_that("log_prob_detect vs log_prob_detect_r: examples fixture", {
+test_that("log_prob_detect vs log_prob_detect_r: example_1 fixture", {
   v_cpp <- log_prob_detect(
-    env_dat = examples$env_array,
-    mu      = examples$par_list$mu,
-    sigltil = examples$par_list$sigltil,
-    sigrtil = examples$par_list$sigrtil,
-    o_mat   = examples$par_list$o_mat,
-    ctil    = examples$par_list$ctil,
-    pd      = examples$par_list$pd
+    env_dat = example_1$env_array,
+    mu      = example_1$par_list$mu,
+    sigltil = example_1$par_list$sigltil,
+    sigrtil = example_1$par_list$sigrtil,
+    o_mat   = example_1$par_list$o_mat,
+    ctil    = example_1$par_list$ctil,
+    pd      = example_1$par_list$pd
   )
   v_r <- xsdm:::log_prob_detect_r(
-    env_dat = examples$env_array,
-    mu      = examples$par_list$mu,
-    sigltil = examples$par_list$sigltil,
-    sigrtil = examples$par_list$sigrtil,
-    o_mat   = examples$par_list$o_mat,
-    ctil    = examples$par_list$ctil,
-    pd      = examples$par_list$pd
+    env_dat = example_1$env_array,
+    mu      = example_1$par_list$mu,
+    sigltil = example_1$par_list$sigltil,
+    sigrtil = example_1$par_list$sigrtil,
+    o_mat   = example_1$par_list$o_mat,
+    ctil    = example_1$par_list$ctil,
+    pd      = example_1$par_list$pd
   )
   expect_equal(v_cpp, v_r, tolerance = TOL)
 })

@@ -69,14 +69,14 @@ compiler (e.g. Rtools on Windows, Xcode CLT on macOS) is needed.
 
 ## Quick start
 
-The package ships with a built-in dataset (`examples`) containing all objects
+The package ships with a built-in dataset (`example_1`) containing all objects
 needed to run a complete workflow without loading external files.
 
 ```{r quickstart}
 library(xsdm)
 
-# The examples dataset is a named list bundling all example objects.
-names(examples)
+# The example_1 dataset is a named list bundling all example objects.
+names(example_1)
 #> [1] "par_vec"                  "bio01"
 #> [3] "bio12"                    "env_array"
 #> [5] "occ_df"                   "occ_vec"
@@ -86,8 +86,8 @@ names(examples)
 
 # Fit the model from the pre-built environmental array
 result <- optimize_likelihood(
-  env_dat    = examples$env_array,
-  occ        = examples$occ_vec,
+  env_dat    = example_1$env_array,
+  occ        = example_1$occ_vec,
   num_starts = 10L
 )
 
@@ -118,8 +118,8 @@ library(terra)
 
 # The rasters are stored as packed SpatRasters to minimise package size.
 # Unpack them before use.
-bio1_ts  <- terra::unwrap(examples$bio01)
-bio12_ts <- terra::unwrap(examples$bio12)
+bio1_ts  <- terra::unwrap(example_1$bio01)
+bio12_ts <- terra::unwrap(example_1$bio12)
 
 # Scale to interpretable units: CHELSA bio1 is in 0.1 °C → convert to °C,
 # and bio12 is in kg/m² → scale to match temperature magnitude.
@@ -137,12 +137,12 @@ given in a presence/absence data frame, returning a 3-D array
 # Named list of raster time series (names become the variable labels)
 env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
 
-# examples$occ_df has columns: name, x (lon), y (lat), presence (0/1)
-env_dat <- env_data_array(env_data, occ = examples$occ_df)
+# example_1$occ_df has columns: name, x (lon), y (lat), presence (0/1)
+env_dat <- env_data_array(env_data, occ = example_1$occ_df)
 dim(env_dat)
 #> [1] 1000   39    2    (locations × time-steps × variables)
 
-occ <- examples$occ_df$presence
+occ <- example_1$occ_df$presence
 ```
 
 ### 3 · Fit the model
@@ -268,8 +268,8 @@ find the equivalence-class representative of `p1` closest to `p2`:
 ```{r distance}
 # Both representations belong to the same equivalence class → distance ≈ 0
 dist_between_params(
-  p1 = examples$optim_par_vec,
-  p2 = examples$optim_par_vec_equivalent
+  p1 = example_1$optim_par_vec,
+  p2 = example_1$optim_par_vec_equivalent
 )
 ```
 

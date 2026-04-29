@@ -8,10 +8,10 @@
 
 TOL <- 1e-6
 
-test_that("loglik_math vs loglik_math_r: examples fixture, both `negative` flags", {
-  pv      <- examples$par_vec
-  env_dat <- examples$env_array
-  occ     <- as.integer(examples$occ_vec)
+test_that("loglik_math vs loglik_math_r: example_1 fixture, both `negative` flags", {
+  pv      <- example_1$par_vec
+  env_dat <- example_1$env_array
+  occ     <- as.integer(example_1$occ_vec)
 
   for (neg in c(TRUE, FALSE)) {
     cpp_val <- loglik_math(pv, env_dat, occ, negative = neg)

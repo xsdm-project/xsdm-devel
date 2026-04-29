@@ -26,7 +26,7 @@ a likelihood that combines:
 * **presence / absence** records on the same locations.
 
 This vignette walks through the complete workflow on the bundled
-`examples` fixture: build a starting design, run multi-start MLE, inspect
+`example_1` fixture: build a starting design, run multi-start MLE, inspect
 results, and project them spatially.
 
 ## Setup
@@ -34,9 +34,9 @@ results, and project them spatially.
 ```{r setup}
 library(xsdm)
 
-# The examples object ships with the package and provides a small,
+# The example_1 object ships with the package and provides a small,
 # fully-formed environmental array + occurrence vector.
-str(examples, max.level = 1)
+str(example_1, max.level = 1)
 ```
 
 ## 1. Multi-start maximum-likelihood estimation
@@ -48,8 +48,8 @@ both the per-start solutions and the best one.
 
 ```{r optimize}
 fit <- optimize_likelihood(
-  env_dat     = examples$env_array,
-  occ         = examples$occ_vec,
+  env_dat     = example_1$env_array,
+  occ         = example_1$occ_vec,
   num_starts  = 8L,        # use 50-200 for real analyses
   parallel    = FALSE,     # set TRUE on multi-core machines
   control     = list(maxeval = 200),
@@ -68,8 +68,8 @@ fit$best$full_par
 # Skipped at vignette-build time because terra requires a raster on disk.
 hs <- vsp(
   param_list = interpret_parameters(fit$best$full_par,
-                                    p = dim(examples$env_array)[3]),
-  env_layers = list(examples$bio01, examples$bio12)
+                                    p = dim(example_1$env_array)[3]),
+  env_layers = list(example_1$bio01, example_1$bio12)
 )
 ```
 
@@ -78,8 +78,8 @@ hs <- vsp(
 ```{r profile, eval = FALSE}
 # Profile the detection probability `pd` around the MLE.
 prof <- profile_likelihood(
-  env_dat = examples$env_array,
-  occ     = examples$occ_vec,
+  env_dat = example_1$env_array,
+  occ     = example_1$occ_vec,
   param   = "pd",
   best    = fit$best$full_par,
   n_grid  = 7,

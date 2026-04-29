@@ -5,7 +5,7 @@ test_that("like_neg_ltsgr_r test for correct format of output", {
   mu <- c(11.433373, 5.046939)
   sigltil <- c(1.036834, 1.556083)
   sigrtil <- c(1.538972, 1.458738)
-  env_dat <- examples$env_array
+  env_dat <- example_1$env_array
   M <- xsdm:::like_neg_ltsgr_r(env_dat, mu, sigltil, sigrtil, o_mat)
   testthat::expect_equal(class(M), "numeric")
   testthat::expect_equal(length(M), 2000)

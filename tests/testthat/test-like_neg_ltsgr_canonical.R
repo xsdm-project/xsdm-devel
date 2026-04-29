@@ -16,19 +16,19 @@ test_that("like_neg_ltsgr is exported and like_neg_ltsgr_cpp is unexported", {
 
 test_that("canonical and alias return identical values", {
   out_canonical <- like_neg_ltsgr(
-    env_dat = examples$env_array,
-    mu      = examples$par_list$mu,
-    sigltil = examples$par_list$sigltil,
-    sigrtil = examples$par_list$sigrtil,
-    o_mat   = examples$par_list$o_mat,
+    env_dat = example_1$env_array,
+    mu      = example_1$par_list$mu,
+    sigltil = example_1$par_list$sigltil,
+    sigrtil = example_1$par_list$sigrtil,
+    o_mat   = example_1$par_list$o_mat,
     num_threads = 1L
   )
   out_alias <- xsdm:::like_neg_ltsgr_cpp(
-    env_dat = examples$env_array,
-    mu      = examples$par_list$mu,
-    sigltil = examples$par_list$sigltil,
-    sigrtil = examples$par_list$sigrtil,
-    o_mat   = examples$par_list$o_mat,
+    env_dat = example_1$env_array,
+    mu      = example_1$par_list$mu,
+    sigltil = example_1$par_list$sigltil,
+    sigrtil = example_1$par_list$sigrtil,
+    o_mat   = example_1$par_list$o_mat,
     num_threads = 1L
   )
   expect_identical(out_canonical, out_alias)

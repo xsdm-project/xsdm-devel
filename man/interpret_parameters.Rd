@@ -95,18 +95,18 @@ no units of their own.
 \dontrun{
   # Two-panel (presence vs non-detection) plot with auto-derived limits
   interpret_parameters(
-    examples$par_list,
+    example_1$par_list,
     plot_indices = c(1, 2),
-    env_dat      = examples$env_array,
-    occ          = examples$occ_vec
+    env_dat      = example_1$env_array,
+    occ          = example_1$occ_vec
   )
 
   # Narrower auto-derived window
   interpret_parameters(
-    examples$par_list,
+    example_1$par_list,
     plot_indices = c(1, 2),
-    env_dat      = examples$env_array,
-    occ          = examples$occ_vec,
+    env_dat      = example_1$env_array,
+    occ          = example_1$occ_vec,
     breadth      = 0.7
   )
 
