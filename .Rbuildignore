@@ -11,6 +11,9 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^scripts$
+^xsdm-release-readiness\.md$
+^xsdm-cpp-canonical-plan\.md$
 ^ReumanAnnularVirtualSpecies$
 ^ClaudeOutputs$
 ^src/.*\.dll$

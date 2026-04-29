@@ -9,7 +9,7 @@ test_that("like_neg_ltsgr_cpp covers p == 1 branch with real like_ltsg", {
   o_mat <- matrix(1, nrow = 1, ncol = 1)
 
   # Call the actual function
-  result <- like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
+  result <- xsdm:::like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
 
   # Assertions
   expect_type(result, "double")
@@ -35,7 +35,7 @@ test_that("like_neg_ltsgr_cpp handles Inf entries in sigltil and sigrtil", {
   # Case 1: sigltil = Inf, sigrtil finite
   sigl <- Inf
   sigr <- 1
-  res <- like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
+  res <- xsdm:::like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
   # Computation:
   # - dl_inv = 0, dr_inv = 1
   # - usym = max(0, dot_product) * 1
@@ -47,14 +47,14 @@ test_that("like_neg_ltsgr_cpp handles Inf entries in sigltil and sigrtil", {
   # Case 2: sigrtil = Inf, sigltil finite
   sigl <- 1
   sigr <- Inf
-  res <- like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
+  res <- xsdm:::like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
   # Only negative deviations matter, all positive => zero
   expect_equal(res, c(0, 0))
   
   # Case 3: both Inf -> zero
   sigl <- Inf
   sigr <- Inf
-  res <- like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
+  res <- xsdm:::like_neg_ltsgr_cpp(env_dat, mu, sigl, sigr, o_mat, num_threads = 1)
   expect_equal(res, c(0, 0))
   
   # ---- 2D case with mixed Inf ----
@@ -73,7 +73,7 @@ test_that("like_neg_ltsgr_cpp handles Inf entries in sigltil and sigrtil", {
   sigl <- c(1, Inf)   # var1: left=1; var2: left=Inf -> effectively only right matters
   sigr <- c(Inf, 1)   # var1: right=Inf -> left only; var2: right=1 -> right only
   
-  res <- like_neg_ltsgr_cpp(env_dat_2d, mu, sigl, sigr, o_mat, num_threads = 1)
+  res <- xsdm:::like_neg_ltsgr_cpp(env_dat_2d, mu, sigl, sigr, o_mat, num_threads = 1)
   # var1: only left branch (negative deviations) -> all positive => 0 contribution
   # var2: only right branch (positive deviations) -> values = (1,2) for loc1, (3,4) for loc2
   # => squares sum = 5 for loc1, 25 for loc2, divided by (2*2) = 1.25 and 6.25

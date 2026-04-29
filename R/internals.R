@@ -32,7 +32,7 @@ log_prob_detect_r <- function(env_dat,
   on.exit(RcppParallel::setThreadOptions(numThreads = old), add = TRUE)
   RcppParallel::setThreadOptions(numThreads = num_threads)
 
-  h <- like_neg_ltsgr_cpp(
+  h <- like_neg_ltsgr(
     env_dat = env_dat,
     mu = mu,
     sigltil = sigltil,
