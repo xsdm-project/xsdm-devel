@@ -10,6 +10,39 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// solve_lsap_cpp
+Rcpp::IntegerVector solve_lsap_cpp(Rcpp::NumericMatrix cost);
+RcppExport SEXP _xsdm_solve_lsap_cpp(SEXP costSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type cost(costSEXP);
+    rcpp_result_gen = Rcpp::wrap(solve_lsap_cpp(cost));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dist_between_params_cpp
+Rcpp::List dist_between_params_cpp(Rcpp::NumericVector mu1, Rcpp::NumericVector sigltil1, Rcpp::NumericVector sigrtil1, Rcpp::NumericMatrix o_mat1, double ctil1, double pd1, Rcpp::NumericVector mu2, Rcpp::NumericVector sigltil2, Rcpp::NumericVector sigrtil2, Rcpp::NumericMatrix o_mat2, double ctil2, double pd2);
+RcppExport SEXP _xsdm_dist_between_params_cpp(SEXP mu1SEXP, SEXP sigltil1SEXP, SEXP sigrtil1SEXP, SEXP o_mat1SEXP, SEXP ctil1SEXP, SEXP pd1SEXP, SEXP mu2SEXP, SEXP sigltil2SEXP, SEXP sigrtil2SEXP, SEXP o_mat2SEXP, SEXP ctil2SEXP, SEXP pd2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type mu1(mu1SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigltil1(sigltil1SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigrtil1(sigrtil1SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type o_mat1(o_mat1SEXP);
+    Rcpp::traits::input_parameter< double >::type ctil1(ctil1SEXP);
+    Rcpp::traits::input_parameter< double >::type pd1(pd1SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type mu2(mu2SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigltil2(sigltil2SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sigrtil2(sigrtil2SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type o_mat2(o_mat2SEXP);
+    Rcpp::traits::input_parameter< double >::type ctil2(ctil2SEXP);
+    Rcpp::traits::input_parameter< double >::type pd2(pd2SEXP);
+    rcpp_result_gen = Rcpp::wrap(dist_between_params_cpp(mu1, sigltil1, sigrtil1, o_mat1, ctil1, pd1, mu2, sigltil2, sigrtil2, o_mat2, ctil2, pd2));
+    return rcpp_result_gen;
+END_RCPP
+}
 // build_orthogonal_matrix_cpp
 Rcpp::NumericMatrix build_orthogonal_matrix_cpp(Rcpp::NumericVector entries);
 RcppExport SEXP _xsdm_build_orthogonal_matrix_cpp(SEXP entriesSEXP) {
@@ -153,6 +186,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_xsdm_solve_lsap_cpp", (DL_FUNC) &_xsdm_solve_lsap_cpp, 1},
+    {"_xsdm_dist_between_params_cpp", (DL_FUNC) &_xsdm_dist_between_params_cpp, 12},
     {"_xsdm_build_orthogonal_matrix_cpp", (DL_FUNC) &_xsdm_build_orthogonal_matrix_cpp, 1},
     {"_xsdm_like_ltsg", (DL_FUNC) &_xsdm_like_ltsg, 7},
     {"_xsdm_log_prob_detect_cpp", (DL_FUNC) &_xsdm_log_prob_detect_cpp, 10},

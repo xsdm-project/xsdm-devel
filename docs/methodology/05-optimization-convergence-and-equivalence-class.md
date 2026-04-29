@@ -126,7 +126,7 @@ fit <- optimize_likelihood(
 fit_canon <- canonicalize_solutions(fit)
 
 # Comparing to the truth:
-xsdm:::distance_between_params(
+dist_between_params(
   math_to_bio(fit_canon$best$par),
   math_to_bio(examples$par_vec)
 )

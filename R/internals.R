@@ -331,7 +331,7 @@ logit <- function(x) {
 #'
 #' Adapted from \pkg{gtools::permutations} (Bill Venables; extended by
 #' Gregory R. Warnes to handle \code{repeats.allowed}). Used internally
-#' by \code{distance_between_params} for the orthogonal-matrix
+#' by \code{distance_between_params_r} for the orthogonal-matrix
 #' equivalence-class search.
 #'
 #' @keywords internal
@@ -389,4 +389,188 @@ permutations <- function(n, r, v = 1:n, set = TRUE, repeats.allowed = FALSE) {
     }
   }
   sub(n, r, v[1:n])
+}
+
+# ---------------------------------------------------------------------------
+# Pure-R reference: dist_between_params
+#
+# Pre-port pure-R implementation of the Hungarian-accelerated parameter-space
+# distance. Kept here (non-exported) as the numerical reference against which
+# the C++ backend used by the canonical exported `dist_between_params` is
+# compared in tests/testthat/test-dist_between_params_r_vs_cpp.R. Relies on
+# the `clue` package for the LSAP solve; guarded with `requireNamespace` so
+# that `clue` can sit in `Suggests:` rather than `Imports:`.
+# ---------------------------------------------------------------------------
+
+#' Pure-R reference for \code{dist_between_params}
+#'
+#' @keywords internal
+#' @noRd
+dist_between_params_r <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
+  if (!requireNamespace("clue", quietly = TRUE)) {
+    stop("dist_between_params_r requires the 'clue' package. ",
+         "Install it with install.packages('clue').")
+  }
+
+  # --- basic input checks -----------------------------------------------
+  checkmate::assert_flag(give_closest_rep)
+  if (!((is.null(mask)) || (is.numeric(mask) && (sum(is.na(mask)) == 0)))) {
+    stop("mask must be NULL or a numeric vector with no missing values")
+  }
+  checkmate::assert_true(is.list(p1) || is.numeric(p1))
+  checkmate::assert_true(is.list(p2) || is.numeric(p2))
+
+  # --- math -> biological conversion ------------------------------------
+  if (is.numeric(p1)) {
+    checkmate::assert_integerish(sqrt(9 + 8 * (length(p1) + length(mask))))
+    p <- round((-5 + sqrt(9 + 8 * (length(p1) + length(mask)))) / 2)
+    checkmate::assert_true(setequal(c(names(mask), names(p1)),
+                                    names(make_mask_names(p))))
+    checkmate::assert_numeric(p1, any.missing = FALSE, finite = TRUE)
+    allnames <- names(make_mask_names(p))
+    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
+      c(allnames[grepl("^sig", allnames)], "pd")))
+    p1 <- math_to_bio(create_param_vector_masked(p1, mask, p))
+  }
+  if (is.numeric(p2)) {
+    checkmate::assert_integerish(sqrt(9 + 8 * (length(p2) + length(mask))))
+    p <- round((-5 + sqrt(9 + 8 * (length(p2) + length(mask)))) / 2)
+    checkmate::assert_true(setequal(c(names(mask), names(p2)),
+                                    names(make_mask_names(p))))
+    checkmate::assert_numeric(p2, any.missing = FALSE, finite = TRUE)
+    allnames <- names(make_mask_names(p))
+    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
+      c(allnames[grepl("^sig", allnames)], "pd")))
+    p2 <- math_to_bio(create_param_vector_masked(p2, mask, p))
+  }
+
+  # --- biological-scale checks -----------------------------------------
+  checkmate::assert_names(names(p1),
+    must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
+  checkmate::assert_numeric(p1$mu, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p1$sigltil, any.missing = FALSE)
+  checkmate::assert_numeric(p1$sigrtil, any.missing = FALSE)
+  checkmate::assert_numeric(p1$o_mat, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p1$ctil, finite = TRUE, any.missing = FALSE, len = 1)
+  checkmate::assert_numeric(p1$pd, finite = TRUE, any.missing = FALSE, len = 1)
+  p <- length(p1$mu)
+  checkmate::assert_true(length(p1$sigltil) == p)
+  checkmate::assert_true(length(p1$sigrtil) == p)
+  checkmate::assert_true(all(dim(p1$o_mat) == c(p, p)))
+
+  checkmate::assert_names(names(p2),
+    must.include = c("mu", "sigltil", "sigrtil", "ctil", "pd", "o_mat"))
+  checkmate::assert_numeric(p2$mu, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p2$sigltil, any.missing = FALSE)
+  checkmate::assert_numeric(p2$sigrtil, any.missing = FALSE)
+  checkmate::assert_numeric(p2$o_mat, finite = TRUE, any.missing = FALSE)
+  checkmate::assert_numeric(p2$ctil, finite = TRUE, any.missing = FALSE, len = 1)
+  checkmate::assert_numeric(p2$pd, finite = TRUE, any.missing = FALSE, len = 1)
+  checkmate::assert_true(length(p2$mu) == p)
+  checkmate::assert_true(length(p2$sigltil) == p)
+  checkmate::assert_true(length(p2$sigrtil) == p)
+  checkmate::assert_true(all(dim(p2$o_mat) == c(p, p)))
+
+  sigdistsq <- function(x, y) (1 / x - 1 / y) ^ 2
+
+  dd <- dim(p1$o_mat)[1]
+  cost <- matrix(NA_real_, dd, dd)
+  posneg <- matrix(NA_integer_, dd, dd)
+  for (cc2 in seq_len(dd)) {
+    for (cc1 in seq_len(dd)) {
+      pos <- sum((p2$o_mat[, cc2] - p1$o_mat[, cc1]) ^ 2) +
+        sigdistsq(p2$sigltil[cc2], p1$sigltil[cc1]) +
+        sigdistsq(p2$sigrtil[cc2], p1$sigrtil[cc1])
+      neg <- sum((p2$o_mat[, cc2] + p1$o_mat[, cc1]) ^ 2) +
+        sigdistsq(p2$sigltil[cc2], p1$sigrtil[cc1]) +
+        sigdistsq(p2$sigrtil[cc2], p1$sigltil[cc1])
+      cost[cc2, cc1] <- min(pos, neg)
+      posneg[cc2, cc1] <- if (neg < pos) -1L else 1L
+    }
+  }
+
+  perm <- clue::solve_LSAP(cost)
+  sq_dist_other_params <- sum((p1$mu - p2$mu) ^ 2) +
+    (p1$ctil - p2$ctil) ^ 2 +
+    (p1$pd - p2$pd) ^ 2
+
+  pairing <- cbind(seq_len(nrow(cost)), perm)
+  distance <- sqrt(sum(cost[pairing]) + sq_dist_other_params)
+  if (!give_closest_rep) {
+    return(distance)
+  }
+
+  perm_inv <- order(as.numeric(perm))
+  posnegs <- posneg[pairing]
+  posnegs <- posnegs[perm_inv]
+  flip <- (posnegs == -1)
+  rep_ec <- convert_equivalence_class(p1, flip = flip, perm = perm)
+  rep_out <- list(
+    mu = p1$mu,
+    sigltil = rep_ec$sigltil,
+    sigrtil = rep_ec$sigrtil,
+    ctil = p1$ctil,
+    pd = p1$pd,
+    o_mat = rep_ec$o_mat
+  )
+  list(distance = distance, representative = rep_out)
+}
+
+# ---------------------------------------------------------------------------
+# Pure-R reference: distance_between_params
+#
+# Brute-force pre-port pure-R implementation that enumerates every sign flip
+# and permutation of the o_mat columns. Kept here so test-dist_between_params
+# can assert agreement of the Hungarian-accelerated path with the brute-force
+# answer on small examples.
+# ---------------------------------------------------------------------------
+
+#' Pure-R reference for \code{dist_between_params} via brute-force enumeration
+#'
+#' @keywords internal
+#' @noRd
+distance_between_params_r <- function(p1, p2, GiveClosestRep = FALSE) {
+  dd <- dim(p1$o_mat)[1]
+  if (dd > 5) {
+    warning("In distance_between_params_r: this function is very slow for ",
+            "large numbers of environmental variables")
+  }
+
+  sq_dist_other_params <- sum((p1$mu - p2$mu) ^ 2) +
+    (p1$ctil - p2$ctil) ^ 2 +
+    (p1$pd - p2$pd) ^ 2
+
+  all_perms <- permutations(dd, dd, seq_len(dd))
+  all_flips <- as.matrix(expand.grid(rep(list(c(0, 1)), dd)))
+
+  bestsqdist <- Inf
+  bestparams <- NA
+  for (fc in seq_len(dim(all_flips)[1])) {
+    for (pc in seq_len(dim(all_perms)[1])) {
+      p1_ec <- convert_equivalence_class(p1, all_flips[fc, ], all_perms[pc, ])
+      thissqdist <- sum((p1_ec$o_mat - p2$o_mat) ^ 2) +
+        sum((1 / p1_ec$sigltil - 1 / p2$sigltil) ^ 2) +
+        sum((1 / p1_ec$sigrtil - 1 / p2$sigrtil) ^ 2)
+      if (thissqdist < bestsqdist) {
+        bestsqdist <- thissqdist
+        bestparams <- p1_ec
+      }
+    }
+  }
+
+  if (!GiveClosestRep) {
+    return(sqrt(bestsqdist + sq_dist_other_params))
+  }
+  rep_out <- list(
+    mu = p1$mu,
+    sigltil = bestparams$sigltil,
+    sigrtil = bestparams$sigrtil,
+    ctil = p1$ctil,
+    pd = p1$pd,
+    o_mat = bestparams$o_mat
+  )
+  list(
+    distance = sqrt(bestsqdist + sq_dist_other_params),
+    representative = rep_out
+  )
 }

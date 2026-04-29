@@ -2,55 +2,78 @@
 % Please edit documentation in R/dist_between_params.R
 \name{dist_between_params}
 \alias{dist_between_params}
-\title{Provides a measure of distance in parameter space between two sets of
-parameters, using the Hungarian algorithm.}
+\title{Distance in parameter space between two sets of parameters}
 \usage{
 dist_between_params(p1, p2, mask = NULL, give_closest_rep = FALSE)
 }
 \arguments{
-\item{p1}{First set of parameters. May be math- or biological-scale parameters,
-following the associated formatting requirements in each case.}
+\item{p1}{First set of parameters. May be math-scale (a named numeric
+vector whose names complement \code{mask}) or biological-scale (a named
+list with entries \code{mu}, \code{sigltil}, \code{sigrtil}, \code{ctil},
+\code{pd}, \code{o_mat}).}
 
-\item{p2}{Second set of parameters, same format options as the first}
+\item{p2}{Second set of parameters; same format options as \code{p1}.}
 
 \item{mask}{Same format as the \code{mask} argument to \code{\link{loglik_math}}
-and \code{\link{start_parms}}. Ignored if both \code{p1} and \code{p2} are on
-the biological scale. Otherwise the parameters contained in \code{mask} must
-exactly complement those contained in whichever of \code{p1} and \code{p2} are on the
+and \code{\link{start_parms}}. Ignored if both \code{p1} and \code{p2} are
+on the biological scale. Otherwise the names of \code{mask} must exactly
+complement the names of whichever of \code{p1} / \code{p2} is on the
 math scale.}
 
-\item{give_closest_rep}{TRUE if you also want the member of the equivalence class
-of p1 which is closest to p2. Gives the answer on the biological scale.
-Default FALSE.}
+\item{give_closest_rep}{If \code{TRUE}, also returns the member of the
+equivalence class of \code{p1} that attains the minimum distance
+(biological scale). Default \code{FALSE}.}
 }
 \value{
-If \code{give_closest_rep} is FALSE then a single number which is the
-distance. Otherwise a list with elements for the distance and for the
-representative which gives that distance.
+If \code{give_closest_rep} is \code{FALSE}, a single number: the
+  distance. Otherwise a list with entries \code{distance} and
+  \code{representative}.
 }
 \description{
-Computes a distance in parameter space between two sets of parameters. The
-o_mat, sigltil, and sigrtil parameters are only determined up to equivalence
-class. This function runs through all representatives of the equivalence
-class of p1 and computes the distance to p2 for each, returning the minimum.
-Optionally also returns the equivalence class representative that gives that
-minimum. Only it does not literally compute all that, it uses the Hungarian
-algorithm to speed it up. Distance is reckoned using sum-squared errors, on
-the biological scale, except for sigltil and sigrtil which are inverted
-before measuring distance because that is the scale it makes most sense to
-measure distance for those parameters.
+Computes a distance in parameter space between two parameter sets of the
+xsdm model. The \code{o_mat}, \code{sigltil}, and \code{sigrtil} parameters
+are only determined up to an equivalence class; this function returns the
+minimum distance over all equivalence-class representatives of \code{p1},
+using the Hungarian (Kuhn--Munkres) linear sum assignment algorithm to
+avoid enumerating every permutation and sign flip. Distance is measured in
+sum-squared-errors on the biological scale, except that \code{sigltil} and
+\code{sigrtil} are inverted before comparison (that is the scale on which
+distance is most meaningful for those parameters).
+}
+\details{
+The numerical backbone of this function is a pure-C++ implementation in
+\code{src/dist_between_params.cpp} that (a) builds the cost matrix over
+column pairings and (b) solves the assignment problem. A pure-R reference
+implementation is kept as \code{xsdm:::dist_between_params_r} and is used
+by the parity tests in \code{tests/testthat/test-dist_between_params_r_vs_cpp.R}.
 }
 \examples{
-# Using list in biological scale
+# Using lists on the biological scale
 par_list <- math_to_bio(examples$optim_par_vec)
 par_list_equivalent <- math_to_bio(examples$optim_par_vec_equivalent)
 dist_between_params(
   p1 = par_list,
   p2 = par_list_equivalent
 )
-# Using vectors in math scale
+
+# Using vectors on the math scale
 dist_between_params(
   p1 = examples$optim_par_vec,
   p2 = examples$optim_par_vec_equivalent
 )
+}
+\references{
+H. W. Kuhn (1955). The Hungarian Method for the Assignment Problem.
+\emph{Naval Research Logistics Quarterly} 2(1-2), 83--97.
+
+J. Munkres (1957). Algorithms for the Assignment and Transportation
+Problems. \emph{Journal of the SIAM} 5(1), 32--38.
+
+R. Jonker and A. Volgenant (1987). A Shortest Augmenting Path Algorithm for
+Dense and Sparse Linear Assignment Problems. \emph{Computing} 38, 325--340.
+
+K. Hornik (2005). A CLUE for CLUster Ensembles. \emph{Journal of
+Statistical Software} 14(12). (See also the \pkg{clue} package for an
+alternative R-level implementation of the same LSAP algorithm that
+\code{xsdm:::dist_between_params_r} calls via \code{clue::solve_LSAP}.)
 }

@@ -20,7 +20,6 @@ Description: Integrates concepts of stochastic demography into species
 License: AGPL (>= 3)
 Imports: 
     checkmate,
-    clue,
     expm,
     Rcpp (>= 1.1.0),
     RcppParallel (>= 5.1.10),
@@ -42,6 +41,7 @@ Depends:
 LazyData: true
 LazyDataCompression: xz
 Suggests: 
+    clue,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
