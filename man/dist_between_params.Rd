@@ -41,11 +41,12 @@ sum-squared-errors on the biological scale, except that \code{sigltil} and
 distance is most meaningful for those parameters).
 }
 \details{
-The numerical backbone of this function is a pure-C++ implementation in
-\code{src/dist_between_params.cpp} that (a) builds the cost matrix over
-column pairings and (b) solves the assignment problem. A pure-R reference
-implementation is kept as \code{xsdm:::dist_between_params_r} and is used
-by the parity tests in \code{tests/testthat/test-dist_between_params_r_vs_cpp.R}.
+All numerics besides the linear sum assignment are computed in R. The
+assignment problem itself is solved by an in-package C++ implementation of
+the classical O(n^3) Hungarian algorithm, exposed (unexported) as
+\code{xsdm:::.solve_lsap_cpp}. An R-level alternative is
+\code{clue::solve_LSAP}; the two are compared in
+\code{tests/testthat/test-solve_lsap_cpp.R}.
 }
 \examples{
 # Using lists on the biological scale
@@ -73,7 +74,6 @@ R. Jonker and A. Volgenant (1987). A Shortest Augmenting Path Algorithm for
 Dense and Sparse Linear Assignment Problems. \emph{Computing} 38, 325--340.
 
 K. Hornik (2005). A CLUE for CLUster Ensembles. \emph{Journal of
-Statistical Software} 14(12). (See also the \pkg{clue} package for an
-alternative R-level implementation of the same LSAP algorithm that
-\code{xsdm:::dist_between_params_r} calls via \code{clue::solve_LSAP}.)
+Statistical Software} 14(12). (See also the \pkg{clue} package on CRAN
+for an alternative R-level LSAP implementation.)
 }

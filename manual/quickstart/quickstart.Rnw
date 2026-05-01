@@ -37,7 +37,7 @@
 \newcommand{\logit}{\text{logit}}
 
 % --- Header material ---
-\title{xsdmMle quickstart}
+\title{xsdm quickstart}
 \author[1]{Angel Lu\'{i}s Robles Fern\'{a}ndez}
 \author[1]{Daniel C. Reuman}
 \affil[1]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,

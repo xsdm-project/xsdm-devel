@@ -40,7 +40,7 @@
 \newcommand{\logit}{\text{logit}}
 
 % --- Header material ---
-\title{How to fit xsdm models with species occurrence data using \texttt{xsdmMle}}
+\title{How to fit xsdm models with species occurrence data using \texttt{xsdm}}
 \author[1]{Daniel C. Reuman}
 \author[1]{Angel Lu\'{i}s Robles Fern\'{a}ndez}
 \affil[1]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
@@ -93,7 +93,7 @@ knitr::opts_chunk$set(
 \begin{abstract}
 \noindent After reading the document entitled "The xsdm model", this document
 introduces the statistically and computationally sophisticated user to the 
-main functions of the \texttt{xsdmMle} package. The package implements a frequentist 
+main functions of the \texttt{xsdm} package. The package implements a frequentist 
 analysis of the xsdm model. This document should get the user to the point
 of maximizing the likelihood of the model and profiling in ``easy'' cases, 
 with callouts to
@@ -106,7 +106,7 @@ parameters if model mis-specification is not an issue.
 
 \section{Introduction to the running example used throughout this document}
 
-This manual uses a small built-in example included with the \texttt{xsdmMle} R 
+This manual uses a small built-in example included with the \texttt{xsdm} R 
 package to illustrate a baseline workflow. The example contains (i) an
 occurrence table for a virtual species, and (ii) two environmental
 \texttt{terra} raster time series representing CHELSA-derived 
@@ -116,7 +116,7 @@ Load the data and get oriented to the first bioclimatic variable, which is mean 
 in units of $100 \times ^\circ$C for 39 years for a particular region of interest. 
 And make it units of $^\circ$C: 
 <<bio1>>=
-library(xsdmMle)
+library(xsdm)
 
 bio_1 <- terra::unwrap(example_1_bio01) 
 class(bio_1)
@@ -195,7 +195,7 @@ terra::plot(m_bio_1,axes=TRUE,main="Detections",xlab="x",ylab="y",legend=TRUE)
 terra::plot(pts_1,add=TRUE,col="black",pch=20,cex=.2)
 @
 
-The fitting tools offered by \texttt{xsdmMle} use a more succinct version of the data,
+The fitting tools offered by \texttt{xsdm} use a more succinct version of the data,
 since only the environmental time series at the locations for which there is a 
 detection or a non-detection/pseudo-absence matter; though we will return to using 
 rasters after fitting and model selection. So, for now, we cut out only those
@@ -304,7 +304,7 @@ $p_d^{(m)}$; and the term $\frac{p^2-p}{2}$ in the expression comes from
 $O^{(m)}$.
 
 The transformation from math-scale to bio-scale parameters is implemented
-in \texttt{xsdmMle} using the function \texttt{math\_to\_bio}, which takes an unconstrained
+in \texttt{xsdm} using the function \texttt{math\_to\_bio}, which takes an unconstrained
 numeric vector as its argument and returns a named list of of biological-scale
 parameters. But it is not so common for the end-user to call \texttt{math\_to\_bio}
 directly because we have written the likelihood directly in terms of the math-scale
@@ -561,7 +561,7 @@ a downward-opening parabola. In that case, confidence
 intervals can be constructed by use of the likelihood ratio test - see basic 
 texts on maximum likelihood methods for additional details.
 
-To calculate profiles using \texttt{xsdmMle}, use the function 
+To calculate profiles using \texttt{xsdm}, use the function 
 \texttt{profile\_likelihood}, here for \text{mu1}:
 <<profiling1, cache=TRUE>>=
 prof1 = profile_likelihood(
@@ -806,7 +806,7 @@ delta
 \noindent As you can see, both the inferred habitat suitability map and the 
 associated species range are similar to the true versions.
 
-One of the main things \texttt{xsdmMle} is good for is assessing 
+One of the main things \texttt{xsdm} is good for is assessing 
 the influence of inter-annual climatic variability on species distributions,
 so we also display what the habitat suitability map would look like if the value of 
 each environmental variable in each location were always equal to the temporal
