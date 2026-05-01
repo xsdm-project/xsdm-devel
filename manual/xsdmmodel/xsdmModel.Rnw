@@ -505,7 +505,7 @@ Inspection shows that the one-parameter family of transformations
 \label{eq:scaling_iv}
 \end{equation}
 leaves the detection exponent unchanged at every location. Setting $c = \sqrt{\alpha}$
-in (\ref{eq:scaling_iv}) maps $\alpha \to 1$ and yields the canonical reparametrization
+in (\ref{eq:scaling_iv}) maps $\alpha \to 1$ and yields the reparametrization
 \begin{equation}
 \hat{\sigma}_{L,i} = \sqrt{\alpha}\,\sigma_{L,i},
 \qquad
