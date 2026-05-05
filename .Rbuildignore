@@ -26,3 +26,4 @@ data-raw/
 vignettes/_articles_draft/
 vignettes/articles/
 docs/
+inst/doc
