@@ -21,9 +21,6 @@
 #' # Return all the environmental in the rasters
 #' env_data_array(env_data, occ)
 env_data_array <- function(env_data, occ = NULL) {
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("Package 'terra' is required for this function. Install it with install.packages('terra').")
-  }
   checkmate::assert_list(env_data,
     any.missing = FALSE,
     null.ok = FALSE,

@@ -196,14 +196,10 @@ get_range_df_ <- function(env_dat,
 #' of parameters
 #' @param numstarts The number of require samples
 #'
+#' @return A tibble with one row per starting point and one column per
+#'   parameter.
 #' @keywords internal
 get_start_parms_ <- function(ranges, numstarts = 100) {
-  if (!requireNamespace("pomp", quietly = TRUE)) {
-    stop("Package 'pomp' is required for this function. Install it with install.packages('pomp').")
-  }
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("Package 'tibble' is required for this function. Install it with install.packages('tibble').")
-  }
   # Check parameters. numstarts must be >= 3: we call
   # pomp::sobol_design(..., nseq = numstarts - 1) and then append the
   # data-driven center row. nseq = 0 segfaults pomp, nseq = 1 returns a
@@ -224,9 +220,6 @@ get_start_parms_ <- function(ranges, numstarts = 100) {
   names(upper) <- rownames(ranges)
   
   # Get the actual start parameters, math scale
-  if (!requireNamespace("pomp", quietly = TRUE)) {
-    stop("Package 'pomp' is required for get_start_parms_(). Install it with: install.packages('pomp')")
-  }
   startparms_math <- pomp::sobol_design(
     lower = lower,
     upper = upper,

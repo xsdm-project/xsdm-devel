@@ -58,18 +58,21 @@ fit <- optimize_likelihood(
 
 # Best solution and its log-likelihood
 fit$best$loglik
-fit$best$full_par
+fit$best$par
 ```
 
 ## 2. Habitat-suitability projection
 
-```{r vsp, eval = FALSE}
-# The `vsp` function projects the best-fit niche onto a raster grid.
-# Skipped at vignette-build time because terra requires a raster on disk.
-hs <- vsp(
-  param_list = interpret_parameters(fit$best$full_par,
-                                    p = dim(example_1$env_array)[3]),
-  env_layers = list(example_1$bio01, example_1$bio12)
+```{r habitat, eval = FALSE}
+# Compute habitat suitability from the best-fit parameters.
+# Skipped at vignette-build time because terra rasters are packed.
+best_bio <- math_to_bio(fit$best$par)
+bio01 <- terra::unwrap(example_1$bio01) / 100
+bio12 <- terra::unwrap(example_1$bio12) / 100
+suit <- habitat_suitability(
+  param_list  = best_bio,
+  env_list    = list(bio1 = bio01, bio12 = bio12),
+  return_prob = TRUE
 )
 ```
 
@@ -78,18 +81,20 @@ hs <- vsp(
 ```{r profile, eval = FALSE}
 # Profile the detection probability `pd` around the MLE.
 prof <- profile_likelihood(
-  env_dat = example_1$env_array,
-  occ     = example_1$occ_vec,
-  param   = "pd",
-  best    = fit$best$full_par,
-  n_grid  = 7,
-  span    = 0.5
+  profile_parameter  = "pd",
+  optim_param_vector = fit$best$par,
+  env_dat            = example_1$env_array,
+  occ                = example_1$occ_vec,
+  increment_left     = 0.2,
+  increment_right    = 0.2,
+  num_steps_left     = 20L,
+  num_steps_right    = 20L
 )
 ```
 
 ## See also
 
-* `vignette("xsdm")` — package overview *(TODO)*.
+* `?xsdm-package` — package overview.
 * `?optimize_likelihood` — full argument reference.
 * `?profile_likelihood` — uncertainty estimation.
 * `?make_mask_names` — fixing specific parameters during optimization.

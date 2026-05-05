@@ -85,13 +85,6 @@ habitat_suitability <- function(
     threads     = 0L,
     wopt        = list()
 ) {
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop(
-      "Package 'terra' is required for habitat_suitability(). ",
-      "Install it with: install.packages('terra')"
-    )
-  }
-
   # ---- Input validation ----
   checkmate::assert_list(param_list, names = "unique", any.missing = FALSE)
   checkmate::assert_true(

@@ -187,14 +187,6 @@ optimize_likelihood <- function(
   
   
   if (parallel) {
-    for (pkg in c("future", "future.callr", "furrr")) {
-      if (!requireNamespace(pkg, quietly = TRUE)) {
-        stop(sprintf(
-          "Package '%s' is required for parallel optimization. Install it with: install.packages('%s')",
-          pkg, pkg
-        ))
-      }
-    }
     old_plan <- future::plan()
     on.exit(future::plan(old_plan), add = TRUE)
     
@@ -209,9 +201,6 @@ optimize_likelihood <- function(
       .progress = TRUE
     )
   } else {
-    if (!requireNamespace("purrr", quietly = TRUE)) {
-      stop("Package 'purrr' is required for this function. Install it with install.packages('purrr').")
-    }
     res_list <- purrr::map(list_of_pars, runner, .progress = TRUE)
   }
   
@@ -272,6 +261,8 @@ optimize_likelihood <- function(
 }
 
 #' Internal helper: normalize gradient-related optimizer controls
+#' @param ctrl Named list of optimizer control parameters.
+#' @return A list with elements \code{grad} and \code{gradstep}.
 #' @keywords internal
 resolve_xptr_grad_control_ <- function(ctrl) {
   list(
@@ -281,6 +272,8 @@ resolve_xptr_grad_control_ <- function(ctrl) {
 }
 
 #' Internal helper: run ucminfcpp for one starting vector
+#' @return A list with \code{par}, \code{value}, \code{convergence},
+#'   and optionally \code{invhessian.lt}.
 #' @keywords internal
 optimize_loglik_math_ <- function(
     param_vector,  # starting values for FREE params (named)
