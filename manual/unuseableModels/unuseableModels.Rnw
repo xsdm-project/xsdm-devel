@@ -238,16 +238,17 @@ Among the models we fitted, there is one clear winner in pseudo-BIC, model
 Start by optimizing it a bit harder to see if we can 
 do any better.
 <<check_model_11,cache=TRUE>>=
-i=11
+i = 11
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
-starts = xsdm::start_parms(env_dat,num_starts=100)
+starts = xsdm::start_parms(env_dat, num_starts = 100)
 model_11_results = list()
 for (j in 1:nrow(starts)) 
 {
   model_11_results[[j]] = optim(par=starts[j,],fn=xsdm::loglik_math, 
-                                 method="BFGS",
-                                 env_dat=env_dat, occ=occ,negative=TRUE,
-                                 control=list(trace=0))
+                                method="BFGS",
+                                env_dat = env_dat,
+                                occ = occ,negative=TRUE,
+                                control = list(trace=0))
 }
 all_model_results[[11]][[1]]$value
 min(sapply(X=model_11_results, FUN=function(y){y$value}))
@@ -256,7 +257,7 @@ min(sapply(X=model_11_results, FUN=function(y){y$value}))
 \noindent We did slightly better. 
 
 Now move forward by looking at the results for this model, starting by 
-writing a convenience function for examing optimization results: 
+writing a convenience function for examine optimization results: 
 <<look_at_optim_results>>=
 examine_optim_results = function(optim_results,mask=NULL)
 {
@@ -288,8 +289,8 @@ examine_optim_results = function(optim_results,mask=NULL)
   return(rbind(bestlogliks,convergences,parms_dists,bestparms))
 }
 
-h=examine_optim_results(all_model_results[[11]])
-t(h[,1:8])
+h <- examine_optim_results(all_model_results[[11]])
+t(h[ ,1:8])
 @
 
 \noindent The very large values of \texttt{sigltil2} suggest the boundary
@@ -299,26 +300,31 @@ the environment.
 
 So we consider the corresponding boundary model:
 <<fit_boundary_model,cache=TRUE>>=
-i=11
-env_dat = env_array[,,models[i,]==1,drop=FALSE]
-mask=c(sigltil2=Inf)
-new_starts = xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],
-                                  mask=mask,num_starts=100)
+i <- 11
+env_dat = env_array[ , , models[i,] == 1, drop=FALSE]
+mask <- c(sigltil2 = Inf)
+new_starts = xsdm::start_parms(env_dat[occ == 1, , , drop=FALSE],
+                               mask = mask,
+                               num_starts = 100)
 
 bdry_optim_results = list()
 for (j in 1:nrow(new_starts)) 
 {
-  bdry_optim_results[[j]] = optim(par=new_starts[j,],fn=xsdm::loglik_math, 
-                                method="BFGS",
-                                env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
-                                control=list(trace=0,maxit=500))
+  bdry_optim_results[[j]] = optim(par = new_starts[j,],
+                                  fn = xsdm::loglik_math,
+                                  method = "BFGS",
+                                  env_dat = env_dat,
+                                  occ = occ,
+                                  mask = mask,
+                                  negative = TRUE,
+                                  control = list(trace=0, maxit=500))
 }
 @
 
 \noindent Now look at these results:
 <<look_at_bdry_models>>=
-h=examine_optim_results(bdry_optim_results,mask=mask)
-t(h[,1:8])
+h <- examine_optim_results(bdry_optim_results, mask = mask)
+t(h[ ,1:8])
 @
 
 \noindent The best likelihoods obtained for this boundary model are very similar 
@@ -334,45 +340,45 @@ top-likelihood result).
 
 To investigate the model further, we profile:
 <<profile, cache=TRUE>>=
-pnames=names(xsdm::make_mask_names(2))
-pnames=pnames[!(pnames %in% names(mask))]
+pnames <-  names(xsdm::make_mask_names(2))
+pnames <-  pnames[!(pnames %in% names(mask))]
 
-values = sapply(X=bdry_optim_results, FUN=function(x){x$value})
-inds = order(values)
-bdry_optim_results = bdry_optim_results[inds]
+values <-  sapply(X=bdry_optim_results, FUN=function(x){x$value})
+inds <-  order(values)
+bdry_optim_results <-  bdry_optim_results[inds]
 
 all_profiles=list()
-linc = rep(0.05, length(pnames))
-rinc = rep(0.05, length(pnames))
-linc[8] = 0.001
-rinc[8] = 0.001
+linc <-  rep(0.05, length(pnames))
+rinc <-  rep(0.05, length(pnames))
+linc[8] <-  0.001
+rinc[8] <-  0.001
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] = xsdm::profile_likelihood(
-                              profile_parameter=pnames[counter],
-                              increment_left=linc[counter],
-                              increment_right=rinc[counter],
-                              num_steps_left=50,
-                              num_steps_right=50,
-                              alpha=0.95,
-                              optim_param_vector=bdry_optim_results[[1]]$par,
+  all_profiles[[counter]] <-  xsdm::profile_likelihood(
+                              profile_parameter = pnames[counter],
+                              increment_left =linc[counter],
+                              increment_right = rinc[counter],
+                              num_steps_left = 50, 
+                              num_steps_right = 50,
+                              alpha = 0.95,
+                              optim_param_vector = bdry_optim_results[[1]]$par,
                               env_dat=env_dat,
-                              occ=occ,
-                              mask=mask,
-                              num_threads=6
+                              occ = occ,
+                              mask = mask,
+                              num_threads = 6
                             )
 }
-names(all_profiles) = pnames
+names(all_profiles) <-  pnames
 @
 
 \noindent Now plot these profiles:
 <<plot_profiles>>=
-plot_tool=function(ap,index)
-{
-  x=ap[[index]]$profile$value_math
-  y=ap[[index]]$profile$loglik
-  xlab=names(ap)[index]
-  thresh=ap[[index]]$threshold
+plot_tool <- function(ap,index)
+  {
+  x <- ap[[index]]$profile$value_math
+  y <- ap[[index]]$profile$loglik
+  xlab <- names(ap)[index]
+  thresh <- ap[[index]]$threshold
   plot(x,y,
        type="o",xlab=xlab,
        ylab="Log likelihood")
@@ -381,14 +387,14 @@ plot_tool=function(ap,index)
 }
 
 par(mfrow=c(3,3))
-plot_tool(all_profiles,1)
-plot_tool(all_profiles,2)
-plot_tool(all_profiles,3)
-plot_tool(all_profiles,4)
-plot_tool(all_profiles,5)
-plot_tool(all_profiles,6)
-plot_tool(all_profiles,7)
-plot_tool(all_profiles,8)
+plot_tool(all_profiles, 1)
+plot_tool(all_profiles, 2)
+plot_tool(all_profiles, 3)
+plot_tool(all_profiles, 4)
+plot_tool(all_profiles, 5)
+plot_tool(all_profiles, 6)
+plot_tool(all_profiles, 7)
+plot_tool(all_profiles, 8)
 @
 
 \noindent These profiles are not dome-shaped, and have other idiosyncratic features,
@@ -397,9 +403,9 @@ The \texttt{mu2}, \texttt{mu2}, and \texttt{ctil} profile, in particular, show p
 
 We do a pairs plot based on the \texttt{mu2} profile to investigate further:
 <<make_pairs_plot_again>>=
-p = all_profiles[[2]]$parameters
+p <- all_profiles[[2]]$parameters
 head(p)
-p = p[,1:8]
+p <- p[,1:8]
 pairs(p)
 @
 
@@ -420,8 +426,8 @@ param_list = bdry_optim_results[[1]]$par
 param_list["sigltil2"] = Inf
 param_list = param_list[names(xsdm::make_mask_names(2))]
 param_list_bio = xsdm::math_to_bio(param_list)
-xsdm::interpret_parameters(param_list=param_list_bio,
-                          plot_indices=c(1,2),env_dat=env_dat,occ=occ)
+xsdm::interpret_parameters(param_list = param_list_bio,
+                          plot_indices = c(1,2), env_dat=env_dat, occ = occ)
 param_list_bio$mu
 @
 
@@ -447,8 +453,8 @@ workflows, we skip straight to examining model \Sexpr{order(model_BICs)[4]},
 which may be simpler because it only uses one environmental variable. 
 <<examine_result_model_5>>=
 i=5
-model_5_optim_results = all_model_results[[i]]
-h=examine_optim_results(model_5_optim_results)
+model_5_optim_results <-  all_model_results[[i]]
+h <- examine_optim_results(model_5_optim_results)
 t(h[,1:8])
 @
 
@@ -456,7 +462,7 @@ t(h[,1:8])
 should be considered:
 <<fit_boundary_model_5,cache=TRUE>>=
 env_dat = env_array[,,models[i,]==1,drop=FALSE]
-mask=c(sigrtil1=Inf)
+mask=c(sigrtil1 = Inf)
 new_starts = xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,
                                num_starts=100)
 
@@ -472,7 +478,7 @@ for (j in 1:nrow(new_starts))
 
 \noindent Examine these results:
 <<look_at_bdry_models_5>>=
-h=examine_optim_results(bdry_optim_results5,mask=mask)
+h <- examine_optim_results(bdry_optim_results5,mask=mask)
 t(h[,1:8])
 values = sapply(X=bdry_optim_results5, FUN=function(x){x$value})
 inds = order(values)
@@ -483,25 +489,25 @@ bdry_optim_results5 = bdry_optim_results5[inds]
 
 Next do profiles:
 <<profile_model_5, cache=TRUE>>=
-all_profiles=list()
-pnames=names(xsdm::make_mask_names(1))
+all_profiles <- list()
+pnames <- names(xsdm::make_mask_names(1))
 pnames = pnames[pnames!="sigrtil1"]
 linc = c(0.05,0.025,0.05,0.05)
 rinc = c(0.15,0.025,0.05,0.05)
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] = xsdm::profile_likelihood(
-                              profile_parameter=pnames[counter],
-                              increment_left=linc[counter],
-                              increment_right=rinc[counter],
-                              num_steps_left=50,
-                              num_steps_right=50,
-                              alpha=0.95,
-                              optim_param_vector=bdry_optim_results5[[1]]$par,
-                              env_dat=env_dat,
-                              occ=occ,
-                              mask=mask,
-                              num_threads=6
+  all_profiles[[counter]] <-  xsdm::profile_likelihood(
+                              profile_parameter = pnames[counter],
+                              increment_left  = linc[counter],
+                              increment_right = rinc[counter],
+                              num_steps_left  = 50,
+                              num_steps_right = 50,
+                              alpha = 0.95,
+                              optim_param_vector = bdry_optim_results5[[1]]$par,
+                              env_dat = env_dat,
+                              occ = occ,
+                              mask = mask,
+                              num_threads = 6
                             )
 }
 names(all_profiles) = pnames
