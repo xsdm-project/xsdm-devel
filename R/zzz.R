@@ -1,5 +1,10 @@
 .onLoad <- function(libname, pkgname) {
-  options(future.globals.maxSize = 8.0 * 1024^3)
+  op <- options()
+  op.xsdm <- list(
+    future.globals.maxSize = 8.0 * 1024^3
+  )
+  toset <- !(names(op.xsdm) %in% names(op))
+  if (any(toset)) options(op.xsdm[toset])
   assign("xsdm", new.env(), envir = parent.env(environment()))
 }
 

@@ -20,10 +20,10 @@
 ^src/.*\.so$
 ^src/.*\.o$
 ^src/.*\.obj$
-inst/articles/
-inst/articles/*.pdf
-data-raw/
-vignettes/_articles_draft/
-vignettes/articles/
-docs/
-inst/doc
+^inst/articles
+^inst/doc$
+^data-raw$
+^vignettes/_articles_draft
+^vignettes/articles
+^vignettes/howToFit\.pdf$
+^cran-comments\.md$

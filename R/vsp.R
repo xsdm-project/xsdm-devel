@@ -54,13 +54,6 @@
 #' }
 vsp <- function(param_list, env_data, size_presence, size_absence, threshold = 0.5) {
   # Input validation --------------------------------------------------------
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("Package 'terra' is required for this function. Install it with install.packages('terra').")
-  }
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("Package 'tibble' is required for this function. Install it with install.packages('tibble').")
-  }
-  
   checkmate::assert_list(env_data,
                          types = "SpatRaster",
                          min.len = 1,
@@ -132,7 +125,7 @@ vsp <- function(param_list, env_data, size_presence, size_absence, threshold = 0
     names(occ_df) <- c("lon", "lat", "presence")
   } else {
     # Create an empty data frame with correct column names
-    occ_df <- data.frame(lon = numeric(0), lat = numeric(0), occurrence = integer(0))
+    occ_df <- data.frame(lon = numeric(0), lat = numeric(0), presence = integer(0))
   }
   
   # Return as tibble

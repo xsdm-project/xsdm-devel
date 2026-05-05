@@ -148,7 +148,7 @@ auto_plot_lims_ <- function(env_dat,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   # Two-panel (presence vs non-detection) plot with auto-derived limits
 #'   interpret_parameters(
 #'     example_1$par_list,

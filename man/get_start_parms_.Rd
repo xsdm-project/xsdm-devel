@@ -15,6 +15,10 @@ of parameters}
 
 \item{numstarts}{The number of require samples}
 }
+\value{
+A tibble with one row per starting point and one column per
+  parameter.
+}
 \description{
 get_start_parms_. Generates a Latin hypercube design for the parameters
 based on the Sobol' low-discrepancy sequence.

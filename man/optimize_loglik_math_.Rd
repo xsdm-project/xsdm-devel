@@ -15,6 +15,10 @@ optimize_loglik_math_(
   optimizer_fun = ucminfcpp::ucminf_xptr
 )
 }
+\value{
+A list with \code{par}, \code{value}, \code{convergence},
+  and optionally \code{invhessian.lt}.
+}
 \description{
 Internal helper: run ucminfcpp for one starting vector
 }

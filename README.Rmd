@@ -195,10 +195,14 @@ to return per-cell detection probabilities:
 
 ```{r project}
 # Use the full raster extent (not just occurrence points)
-env_data_full <- list(bio1 = bio1_ts, bio12 = bio12_ts)
+env_list <- list(bio1 = bio1_ts, bio12 = bio12_ts)
 
-# Returns a a SpatRaster for mapping
-prob_rast  <- habitat_suitability(best_bio, env_data_full)
+# Returns a SpatRaster for mapping
+prob_rast <- habitat_suitability(
+  param_list  = best_bio,
+  env_list    = env_list,
+  return_prob = TRUE
+)
 terra::plot(prob_rast, main = "Detection probability")
 ```
 

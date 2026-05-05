@@ -18,5 +18,5 @@
 #' # Access the list
 #' names(example_3)
 #'
-#' @source Berti e al,  2024 (<https://doi.org/10.1101/2024.10.30.621023>)
+#' @source Berti et al., 2025 (\doi{10.1101/2024.10.30.621023})
 "example_3"

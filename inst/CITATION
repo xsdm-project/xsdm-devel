@@ -1,0 +1,15 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "The impacts of climate variability on the niche concept and distributions of species",
+  author   = c(
+    person("Emilio", "Berti"),
+    person("Angel Luis", "Robles Fern\u00e1ndez"),
+    person("Benjamin", "Rosenbaum"),
+    person("A. Townsend", "Peterson"),
+    person("Jorge", "Sober\u00f3n"),
+    person("Daniel C.", "Reuman")
+  ),
+  journal  = "bioRxiv",
+  year     = "2025",
+  doi      = "10.1101/2024.10.30.621023"
+)

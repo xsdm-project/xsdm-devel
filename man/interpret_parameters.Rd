@@ -92,7 +92,7 @@ and the numeric values of the image colors in the bivariate plot carry
 no units of their own.
 }
 \examples{
-\dontrun{
+\donttest{
   # Two-panel (presence vs non-detection) plot with auto-derived limits
   interpret_parameters(
     example_1$par_list,
