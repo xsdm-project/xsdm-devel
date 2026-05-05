@@ -6,6 +6,12 @@
 \usage{
 resolve_xptr_grad_control_(ctrl)
 }
+\arguments{
+\item{ctrl}{Named list of optimizer control parameters.}
+}
+\value{
+A list with elements \code{grad} and \code{gradstep}.
+}
 \description{
 Internal helper: normalize gradient-related optimizer controls
 }
