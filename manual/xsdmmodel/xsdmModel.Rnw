@@ -487,11 +487,11 @@ combination $\alpha\log(\lambda_{\text{max}})+\gamma$. For any $\delta\in\mathbb
 substitution $\lambda_{\text{max}} \mapsto e^\delta\lambda_{\text{max}}$,
 $\gamma \mapsto \gamma - \alpha\delta$ leaves every $P(X=1)$ unchanged. Defining
 \begin{equation}
-\tilde{\gamma} = \gamma + \alpha\log(\lambda_{\text{max}}),
-\label{eq:gammatilde_iv}
+\hat{\gamma} = \gamma + \alpha\log(\lambda_{\text{max}}),
+\label{eq:gammahat_iv}
 \end{equation}
 the detection exponent in (\ref{eq:detect_iv_expanded}) reduces to
-$\beta - 4\tilde{\gamma}/W + 2\alpha\mean{S_t}/W$, and $\lambda_{\text{max}}$ no longer
+$\beta - 4\hat{\gamma}/W + 2\alpha\mean{S_t}/W$, and $\lambda_{\text{max}}$ no longer
 appears.
 
 The second structural non-identifiability arises from width scaling. The substitution
@@ -499,48 +499,48 @@ $\sigma_{L,i} \to c\sigma_{L,i}$, $\sigma_{R,i} \to c\sigma_{R,i}$ for any $c>0$
 maps $S_t \to S_t/c^2$, hence $\mean{S_t} \to \mean{S_t}/c^2$ and $W \to W/c^4$.
 Inspection shows that the one-parameter family of transformations
 \begin{equation}
-(\vec{\sigma}_L,\, \vec{\sigma}_R,\, \alpha,\, \tilde{\gamma})
+(\vec{\sigma}_L,\, \vec{\sigma}_R,\, \alpha,\, \hat{\gamma})
 \;\longmapsto\;
-(c\vec{\sigma}_L,\, c\vec{\sigma}_R,\, \alpha/c^2,\, \tilde{\gamma}/c^4), \qquad c>0,
+(c\vec{\sigma}_L,\, c\vec{\sigma}_R,\, \alpha/c^2,\, \hat{\gamma}/c^4), \qquad c>0,
 \label{eq:scaling_iv}
 \end{equation}
 leaves the detection exponent unchanged at every location. Setting $c = \sqrt{\alpha}$
 in (\ref{eq:scaling_iv}) maps $\alpha \to 1$ and yields the reparametrization
 \begin{equation}
-\hat{\sigma}_{L,i} = \sqrt{\alpha}\,\sigma_{L,i},
+\tilde{\sigma}_{L,i} = \sqrt{\alpha}\,\sigma_{L,i},
 \qquad
-\hat{\sigma}_{R,i} = \sqrt{\alpha}\,\sigma_{R,i},
+\tilde{\sigma}_{R,i} = \sqrt{\alpha}\,\sigma_{R,i},
 \qquad
-\hat{\gamma} = \frac{\tilde{\gamma}}{\alpha^2} = \frac{\gamma + \alpha\log(\lambda_{\text{max}})}{\alpha^2}.
+\tilde{\gamma} = \frac{\hat{\gamma}}{\alpha^2} = \frac{\gamma + \alpha\log(\lambda_{\text{max}})}{\alpha^2}.
 \label{eq:canonical_iv}
 \end{equation}
-Let $\hat{S}_t = \sum_{i=1}^n (u_{t,i}/\hat{\sigma}_i(u_{t,i}))^2 = S_t/\alpha$, and let
-$\hat{W}$ be the long-run variance of $\{\hat{S}_t\}$. Then
-$\mean{\hat{S}_t} = \mean{S_t}/\alpha$ and $\hat{W} = W/\alpha^2$. Substituting into the
+Let $\tilde{S}_t = \sum_{i=1}^n (u_{t,i}/\tilde{\sigma}_i(u_{t,i}))^2 = S_t/\alpha$, and let
+$\tilde{W}$ be the long-run variance of $\{\tilde{S}_t\}$. Then
+$\mean{\tilde{S}_t} = \mean{S_t}/\alpha$ and $\tilde{W} = W/\alpha^2$. Substituting into the
 detection exponent,
 \begin{align}
-\beta - \frac{4\tilde{\gamma}}{W} + \frac{2\alpha\mean{S_t}}{W}
+\beta - \frac{4\hat{\gamma}}{W} + \frac{2\alpha\mean{S_t}}{W}
 &= \beta
-   - \frac{4\alpha^2\hat{\gamma}}{\alpha^2\hat{W}}
-   + \frac{2\alpha^2\mean{\hat{S}_t}}{\alpha^2\hat{W}}
-= \beta - \frac{4\hat{\gamma}}{\hat{W}} + \frac{2\mean{\hat{S}_t}}{\hat{W}},
+   - \frac{4\alpha^2\tilde{\gamma}}{\alpha^2\tilde{W}}
+   + \frac{2\alpha^2\mean{\tilde{S}_t}}{\alpha^2\tilde{W}}
+= \beta - \frac{4\tilde{\gamma}}{\tilde{W}} + \frac{2\mean{\tilde{S}_t}}{\tilde{W}},
 \label{eq:exponent_canonical_iv}
 \end{align}
 confirming that both $\lambda_{\text{max}}$ and $\alpha$ have been absorbed. The
 detection probability is
 \begin{equation}
 P(X = 1) = \frac{p_d}{1+\exp\!\left(\beta
-           - \frac{4\hat{\gamma}}{\hat{W}}
-           + \frac{2\mean{\hat{S}_t}}{\hat{W}}\right)},
+           - \frac{4\tilde{\gamma}}{\tilde{W}}
+           + \frac{2\mean{\tilde{S}_t}}{\tilde{W}}\right)},
 \label{eq:probdetect_iv}
 \end{equation}
-where $\mean{\hat{S}_t}$ is the time mean of $\hat{S}_t$ and $\hat{W}$ is its
+where $\mean{\tilde{S}_t}$ is the time mean of $\tilde{S}_t$ and $\tilde{W}$ is its
 long-run variance, estimated via the Bartlett-weighted truncated autocovariance sum
-(\ref{eq:iv_comp}) applied to $\{\hat{S}_t\}$ in place of $\{\log\lambda_t\}$.
+(\ref{eq:iv_comp}) applied to $\{\tilde{S}_t\}$ in place of $\{\log\lambda_t\}$.
 
 As a result of these two parameter reductions, the detection probability
 (\ref{eq:probdetect_iv}) is a function of $\vec{e}_t$, $\vec{\mu}$, $O$,
-$\hat{\vec{\sigma}}_L$, $\hat{\vec{\sigma}}_R$, $\beta$, $\hat{\gamma}$, and $p_d$
+$\tilde{\vec{\sigma}}_L$, $\tilde{\vec{\sigma}}_R$, $\beta$, $\tilde{\gamma}$, and $p_d$
 only. Neither $\lambda_{\text{max}}$ nor $\alpha$ nor $\gamma$ nor the unscaled widths
 appear. If $P_i$ is the probability of detection for location $i$, the likelihood is
 $\prod_i P_i \prod_j (1-P_j)$, where the first product is over all detection locations
@@ -593,8 +593,8 @@ from a species which is less capable of thriving but easier to detect.
 ltsgr and the iv}
 
 The \texttt{xsdm} package facilitates inferences of the parameters
-$\vec{\mu}$, $O$, $\hat{\vec{\sigma}}_L$,
-$\hat{\vec{\sigma}}_R$, $\beta$, $\hat{\gamma}$, and $p_d$ and of quantities which can be
+$\vec{\mu}$, $O$, $\tilde{\vec{\sigma}}_L$,
+$\tilde{\vec{\sigma}}_R$, $\beta$, $\tilde{\gamma}$, and $p_d$ and of quantities which can be
 derived from these parameters. But what does an inference about these parameters
 imply about the structure of the original growth-environment function?
 
@@ -604,26 +604,26 @@ The log growth-environment function is
 \end{equation}
 where $\vec{u}_t = O^{-1}(\vec{e}_t-\vec{\mu})$ and where $\sigma_i(u_{t,i}) = \sigma_{L,i}$
 if $u_{t,i} \leq 0$ and $\sigma_i(u_{t,i}) = \sigma_{R,i}$ if $u_{t,i} > 0$.
-But inference only provides estimates of $\hat{\vec{\sigma}}_L$ and $\hat{\vec{\sigma}}_R$,
-where $\hat{\vec{\sigma}}_L = \sqrt{\alpha}\,\vec{\sigma}_L$ and
-$\hat{\vec{\sigma}}_R = \sqrt{\alpha}\,\vec{\sigma}_R$ and $\alpha$ is unknown. So
+But inference only provides estimates of $\tilde{\vec{\sigma}}_L$ and $\tilde{\vec{\sigma}}_R$,
+where $\tilde{\vec{\sigma}}_L = \sqrt{\alpha}\,\vec{\sigma}_L$ and
+$\tilde{\vec{\sigma}}_R = \sqrt{\alpha}\,\vec{\sigma}_R$ and $\alpha$ is unknown. So
 \begin{equation}
-\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{1}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\hat{\sigma}_i(u_{t,i})/\sqrt{\alpha}} \right)^2,
+\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{1}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\tilde{\sigma}_i(u_{t,i})/\sqrt{\alpha}} \right)^2,
 \end{equation}
-where $\hat{\sigma}_i(u_{t,i}) = \hat{\sigma}_{L,i}$ if $u_{t,i} \leq 0$ and
-$\hat{\sigma}_i(u_{t,i}) = \hat{\sigma}_{R,i}$ if $u_{t,i} > 0$. This equals
+where $\tilde{\sigma}_i(u_{t,i}) = \tilde{\sigma}_{L,i}$ if $u_{t,i} \leq 0$ and
+$\tilde{\sigma}_i(u_{t,i}) = \tilde{\sigma}_{R,i}$ if $u_{t,i} > 0$. This equals
 \begin{equation}
-\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{\alpha}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\hat{\sigma}_i(u_{t,i})} \right)^2.
+\log(\lambda_t) = \log(\lambda_{\text{max}}) - \frac{\alpha}{2}\sum_{i=1}^n \left( \frac{u_{t,i}}{\tilde{\sigma}_i(u_{t,i})} \right)^2.
 \end{equation}
 Defining
 \begin{equation}
-\hat{f}(\vec{e}_t) = - \sum_{i=1}^n \left( \frac{u_{t,i}}{\hat{\sigma}_i(u_{t,i})} \right)^2,
+f(\vec{e}_t) = - \sum_{i=1}^n \left( \frac{u_{t,i}}{\tilde{\sigma}_i(u_{t,i})} \right)^2,
 \end{equation}
-the function $\hat{f}$ is determined by inference, and the growth-environment function is
-$g = a\hat{f}+b$ for some unknown scalars $a$ and $b$ with $a>0$. We plot evenly spaced
-contours of $\hat{f}$ as a means of displaying what can be inferred using the xsdm model
+the function $f$ is determined by inference, and the growth-environment function is
+$g = af+b$ for some unknown scalars $a$ and $b$ with $a>0$. We plot evenly spaced
+contours of $f$ as a means of displaying what can be inferred using the xsdm model
 about the nature of the dependence of growth rate on the environment. The contours
-of the true growth environment function will be the same as those of $\hat{f}$, though
+of the true growth environment function will be the same as those of $f$, though
 the levels/labels of those contours will differ according to the values of $a$ and
 $b$. In any case, much of the interpretive value of the growth-environment function
 is available through these contours, since they specify the inferred optimal
