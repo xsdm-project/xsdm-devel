@@ -236,7 +236,6 @@ optimize_likelihood <- function(
   # Sort by decreasing log-likelihood
   ord <- order(solutions$loglik, decreasing = TRUE)
   solutions <- solutions[ord, , drop = FALSE]
-  solutions$full_par <- solutions$full_par[ord]
   rownames(solutions) <- NULL
   
   # Best
