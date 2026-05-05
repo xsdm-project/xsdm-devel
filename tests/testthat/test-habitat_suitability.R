@@ -4,30 +4,6 @@ library(testthat)
 # habitat_suitability: contract & parity with vsp() on example data
 # ---------------------------------------------------------------------------
 
-# Test 1: habitat_suitability matches vsp() on example rasters
-test_that("habitat_suitability matches vsp() output", {
-  skip_if_not_installed("terra")
-  bio1  <- terra::unwrap(example_1$bio01) / 100
-  bio12 <- terra::unwrap(example_1$bio12) / 100
-  env_list <- list(bio1 = bio1, bio12 = bio12)
-
-  # reference using existing vsp()
-  ref <- vsp(env_list, example_1$par_list, return_raster = TRUE)
-
-  # new tiled function
-  out <- habitat_suitability(
-    param_list  = example_1$par_list,
-    env_list    = env_list,
-    return_prob = TRUE
-  )
-
-  expect_s4_class(out, "SpatRaster")
-  expect_equal(
-    as.vector(terra::values(out)),
-    as.vector(terra::values(ref)),
-    tolerance = 1e-8
-  )
-})
 
 # Test 2: returns SpatRaster with correct dimensions
 test_that("habitat_suitability returns SpatRaster with 1 layer", {
@@ -46,7 +22,7 @@ test_that("habitat_suitability returns SpatRaster with 1 layer", {
   expect_equal(terra::ncol(out), terra::ncol(bio1))
 })
 
-# Test 3: log-probability output is <= 0
+# Test 2: log-probability output is <= 0
 test_that("habitat_suitability log-prob output is <= 0", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100
@@ -63,7 +39,7 @@ test_that("habitat_suitability log-prob output is <= 0", {
   expect_true(all(vals[!is.na(vals)] <= 0))
 })
 
-# Test 4: probability output is in [0, 1]
+# Test 3: probability output is in [0, 1]
 test_that("habitat_suitability probabilities are in [0, 1]", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100
@@ -79,7 +55,7 @@ test_that("habitat_suitability probabilities are in [0, 1]", {
   expect_true(all(vals[!is.na(vals)] >= 0 & vals[!is.na(vals)] <= 1))
 })
 
-# Test 5: write to file works
+# Test 4: write to file works
 test_that("habitat_suitability writes to file", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100
@@ -99,7 +75,7 @@ test_that("habitat_suitability writes to file", {
   unlink(tmp)
 })
 
-# Test 6: geometry mismatch is caught
+# Test 5: geometry mismatch is caught
 test_that("habitat_suitability errors on geometry mismatch", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100
@@ -113,7 +89,7 @@ test_that("habitat_suitability errors on geometry mismatch", {
   )
 })
 
-# Test 7: log and probability outputs are consistent via exp()
+# Test 6: log and probability outputs are consistent via exp()
 test_that("habitat_suitability return_prob=FALSE is log of return_prob=TRUE", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100
@@ -130,7 +106,7 @@ test_that("habitat_suitability return_prob=FALSE is log of return_prob=TRUE", {
   expect_equal(exp(v_log[keep]), v_prob[keep], tolerance = 1e-10)
 })
 
-# Test 8: output layer name reflects return_prob
+# Test 7: output layer name reflects return_prob
 test_that("habitat_suitability layer name reflects return_prob", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100
@@ -145,7 +121,7 @@ test_that("habitat_suitability layer name reflects return_prob", {
   expect_equal(terra::names(r_log),  "log_prob_detect")
 })
 
-# Test 9: output geometry matches input
+# Test 8: output geometry matches input
 test_that("habitat_suitability output geometry matches input", {
   skip_if_not_installed("terra")
   bio1  <- terra::unwrap(example_1$bio01) / 100

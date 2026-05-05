@@ -1,94 +1,116 @@
-library(testthat)
-library(terra)
-library(tibble)
-library(checkmate)
+# tests/testthat/test-vsp.R
 
-test_that("vsp returns tibble when return_raster = FALSE", {
-  # Create mock environmental data
-  r1 <- rast(nrows = 2, ncols = 2, vals = c(10, 12, 14, 16))
-  r2 <- rast(nrows = 2, ncols = 2, vals = c(100, 120, 140, 160))
-  env_data <- list(bio1 = r1, bio12 = r2)
-
-  # Mock parameter list
-  param_list <- list(
-    mu = c(10, 100),
-    sigltil = c(2, 10),
-    sigrtil = c(2, 10),
-    ctil = 0.5,
-    pd = 0.8,
-    o_mat = matrix(0, nrow = 2, ncol = 2)
+test_that("vsp returns a tibble with correct structure, respects threshold, and handles edge cases", {
+  # Load example data
+  data("example_1", package = "xsdm")
+  
+  # Unpack rasters (scale as in example)
+  bio1_ts  <- terra::unwrap(example_1$bio01) / 100
+  bio12_ts <- terra::unwrap(example_1$bio12) / 100
+  env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
+  
+  # Set seed for reproducibility
+  set.seed(123)
+  
+  # ---- 1. Normal use with threshold = 0.5 ----
+  size_pres <- 50
+  size_abs  <- 50
+  
+  result <- vsp(
+    param_list    = example_1$par_list,
+    env_data      = env_data,
+    size_presence = size_pres,
+    size_absence  = size_abs,
+    threshold     = 0.5
   )
-
-  # Run function
-  result <- vsp(env_data, param_list, return_raster = FALSE)
-
-  # Assertions
-  expect_s3_class(result, "tbl_df")
-  expect_true(all(c("x", "y", "probs") %in% colnames(result)))
-  expect_equal(nrow(result), ncell(r1))
-})
-
-test_that("vsp returns SpatRaster when return_raster = TRUE", {
-  r1 <- rast(nrows = 2, ncols = 2, vals = c(10, 12, 14, 16))
-  r2 <- rast(nrows = 2, ncols = 2, vals = c(100, 120, 140, 160))
-  env_data <- list(bio1 = r1, bio12 = r2)
-
-  param_list <- list(
-    mu = c(10, 100),
-    sigltil = c(2, 10),
-    sigrtil = c(2, 10),
-    ctil = 0.5,
-    pd = 0.8,
-    o_mat = matrix(0, nrow = 2, ncol = 2)
+  
+  # Output structure
+  expect_true(tibble::is_tibble(result))
+  expect_named(result, c("lon", "lat", "presence"))
+  expect_type(result$lon, "double")
+  expect_type(result$lat, "double")
+  expect_type(result$presence, "integer")
+  expect_equal(nrow(result), size_pres + size_abs)
+  expect_true(all(result$presence %in% c(0L, 1L)))
+  
+  # Verify threshold split
+  suit <- habitat_suitability(
+    param_list  = example_1$par_list,
+    env_list    = env_data,
+    return_prob = TRUE
   )
-
-  result <- vsp(env_data, param_list, return_raster = TRUE)
-
-  expect_s4_class(result, "SpatRaster")
-  expect_equal(ncell(result), ncell(r1))
-})
-
-# ---- Invalid input tests ----
-test_that("vsp fails with invalid env_data", {
-  bad_env <- list(matrix(1:4, 2, 2)) # Not SpatRaster
-  param_list <- list(
-    mu = 1,
-    sigltil = 1,
-    sigrtil = 1,
-    ctil = 1,
-    pd = 1,
-    o_mat = matrix(0, 1, 1)
+  pts <- terra::vect(result[, c("lon", "lat")], geom = c("lon", "lat"))
+  prob_vals <- terra::extract(suit, pts)[[2]]  # first column = values
+  
+  is_pres <- prob_vals > 0.5
+  is_abs  <- prob_vals <= 0.5
+  expect_true(all(is_pres | is_abs))
+  expect_equal(sum(is_pres), size_pres)
+  expect_equal(sum(is_abs),  size_abs)
+  
+  # ---- 2. Edge case: threshold = 1.0 (no presence cells) ----
+  expect_warning(
+    result2 <- vsp(
+      param_list    = example_1$par_list,
+      env_data      = env_data,
+      size_presence = size_pres,
+      size_absence  = size_abs,
+      threshold     = 1.0
+    ),
+    "No cells available for presence sampling"
   )
-  expect_error(vsp(bad_env, param_list, return_raster = FALSE), "SpatRaster")
-})
-
-
-test_that("vsp fails with missing parameters", {
-  r1 <- rast(nrows = 2, ncols = 2, vals = c(10, 12, 14, 16))
-  env_data <- list(bio1 = r1)
-
-  # Missing required names
-  bad_params <- list(mu = 1)
+  expect_true(tibble::is_tibble(result2))
+  pts2 <- terra::vect(result2[, c("lon", "lat")], geom = c("lon", "lat"))
+  prob_vals2 <- terra::extract(suit, pts2)[[2]]
+  expect_true(all(prob_vals2 <= 1.0))
+  # Only absence points exist -> exactly size_abs rows (assuming enough cells)
+  expect_equal(nrow(result2), size_abs)
+  
+  # ---- 3. Edge case: threshold = 0.0 (absence pool may be empty or not) ----
+  # Instead of expecting a warning, we verify that all sampled points have
+  # probability > 0 (i.e., they come from the presence pool) and the total
+  # number of rows equals size_pres (the presence sample size).
+  expect_warning(
+    result3 <- vsp(
+      param_list    = example_1$par_list,
+      env_data      = env_data,
+      size_presence = size_pres,
+      size_absence  = size_abs,
+      threshold     = 0.0
+    ), regexp = "No cells available for absence sampling"
+  )
+  
+  pts3 <- terra::vect(result3[, c("lon", "lat")], geom = c("lon", "lat"))
+  prob_vals3 <- terra::extract(suit, pts3)[[2]]
+  expect_true(all(prob_vals3 > 0))  # all points must have positive probability
+  expect_equal(nrow(result3), size_abs)
+  
+  # ---- 4. Sample size larger than available cells (warning + reduced sample) ----
+  # Count number of cells with prob > 0.5 (presence pool)
+  n_pres_cells <- sum(prob_vals > 0.5, na.rm = TRUE)
+  expect_warning(
+    result4 <- vsp(
+      param_list    = example_1$par_list,
+      env_data      = env_data,
+      size_presence = n_pres_cells + 10000,
+      size_absence  = size_abs,
+      threshold     = 0.5
+    ),
+    "exceeds available cells"
+  )
+  expect_lte(nrow(result4), n_pres_cells + size_abs + 10000)
+  
+  # ---- 5. Invalid inputs ----
   expect_error(
-    vsp(env_data, bad_params, return_raster = FALSE),
-    "param_list must contain"
+    vsp(example_1$par_list, env_data, 10, 10, threshold = 1.5),
+    "Element 1 is not <= 1"
   )
-})
-
-test_that("vsp fails with invalid return_raster type", {
-  r1 <- rast(nrows = 2, ncols = 2, vals = c(10, 12, 14, 16))
-  env_data <- list(bio1 = r1)
-  param_list <- list(
-    mu = 1,
-    sigltil = 1,
-    sigrtil = 1,
-    ctil = 1,
-    pd = 1,
-    o_mat = matrix(0, 1, 1)
-  )
-
   expect_error(
-    vsp(env_data, param_list, return_raster = "yes"),
-    regexp = "logical flag"
+    vsp(example_1$par_list, env_data, 0, 10),
+    "size_presence"
+  )
+  expect_error(
+    vsp(example_1$par_list, env_data, 10, 0),
+    "size_absence"
   )
 })

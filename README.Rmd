@@ -18,11 +18,6 @@ knitr::opts_chunk$set(
 
 # xsdm
 
-<!-- badges: start -->
-[![Codecov test coverage](https://codecov.io/gh/xsdm-project/xsdm-devel/badge.svg)](https://app.codecov.io/gh/xsdm-project/xsdm-devel)
-[![R-CMD-check](https://github.com/xsdm-project/xsdm-devel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/xsdm-project/xsdm-devel/actions/workflows/R-CMD-check.yaml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-<!-- badges: end -->
 
 **xsdm** is an R package that integrates concepts of *stochastic demography*
 into species distribution modelling (SDM).  Instead of treating environmental
@@ -195,15 +190,15 @@ interpret_parameters(
 
 ### 5 · Project the range (virtual species probability map)
 
-`vsp()` uses the fitted parameter list and the full-grid rasters to return
-per-cell detection probabilities:
+`habitat_suitability()` uses the fitted parameter list and the full-grid rasters
+to return per-cell detection probabilities:
 
 ```{r project}
 # Use the full raster extent (not just occurrence points)
 env_data_full <- list(bio1 = bio1_ts, bio12 = bio12_ts)
 
 # Returns a tibble with x, y, probs by default
-prob_tbl  <- vsp(env_data_full, best_bio)
+prob_tbl  <- habitat_suitability(env_data_full, best_bio)
 head(prob_tbl)
 
 # Or as a SpatRaster for mapping
@@ -224,7 +219,7 @@ terra::plot(prob_rast, main = "Detection probability")
 | `bio_to_math()` | Convert biological-scale parameter list → math-scale vector |
 | `start_parms()` | Generate Latin-hypercube starting points from presence-only data |
 | `profile_likelihood()` | Profile one parameter while re-optimising over the rest |
-| `vsp()` | Produce a spatial probability-of-detection map |
+| `habitat_suitability()` | Produce a spatial probability-of-detection map |
 | `interpret_parameters()` | Diagnostic plots of the niche shape |
 | `dist_between_params()` | Distance between two parameter sets (Hungarian algorithm, equivalence-class aware) |
 
@@ -285,21 +280,7 @@ install.packages("devtools")
 devtools::install_github("xsdm-project/xsdm-devel")
 ```
 
-### Run the test suite
-
-```r
-devtools::test()
-```
-
-Tests are written with **testthat** (≥ 3.0) and cover all exported functions.
-Code coverage is tracked via [Codecov](https://app.codecov.io/gh/xsdm-project/xsdm-devel).
-
-### Manual visual tests
-
-Some diagnostics for `interpret_parameters()` require human inspection.
-See `tests/manual/README.md` for instructions on running those scripts.
-
-### Reporting issues
+  ### Reporting issues
 
 Please file bugs and feature requests on the
 [GitHub issue tracker](https://github.com/xsdm-project/xsdm-devel/issues).
@@ -346,4 +327,4 @@ BibTeX:
 
 ## License
 
-xsdm is released under the [GNU General Public License v3 or later](LICENSE.md).
+xsdm is released under the [GNU Affero General Public License v3 or later](LICENSE.md).

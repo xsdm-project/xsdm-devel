@@ -2,7 +2,7 @@
 #'
 #' @param env_data List of environmental variables time series stacks (each a
 #'   SpatRaster with multiple layers).
-#' @param occ Occurrence data frame. Should contain columns "name", "x", "y",
+#' @param occ Occurrence data frame. Should contain columns "name", "lon", "lat",
 #'   "presence". If NULL, returns data for all raster cells.
 #'
 #' @return A 3D array of dimensions M (points or cells) × N (time steps) × P
@@ -35,7 +35,7 @@ env_data_array <- function(env_data, occ = NULL) {
   if (!is.null(occ)) {
     checkmate::assert_names(
       names(occ),
-      must.include = c("name", "x", "y", "presence")
+      must.include = c("lon", "lat", "presence")
     )
   }
   
@@ -46,9 +46,9 @@ env_data_array <- function(env_data, occ = NULL) {
   # Create spatial points if occurrences are provided
   if (!is.null(occ)) {
     checkmate::assert_names(names(occ),
-      must.include = c("name", "x", "y", "presence")
+      must.include = c("lon", "lat", "presence")
     )
-    pts <- terra::vect(occ, geom = c("x", "y"))
+    pts <- terra::vect(occ, geom = c("lon", "lat"))
   } else {
     pts <- NULL
   }
