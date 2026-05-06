@@ -133,7 +133,7 @@ test_that("habitat_suitability output geometry matches input", {
 
   expect_equal(terra::nrow(result), terra::nrow(ref))
   expect_equal(terra::ncol(result), terra::ncol(ref))
-  expect_equal(terra::ext(result),  terra::ext(ref))
+  expect_equal(as.vector(terra::ext(result)),  as.vector(terra::ext(ref)))
   expect_equal(terra::crs(result),  terra::crs(ref))
 })
 

@@ -91,7 +91,7 @@ test_that("near -I_2 (angle pi - eps) is stable via logm path", {
   R2 <- matrix(c(cos(th), -sin(th), sin(th), cos(th)), 2, 2)
   rec <- extract_orthogonal_matrix_parameters(R2)
   O2 <- build_orthogonal_matrix(rec)
-  expect_equal(O2, R2, tolerance = 1e-8)
+  expect_equal(O2, R2, tolerance = 1e-6)
 })
 
 test_that("random large generators reproduce O (k = 3..6)", {

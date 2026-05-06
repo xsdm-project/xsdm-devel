@@ -142,6 +142,9 @@ test_that("log1mexp uses the accurate branch for tiny a", {
 })
 
 test_that("log1mexp warns on negative a and preserves NA", {
-  expect_warning(log1mexp(-1), "'a' >= 0")
+  expect_warning(
+    expect_warning(log1mexp(-1), "'a' >= 0"),
+    "NaNs produced"
+  )
   expect_equal(log1mexp(c(1, NA)), c(log1p(-exp(-1)), NA))
 })
