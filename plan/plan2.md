@@ -179,7 +179,7 @@ A list whose elements have positional meaning. Its length determines
 The positional layout is:
 
 | pos | informal name | type / value |
-|-------------|-------------|---------------------------------------------|
+|----|----|----|
 | 1..n\^2 | matrix-entry indices | integer vector; strictly increasing, no duplicates; entries in `1:n_env`. Empty integer vector allowed only if n\>=2. These cannot *all* be empty. |
 | n\^2 + 1 | `ltsgr_iv_method` | scalar character: `"Lyapunov"` or `"Tuljapurkar"`. `"Tuljapurkar"` is forbidden when n=1. |
 | n\^2 + 2 | `max_lag` | non-negative integer. Validated against `dim(env_dat)[2] - 3` when env_dat is supplied. For n=1 link `"ltsgr"` it is unused (kept for forward compatibility); for n=1 link `"ltsgr_iv"` it is the truncation lag of the Bartlett-weighted long-run-variance estimator (eq. (\ref{eq:iv_comp}) of source1). |
@@ -251,7 +251,7 @@ vectors continue to interoperate without renaming.
 The transformations between math and bio scales are:
 
 | bio | math | transformation from math to bio scales |
-|-------------------------|------------------------|-----------------------|
+|----|----|----|
 | `mu` | `mu1..p` | identity |
 | `sigltil` | `sigltil1..p` | `exp` |
 | `sigrtil` | `sigrtil1..p` | `exp` |
@@ -325,7 +325,7 @@ stage in which the change happens.
 #### Tier 1: exported R user-facing functions (current NAMESPACE)
 
 | function | class | stage | notes |
-|---------------------|---------|-------|--------------------------------|
+|----|----|----|----|
 | `bio_to_math` | A | v1px + 4 | Doc-and-error-handling cleanup in Stage v1px (§7.1.b); signature changes to `(model_structure, params_bio)` in Stage 4. |
 | `build_orthogonal_matrix` | C | — | Not changed. (Possible Stage v1px cosmetic tweak only.) |
 | `convert_equivalence_class` | C | — | Not changed. Continues to operate on the n=1 sub-list of `params_bio` (same shape as the v1 list). |
@@ -366,7 +366,7 @@ parity tests) and "private helpers" (used internally by other R
 functions).
 
 | function | location | class | stage | notes |
-|-----------------|--------------|--------|-------|--------------------------|
+|----|----|----|----|----|
 | `log_prob_detect_r` | `R/internals.R` | A | 5 | Pure-R reference for `log_prob_detect`. Tracks the exported function's signature and link dispatch. |
 | `loglik_bio_r` | `R/internals.R` | A | 6 | Pure-R reference for `loglik_bio`. |
 | `loglik_math_r` | `R/internals.R` | A | 7 | Pure-R reference for `loglik_math`. |
@@ -397,7 +397,7 @@ These are the C++ functions surfaced to R via `[[Rcpp::export]]`. The R
 wrappers in Tier 1/Tier 2 ultimately call into one of these.
 
 | C++ function | location | class | stage | notes |
-|-----------------|---------------|--------|--------|---------------------|
+|----|----|----|----|----|
 | `.build_orthogonal_matrix_cpp` | `src/expm_skew.cpp` | C | — | Not changed. |
 | `like_ltsg` | `src/like_ltsg.cpp` | C\* | 3a? | Not changed by default. **Conditional**: if Stage 3a chooses Path B (single-pass refactor) for `Sttil_mean_lrv`, this kernel may be refactored to expose the per-year `S_t` grid as a first-class output. Default is Path A, in which case this is class C. |
 | `log_prob_detect_cpp` | `src/log_prob_detect.cpp` | A | 5 | Takes `model_structure` + `params_bio`; link dispatch. |
@@ -418,7 +418,7 @@ called from the Tier 3 entry points and from each other. They are not
 directly callable from R.
 
 | C++ entity | location | class | stage | notes |
-|---------------|-----------|--------|--------|----------------------------|
+|----|----|----|----|----|
 | `xsdm::BioParams` (struct) | `src/math_to_bio.h` | A | 6 | Extended to hold the link-`"ltsgr_iv"` parameters as well; either tagged-union or two-struct approach (implementer's choice during Stage 6). |
 | `xsdm::loglik_bio_tile` | `src/loglik_bio.h` | A | 6 | Switches on link type; `"ltsgr"` branch is the existing code, `"ltsgr_iv"` branch is new. |
 | `xsdm::loglik_math_eval` | `src/loglik_math.h` | A | 7 | Takes `model_structure`-derived data. |
@@ -578,11 +578,11 @@ Behaviour:
 3.  Returns a numeric vector of length `n_loc`:
     -   `"ltsgr"`: call `Sttil_mean_lrv(..., compute_lrv = FALSE)` to
         get per-location `mean(\tilde{S}_t)`; then compute
-        `h = 0.5 * mean_Sttil`; then return `log(pd) - log1pexp(ctil + h)`.
+        `h = 0.5 * mean_Sttil`; then return
+        `log(pd) - log1pexp(ctil + h)`.
     -   `"ltsgr_iv"`: call
         `Sttil_mean_lrv(..., compute_lrv = TRUE,     max_lag = ...)` to
-        get both `mean_Sttil` and `lrv_Sttil` per location; then
-        return
+        get both `mean_Sttil` and `lrv_Sttil` per location; then return
         `log(pd) - log1pexp(beta - 4*gammatil/lrv_Sttil + 2*mean_Sttil/lrv_Sttil)`.
 4.  Honour `return_prob`.
 
@@ -1150,8 +1150,9 @@ Tests:
     series and (for the same widths) by parity with
     `2 * like_neg_ltsgr(...)` (since `like_neg_ltsgr` returns half the
     mean).
--   Same file covers the `compute_lrv = TRUE` path (`mean_Sttil` and `lrv_Sttil`)
-    with hand-computed short series at several values of `max_lag`.
+-   Same file covers the `compute_lrv = TRUE` path (`mean_Sttil` and
+    `lrv_Sttil`) with hand-computed short series at several values of
+    `max_lag`.
 -   R-vs-C++ parity at tolerance 1e-6.
 
 No-deltas: not applicable (new function).
@@ -1482,9 +1483,17 @@ parallel approach is acceptable.
 -   **Branch.** `version2` is the trunk for all v2 work (already
     exists). Each stage gets a sub-branch named
     `version2-stage<N>-<short-tag>`, branched off `version2`.
-    Sub-branches are short-lived. Force-pushes are allowed on
-    sub-branches up until the merge; never on `version2` and never on
-    `main`.
+    Sub-branches are short-lived.
+-   **No force-pushes.** Once a commit has been pushed to any branch on
+    the remote (sub-branches, `version2`, or `main`), it stays in the
+    history. `git push --force` and `git push --force-with-lease` are
+    not used in this project. If a sub-branch needs to incorporate new
+    commits from `version2`, do that by merging `version2` into the
+    sub-branch (not by rebasing the sub-branch). If a bad commit needs
+    to be undone, do that with a follow-up `git revert` (not by
+    rewriting history). The cost is a slightly noisier commit graph on
+    sub-branches; the benefit is that nothing pushed can be accidentally
+    lost.
 -   **Commits.** Small and atomic, with informative subject lines
     starting with the stage tag (e.g.
     `stage5: log_prob_detect     signature & R wrapper`,
@@ -1552,8 +1561,8 @@ A defensible default:
 -   `gammatil` math-scale range derived from the empirical scale of
     `mean_Sttil` and `lrv_Sttil` at the centred starting point: pick
     `gammatil` such that
-    `4 * gammatil / lrv_Sttil ≈ mean_Sttil / lrv_Sttil`, then take ±
-    a factor.
+    `4 * gammatil / lrv_Sttil ≈ mean_Sttil / lrv_Sttil`, then take ± a
+    factor.
 
 These are guesses; before Stage 8 we should run a sensitivity analysis
 on a virtual species to confirm reasonable optimization behaviour.
@@ -1604,7 +1613,7 @@ Resolved: replaced by `Sttil_mean_lrv`. Stage 3a introduces
 applied inline inside `log_prob_detect` (using `Sttil_mean_lrv`'s two
 outputs). Wired into §5.13 and §7.
 
-### 10.8 (open) `o_mat` slot in n=1 `params_bio[[1]]` when p=1
+### 10.8 (resolved) `o_mat` slot in n=1 `params_bio[[1]]` when p=1
 
 Resolved: `o_mat` must be **absent** in `params_bio[[1]]` when p=1. The
 validator rejects a list that contains an `o_mat` slot at p=1. (Wired
@@ -1631,14 +1640,32 @@ Promote `model_structure` to an `S3` class `xsdm_model_structure` with
 constructor and `print` method? Postponed to a future version; not
 blocking for v2.0. Listed in §11.
 
-### 10.12 (open) C++ implementation of `Sttil_mean_lrv` `compute_lrv = TRUE`
+### 10.12 (resolved) C++ implementation of `Sttil_mean_lrv` `compute_lrv = TRUE`
 
-Whether to implement the `compute_lrv = TRUE` path in C++ as a single
-sweep that produces both `mean_Sttil` and `lrv_Sttil` (preferred), or as two
-sweeps reusing the existing `like_ltsg` kernel for the mean and a
-separate kernel for the variance. The former is recommended; the latter
-is acceptable as a fallback. Decide during Stage 3a based on what the
-lower-level kernel can cleanly expose.
+Resolved: Stage 3a implements the `compute_lrv = TRUE` path as a
+**single sweep** over `env_dat`. The new C++ kernel
+`Sttil_mean_lrv_cpp` (and its underlying header-only helper
+`xsdm::Sttil_mean_lrv_tile`) is structurally similar to v1's
+`like_ltsg` kernel but additionally accumulates, in the same per-
+location loop, the raw moments needed for the Bartlett-weighted
+long-run-variance estimator: `Σ_t \tilde{S}_t` for the mean and
+`Σ_t \tilde{S}_t · \tilde{S}_{t-k}` for `k = 1, ..., max_lag` for the
+lagged sums. Bartlett weights are applied at the end.
+
+Per-location storage for the lagged-sum accumulators is `O(max_lag)`;
+the extra arithmetic on top of the existing per-location sweep is
+roughly `n_time × max_lag` ops. For typical workloads (`n_time = 39`,
+`max_lag = 4`) that is ~156 extra ops per location, marginal compared
+to the existing ~`n_time × p²` matrix-multiply ops per location. The
+two-sweep fallback discussed in earlier drafts of this plan is
+therefore not needed; Stage 3a does not have to make a runtime-vs-
+implementation-effort tradeoff at this point.
+
+`like_ltsg` itself is unchanged (class C in §5.1). The new kernel is
+written from scratch alongside it; v2 ends up with `like_ltsg` (used
+by the v1 detection-link computation paths) and `Sttil_mean_lrv_cpp`
+(used by the link-`"ltsgr_iv"` path and, after Stage 3b, by the
+internal callers that previously called `like_neg_ltsgr`).
 
 ------------------------------------------------------------------------
 
