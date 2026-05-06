@@ -21,7 +21,6 @@
 ^src/.*\.o$
 ^src/.*\.obj$
 ^inst/articles
-^inst/doc$
 ^data-raw$
 ^vignettes/_articles_draft
 ^vignettes/articles
