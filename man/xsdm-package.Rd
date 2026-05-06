@@ -12,6 +12,8 @@ Integrates concepts of stochastic demography into species distribution modelling
 Useful links:
 \itemize{
   \item \url{https://xsdm-project.github.io/xsdm/}
+  \item \url{https://xsdm-project.github.io/xsdm-devel/}
+  \item Report bugs at \url{https://github.com/xsdm-project/xsdm-devel/issues}
 }
 
 }
