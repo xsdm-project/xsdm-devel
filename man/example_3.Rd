@@ -4,7 +4,7 @@
 \name{example_3}
 \alias{example_3}
 \title{Consolidated example data for the xsdm.
-This is environmental data array  an occurence presence absence vector
+This is environmental data array and an occurrence presence absence vector
 Blarina carolinensis
 A named list containing all example datasets used in the package's
 documentation and examples.}
@@ -27,7 +27,7 @@ example_3
 }
 \description{
 Consolidated example data for the xsdm.
-This is environmental data array  an occurence presence absence vector
+This is environmental data array and an occurrence presence absence vector
 Blarina carolinensis
 A named list containing all example datasets used in the package's
 documentation and examples.

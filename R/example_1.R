@@ -3,7 +3,7 @@
 #' A named list containing all example datasets used in the package's
 #' documentation and examples.
 #'
-#' @format A list of 11 objects:
+#' @format A list of 12 objects:
 #' \describe{
 #'   \item{\code{par_vec}}{Named numeric vector of length 9. Math-scale
 #'     parameters for a 2‑variable model (p = 2). Canonical names:
