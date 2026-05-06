@@ -179,7 +179,7 @@ A list whose elements have positional meaning. Its length determines
 The positional layout is:
 
 | pos | informal name | type / value |
-|----------|----------|----------------------------------------------------|
+|-------------|-------------|---------------------------------------------|
 | 1..n\^2 | matrix-entry indices | integer vector; strictly increasing, no duplicates; entries in `1:n_env`. Empty integer vector allowed only if n\>=2. These cannot *all* be empty. |
 | n\^2 + 1 | `ltsgr_iv_method` | scalar character: `"Lyapunov"` or `"Tuljapurkar"`. `"Tuljapurkar"` is forbidden when n=1. |
 | n\^2 + 2 | `max_lag` | non-negative integer. Validated against `dim(env_dat)[2] - 3` when env_dat is supplied. For n=1 link `"ltsgr"` it is unused (kept for forward compatibility); for n=1 link `"ltsgr_iv"` it is the truncation lag of the Bartlett-weighted long-run-variance estimator (eq. (\ref{eq:iv_comp}) of source1). |
@@ -293,71 +293,70 @@ overrides specified by this document):
 
 ## 5. Inventory and function-by-function spec
 
-This section enumerates **every function in the package** —
-exported R user-facing functions, internal R helpers and references,
-Rcpp-exported C++ entry points, and C++ namespace-scope inline
-helpers — and classifies each by what happens to it in v2.
+This section enumerates **every function in the package** — exported R
+user-facing functions, internal R helpers and references, Rcpp-exported
+C++ entry points, and C++ namespace-scope inline helpers — and
+classifies each by what happens to it in v2.
 
 ### 5.1 Classification
 
--   **(A)** Signature change. The function continues to exist in v2
-    but takes different arguments — typically `model_structure` /
-    `params_bio` / `params_math` instead of the v1 individual
-    parameter arguments. Behavior must be numerically backwards-
-    compatible on the n=1 link `"ltsgr"` overlap (the no-deltas
-    invariant of §2.2).
+-   **(A)** Signature change. The function continues to exist in v2 but
+    takes different arguments — typically `model_structure` /
+    `params_bio` / `params_math` instead of the v1 individual parameter
+    arguments. Behavior must be numerically backwards- compatible on the
+    n=1 link `"ltsgr"` overlap (the no-deltas invariant of §2.2).
 -   **(B)** New function in v2 (no v1 equivalent).
 -   **(C)** No control-flow / behavioural change. The function may
     receive cosmetic-only adjustments during Stage v1px (renames for
     identifier consistency, doc fixes, dead-code removal), but the
-    signature, semantics, and computed result are unaffected by v2.
-    For exported functions this means the v1 user-facing API of the
-    function survives v2 unchanged.
--   **(D)** Deleted. Removed from the package source as part of v2.
-    A→D means the function exists in v1, is touched (or shadowed)
-    during the v2 staging, and is removed before v2 ships.
+    signature, semantics, and computed result are unaffected by v2. For
+    exported functions this means the v1 user-facing API of the function
+    survives v2 unchanged.
+-   **(D)** Deleted. Removed from the package source as part of v2. A→D
+    means the function exists in v1, is touched (or shadowed) during the
+    v2 staging, and is removed before v2 ships.
 
-The four tables below cover, in turn, exported R user-facing
-functions (Tier 1), internal R helpers and pure-R references
-(Tier 2), Rcpp-exported C++ entry points called by R wrappers
-(Tier 3), and C++ namespace-scope inline helpers (Tier 4). For
-each row, "stage" is the v2 stage in which the change happens.
+The four tables below cover, in turn, exported R user-facing functions
+(Tier 1), internal R helpers and pure-R references (Tier 2),
+Rcpp-exported C++ entry points called by R wrappers (Tier 3), and C++
+namespace-scope inline helpers (Tier 4). For each row, "stage" is the v2
+stage in which the change happens.
 
 #### Tier 1: exported R user-facing functions (current NAMESPACE)
 
-| function                              | class | stage    | notes |
-|---------------------------------------|-------|----------|-------|
-| `bio_to_math`                         | A     | v1px + 4 | Doc-and-error-handling cleanup in Stage v1px (§7.1.b); signature changes to `(model_structure, params_bio)` in Stage 4. |
-| `build_orthogonal_matrix`             | C     | —        | Not changed. (Possible Stage v1px cosmetic tweak only.) |
-| `convert_equivalence_class`           | C     | —        | Not changed. Continues to operate on the n=1 sub-list of `params_bio` (same shape as the v1 list). |
-| `create_mask`                         | A→D   | 7        | Deleted in Stage 7. Job folded into the new internal helper `assemble_params_math_()`. |
-| `create_param_vector_masked`          | A→D   | 7        | Deleted in Stage 7. Replaced by `assemble_params_math_(model_structure, params_math, mask)`, which wraps the C++ kernel `.build_canonical_param_vector_cpp` (whose signature changes in Stage 7 to take `model_structure`). |
-| `dist_between_params`                 | A     | 10       | Takes `model_structure`; `p1`/`p2` in `params_bio` or `params_math` form. |
-| `env_data_array`                      | C     | —        | Not changed. |
-| `expit`                               | C     | —        | Not changed. |
-| `extract_orthogonal_matrix_parameters`| C     | —        | Not changed. |
-| `habitat_suitability`                 | A     | 11       | Takes `env_list`, `model_structure`, `params_bio`. |
-| `interpret_parameters`                | A     | 12       | Takes `model_structure`, `params_bio`, plus an optional internal `compute_contour_grid_()` extracted from `compute_y` for no-deltas testing. |
-| `like_ltsg`                           | C     | —        | The low-level Rcpp-exported kernel. Not changed in v2 (signature unchanged); see Tier 3 row for the conditional-on-Stage-3a-Path-B case. |
-| `like_neg_ltsgr`                      | A→D   | 3a + 3b  | Stage 3a leaves it alone (new `Sttil_mean_lrv` lands alongside). Stage 3b deletes it and rewrites the few internal callers. |
-| `log1mexp`                            | C     | —        | Not changed. |
-| `log1pexp`                            | C     | —        | Not changed. |
-| `log_prob_detect`                     | A     | 5        | Takes `env_dat`, `model_structure`, `params_bio`. Internal dispatch on `detection_link_type`. |
-| `loglik_bio`                          | A     | 6        | Takes `env_dat`, `occ`, `model_structure`, `params_bio`. |
-| `loglik_math`                         | A     | 7        | Takes `params_math`, `env_dat`, `occ`, `model_structure`, `mask`, ... |
-| `make_mask_names`                     | A→D   | 7        | Stays exported and unchanged through Stage 6, becomes a thin wrapper around `mathscale_names` from Stage 2 onward, deleted in Stage 7. |
-| `math_to_bio`                         | A     | 4        | Takes `model_structure` and `params_math`; returns `params_bio` (shape change). |
-| `num_par`                             | A→D   | 7        | Same lifecycle as `make_mask_names`. |
-| `num_env_var`                         | A→D   | 7        | Same lifecycle as `make_mask_names`. |
-| `optimize_likelihood`                 | A     | 8        | Takes `env_dat`, `occ`, `model_structure`, `mask`, ... |
-| `profile_likelihood`                  | A     | 9        | Takes `env_dat`, `occ`, `model_structure`, `mask`, `params_math_optim`, `profile_parameter`, ... |
-| `start_parms`                         | A     | 8        | Takes `env_dat`, `model_structure`, `mask`, `breadth`, `num_starts`. |
-| `vsp`                                 | A     | 11       | Takes `env_data`, `model_structure`, `params_bio`. |
-| **new in v2:**                        |       |          | |
-| `mathscale_names`                     | B     | 2        | Returns canonical math-scale names from `model_structure`. **Required to work for arbitrary n.** |
-| `validate_model_structure`            | B     | 1        | Exported. **Required to work for arbitrary n.** |
-| `validate_params_bio`                 | B     | 1        | Exported. Takes `model_structure`, `params_bio`, optional `env_dat`. **Required to work for arbitrary n.** |
-| `Sttil_mean_lrv`                      | B     | 3a       | New replacement for `like_neg_ltsgr`. R wrapper + C++ kernel + R reference (see Tiers 2 and 3). See §5.13. |
+| function | class | stage | notes |
+|---------------------|---------|-------|--------------------------------|
+| `bio_to_math` | A | v1px + 4 | Doc-and-error-handling cleanup in Stage v1px (§7.1.b); signature changes to `(model_structure, params_bio)` in Stage 4. |
+| `build_orthogonal_matrix` | C | — | Not changed. (Possible Stage v1px cosmetic tweak only.) |
+| `convert_equivalence_class` | C | — | Not changed. Continues to operate on the n=1 sub-list of `params_bio` (same shape as the v1 list). |
+| `create_mask` | A→D | 7 | Deleted in Stage 7. Job folded into the new internal helper `assemble_params_math_()`. |
+| `create_param_vector_masked` | A→D | 7 | Deleted in Stage 7. Replaced by `assemble_params_math_(model_structure, params_math, mask)`, which wraps the C++ kernel `.build_canonical_param_vector_cpp` (whose signature changes in Stage 7 to take `model_structure`). |
+| `dist_between_params` | A | 10 | Takes `model_structure`; `p1`/`p2` in `params_bio` or `params_math` form. |
+| `env_data_array` | C | — | Not changed. |
+| `expit` | C | — | Not changed. |
+| `extract_orthogonal_matrix_parameters` | C | — | Not changed. |
+| `habitat_suitability` | A | 11 | Takes `env_list`, `model_structure`, `params_bio`. |
+| `interpret_parameters` | A | 12 | Takes `model_structure`, `params_bio`, plus an optional internal `compute_contour_grid_()` extracted from `compute_y` for no-deltas testing. |
+| `like_ltsg` | C | — | The low-level Rcpp-exported kernel. Not changed in v2 (signature unchanged); see Tier 3 row for the conditional-on-Stage-3a-Path-B case. |
+| `like_neg_ltsgr` | A→D | 3a + 3b | Stage 3a leaves it alone (new `Sttil_mean_lrv` lands alongside). Stage 3b deletes it and rewrites the few internal callers. |
+| `log1mexp` | C | — | Not changed. |
+| `log1pexp` | C | — | Not changed. |
+| `log_prob_detect` | A | 5 | Takes `env_dat`, `model_structure`, `params_bio`. Internal dispatch on `detection_link_type`. |
+| `loglik_bio` | A | 6 | Takes `env_dat`, `occ`, `model_structure`, `params_bio`. |
+| `loglik_math` | A | 7 | Takes `params_math`, `env_dat`, `occ`, `model_structure`, `mask`, ... |
+| `make_mask_names` | A→D | 7 | Stays exported and unchanged through Stage 6, becomes a thin wrapper around `mathscale_names` from Stage 2 onward, deleted in Stage 7. |
+| `math_to_bio` | A | 4 | Takes `model_structure` and `params_math`; returns `params_bio` (shape change). |
+| `num_par` | A→D | 7 | Same lifecycle as `make_mask_names`. |
+| `num_env_var` | A→D | 7 | Same lifecycle as `make_mask_names`. |
+| `optimize_likelihood` | A | 8 | Takes `env_dat`, `occ`, `model_structure`, `mask`, ... |
+| `profile_likelihood` | A | 9 | Takes `env_dat`, `occ`, `model_structure`, `mask`, `params_math_optim`, `profile_parameter`, ... |
+| `start_parms` | A | 8 | Takes `env_dat`, `model_structure`, `mask`, `breadth`, `num_starts`. |
+| `vsp` | A | 11 | Takes `env_data`, `model_structure`, `params_bio`. |
+| **new in v2:** |  |  |  |
+| `mathscale_names` | B | 2 | Returns canonical math-scale names from `model_structure`. **Required to work for arbitrary n.** |
+| `validate_model_structure` | B | 1 | Exported. **Required to work for arbitrary n.** |
+| `validate_params_bio` | B | 1 | Exported. Takes `model_structure`, `params_bio`, optional `env_dat`. **Required to work for arbitrary n.** |
+| `Sttil_mean_lrv` | B | 3a | New replacement for `like_neg_ltsgr`. R wrapper + C++ kernel + R reference (see Tiers 2 and 3). See §5.13. |
 
 #### Tier 2: internal R helpers and pure-R references
 
@@ -366,83 +365,83 @@ into "pure-R references" (named `<func>_r`, used only by `_r_vs_cpp`
 parity tests) and "private helpers" (used internally by other R
 functions).
 
-| function                          | location                          | class | stage    | notes |
-|-----------------------------------|-----------------------------------|-------|----------|-------|
-| `log_prob_detect_r`               | `R/internals.R`                   | A     | 5        | Pure-R reference for `log_prob_detect`. Tracks the exported function's signature and link dispatch. |
-| `loglik_bio_r`                    | `R/internals.R`                   | A     | 6        | Pure-R reference for `loglik_bio`. |
-| `loglik_math_r`                   | `R/internals.R`                   | A     | 7        | Pure-R reference for `loglik_math`. |
-| `math_to_bio_r`                   | `R/internals.R`                   | A     | 4        | Pure-R reference for `math_to_bio`. |
-| `create_param_vector_masked_r`    | `R/internals.R`                   | A→D   | 7        | Deleted alongside the public counterpart. Its validation logic moves into `assemble_params_math_()`. |
-| `like_neg_ltsgr_r`                | `R/like_neg_ltsgr_r.R`            | A→D   | 3b       | Deleted alongside `like_neg_ltsgr`. |
-| `like_neg_ltsgr_cpp`              | `R/like_neg_ltsgr_cpp.R`          | A→D   | 3b       | Internal alias to `like_neg_ltsgr` (kept only for back-compatibility with internal callers and tests). Deleted in Stage 3b. |
-| `dist_between_params_r`           | `R/internals.R`                   | A     | 10       | Hungarian-algorithm pure-R reference for `dist_between_params`. |
-| `distance_between_params_r`       | `R/internals.R`                   | C     | —        | Brute-force (enumerate all flips/perms) reference, used to cross-check `dist_between_params_r` on small examples. Operates on biological-scale lists; not affected by the math-scale signature changes. |
-| `check_env_array`                 | `R/internals.R`                   | C     | —        | Internal env_dat shape validator. Not changed. |
-| `logit`                           | `R/internals.R`                   | C     | —        | Internal utility. Not changed. |
-| `permutations`                    | `R/internals.R`                   | C     | —        | Internal utility (used by `distance_between_params_r`). Not changed. |
-| `auto_plot_lims_`                 | `R/interpret_parameters.R`        | A     | 12       | Internal helper for `interpret_parameters`. Its `param_list` argument becomes `params_bio`. |
-| `compute_contour_grid_`           | `R/interpret_parameters.R`        | B     | 12       | New internal helper extracted from the existing `compute_y` closure inside `interpret_parameters`, so the contour grid `z` is computable without drawing (needed for the no-deltas snapshot). |
-| `get_range_df_`                   | `R/start_parms.R`                 | A     | 8        | Range builder. Takes `model_structure`; gains link-`"ltsgr_iv"` heuristics for `gammatil` / `beta`. |
-| `get_start_parms_`                | `R/start_parms.R`                 | C     | —        | Sobol-design wrapper. Takes a ranges data-frame whose row-names are already the right canonical names; logic unchanged. (Possible v1px rename `numstarts` → `num_starts`.) |
-| `profile_one_side_`               | `R/profile_likelihood.R`          | A     | 9        | Internal helper. Threads `model_structure` through. |
-| `optimize_loglik_math_`           | `R/optimize_likelihood.R`         | A     | 8        | Internal single-start runner. Threads `model_structure` through; constructs the XPtr factory with `model_structure` captured. |
-| `resolve_xptr_grad_control_`      | `R/optimize_likelihood.R`         | C     | —        | Small ctrl-merging helper; not affected. |
-| `xsdmStartupMessage`              | `R/zzz.R`                         | C     | —        | Package-startup banner; not affected. |
-| **new in v2:**                    |                                   |       |          | |
-| `assemble_params_math_`           | `R/internals.R`                   | B     | 7        | Replaces `create_param_vector_masked` (and absorbs `create_mask`'s job). Validates that names of `params_math` and `mask` together equal `mathscale_names(model_structure)` with no overlap and no missing slots; delegates the merge to the C++ kernel. |
-| `Sttil_mean_lrv_r`                | `R/internals.R`                   | B     | 3a       | Pure-R reference for `Sttil_mean_lrv`. Used in the parity test. |
+| function | location | class | stage | notes |
+|-----------------|--------------|--------|-------|--------------------------|
+| `log_prob_detect_r` | `R/internals.R` | A | 5 | Pure-R reference for `log_prob_detect`. Tracks the exported function's signature and link dispatch. |
+| `loglik_bio_r` | `R/internals.R` | A | 6 | Pure-R reference for `loglik_bio`. |
+| `loglik_math_r` | `R/internals.R` | A | 7 | Pure-R reference for `loglik_math`. |
+| `math_to_bio_r` | `R/internals.R` | A | 4 | Pure-R reference for `math_to_bio`. |
+| `create_param_vector_masked_r` | `R/internals.R` | A→D | 7 | Deleted alongside the public counterpart. Its validation logic moves into `assemble_params_math_()`. |
+| `like_neg_ltsgr_r` | `R/like_neg_ltsgr_r.R` | A→D | 3b | Deleted alongside `like_neg_ltsgr`. |
+| `like_neg_ltsgr_cpp` | `R/like_neg_ltsgr_cpp.R` | A→D | 3b | Internal alias to `like_neg_ltsgr` (kept only for back-compatibility with internal callers and tests). Deleted in Stage 3b. |
+| `dist_between_params_r` | `R/internals.R` | A | 10 | Hungarian-algorithm pure-R reference for `dist_between_params`. |
+| `distance_between_params_r` | `R/internals.R` | C | — | Brute-force (enumerate all flips/perms) reference, used to cross-check `dist_between_params_r` on small examples. Operates on biological-scale lists; not affected by the math-scale signature changes. |
+| `check_env_array` | `R/internals.R` | C | — | Internal env_dat shape validator. Not changed. |
+| `logit` | `R/internals.R` | C | — | Internal utility. Not changed. |
+| `permutations` | `R/internals.R` | C | — | Internal utility (used by `distance_between_params_r`). Not changed. |
+| `auto_plot_lims_` | `R/interpret_parameters.R` | A | 12 | Internal helper for `interpret_parameters`. Its `param_list` argument becomes `params_bio`. |
+| `compute_contour_grid_` | `R/interpret_parameters.R` | B | 12 | New internal helper extracted from the existing `compute_y` closure inside `interpret_parameters`, so the contour grid `z` is computable without drawing (needed for the no-deltas snapshot). |
+| `get_range_df_` | `R/start_parms.R` | A | 8 | Range builder. Takes `model_structure`; gains link-`"ltsgr_iv"` heuristics for `gammatil` / `beta`. |
+| `get_start_parms_` | `R/start_parms.R` | C | — | Sobol-design wrapper. Takes a ranges data-frame whose row-names are already the right canonical names; logic unchanged. (Possible v1px rename `numstarts` → `num_starts`.) |
+| `profile_one_side_` | `R/profile_likelihood.R` | A | 9 | Internal helper. Threads `model_structure` through. |
+| `optimize_loglik_math_` | `R/optimize_likelihood.R` | A | 8 | Internal single-start runner. Threads `model_structure` through; constructs the XPtr factory with `model_structure` captured. |
+| `resolve_xptr_grad_control_` | `R/optimize_likelihood.R` | C | — | Small ctrl-merging helper; not affected. |
+| `xsdmStartupMessage` | `R/zzz.R` | C | — | Package-startup banner; not affected. |
+| **new in v2:** |  |  |  |  |
+| `assemble_params_math_` | `R/internals.R` | B | 7 | Replaces `create_param_vector_masked` (and absorbs `create_mask`'s job). Validates that names of `params_math` and `mask` together equal `mathscale_names(model_structure)` with no overlap and no missing slots; delegates the merge to the C++ kernel. |
+| `Sttil_mean_lrv_r` | `R/internals.R` | B | 3a | Pure-R reference for `Sttil_mean_lrv`. Used in the parity test. |
 
 #### Tier 3: Rcpp-exported C++ entry points (callable from R)
 
-These are the C++ functions surfaced to R via `[[Rcpp::export]]`. The
-R wrappers in Tier 1/Tier 2 ultimately call into one of these.
+These are the C++ functions surfaced to R via `[[Rcpp::export]]`. The R
+wrappers in Tier 1/Tier 2 ultimately call into one of these.
 
-| C++ function                              | location                          | class | stage    | notes |
-|-------------------------------------------|-----------------------------------|-------|----------|-------|
-| `.build_orthogonal_matrix_cpp`            | `src/expm_skew.cpp`               | C     | —        | Not changed. |
-| `like_ltsg`                               | `src/like_ltsg.cpp`               | C\*   | 3a?      | Not changed by default. **Conditional**: if Stage 3a chooses Path B (single-pass refactor) for `Sttil_mean_lrv`, this kernel may be refactored to expose the per-year `S_t` grid as a first-class output. Default is Path A, in which case this is class C. |
-| `log_prob_detect_cpp`                     | `src/log_prob_detect.cpp`         | A     | 5        | Takes `model_structure` + `params_bio`; link dispatch. |
-| `loglik_bio_cpp`                          | `src/loglik_bio.cpp`              | A     | 6        | Takes `model_structure` + `params_bio`. |
-| `loglik_math_cpp`                         | `src/loglik_math.cpp`             | A     | 7        | Takes `model_structure`. |
-| `make_loglik_math_xptr`                   | `src/loglik_math_xptr.cpp`        | D     | v1px or 7 | Older R-callback variant of the XPtr factory. Used only by its own parity test (`tests/testthat/test-loglik_math_xptr_parity.R`); the comment in `R/profile_likelihood.R:69` notes that it has a bug that prevents it from working in `profile_likelihood`. Recommended for deletion in Stage v1px (or, at the latest, Stage 7) along with its parity test. |
-| `make_loglik_math_xptr_cpp`               | `src/loglik_math_xptr_cpp.cpp`    | A     | 7        | The pure-C++ XPtr factory used by `optimize_likelihood`. Captures `model_structure` in the closure; closure body uses `validate = FALSE` semantics. |
-| `.math_to_bio_cpp`                        | `src/math_to_bio.cpp`             | A     | 4        | Takes `model_structure`. Return shape changes to match `params_bio`. |
-| `.build_canonical_param_vector_cpp`       | `src/math_to_bio.cpp`             | A     | 7        | Takes `model_structure` instead of `p`. The R-side helper `assemble_params_math_()` is what calls this. |
-| `.solve_lsap_cpp`                         | `src/solve_lsap.cpp`              | C     | —        | Hungarian-algorithm linear-sum-assignment kernel. Not changed. |
-| **new in v2:**                            |                                   |       |          | |
-| `Sttil_mean_lrv_cpp`                      | `src/Sttil_mean_lrv.cpp` (new)    | B     | 3a       | C++ kernel for the new replacement of `like_neg_ltsgr`. Returns time-mean-of-`\tilde{S}_t` per location; optionally also long-run variance via Bartlett-weighted truncated autocovariance sum (single sweep when feasible). |
+| C++ function | location | class | stage | notes |
+|-----------------|---------------|--------|--------|---------------------|
+| `.build_orthogonal_matrix_cpp` | `src/expm_skew.cpp` | C | — | Not changed. |
+| `like_ltsg` | `src/like_ltsg.cpp` | C\* | 3a? | Not changed by default. **Conditional**: if Stage 3a chooses Path B (single-pass refactor) for `Sttil_mean_lrv`, this kernel may be refactored to expose the per-year `S_t` grid as a first-class output. Default is Path A, in which case this is class C. |
+| `log_prob_detect_cpp` | `src/log_prob_detect.cpp` | A | 5 | Takes `model_structure` + `params_bio`; link dispatch. |
+| `loglik_bio_cpp` | `src/loglik_bio.cpp` | A | 6 | Takes `model_structure` + `params_bio`. |
+| `loglik_math_cpp` | `src/loglik_math.cpp` | A | 7 | Takes `model_structure`. |
+| `make_loglik_math_xptr` | `src/loglik_math_xptr.cpp` | D | v1px or 7 | Older R-callback variant of the XPtr factory. Used only by its own parity test (`tests/testthat/test-loglik_math_xptr_parity.R`); the comment in `R/profile_likelihood.R:69` notes that it has a bug that prevents it from working in `profile_likelihood`. Recommended for deletion in Stage v1px (or, at the latest, Stage 7) along with its parity test. |
+| `make_loglik_math_xptr_cpp` | `src/loglik_math_xptr_cpp.cpp` | A | 7 | The pure-C++ XPtr factory used by `optimize_likelihood`. Captures `model_structure` in the closure; closure body uses `validate = FALSE` semantics. |
+| `.math_to_bio_cpp` | `src/math_to_bio.cpp` | A | 4 | Takes `model_structure`. Return shape changes to match `params_bio`. |
+| `.build_canonical_param_vector_cpp` | `src/math_to_bio.cpp` | A | 7 | Takes `model_structure` instead of `p`. The R-side helper `assemble_params_math_()` is what calls this. |
+| `.solve_lsap_cpp` | `src/solve_lsap.cpp` | C | — | Hungarian-algorithm linear-sum-assignment kernel. Not changed. |
+| **new in v2:** |  |  |  |  |
+| `Sttil_mean_lrv_cpp` | `src/Sttil_mean_lrv.cpp` (new) | B | 3a | C++ kernel for the new replacement of `like_neg_ltsgr`. Returns time-mean-of-`\tilde{S}_t` per location; optionally also long-run variance via Bartlett-weighted truncated autocovariance sum (single sweep when feasible). |
 
 #### Tier 4: C++ namespace-scope inline helpers (header-only)
 
 These are the inline `xsdm::*` functions and structs in `src/*.h`,
-called from the Tier 3 entry points and from each other. They are
-not directly callable from R.
+called from the Tier 3 entry points and from each other. They are not
+directly callable from R.
 
-| C++ entity                         | location                  | class | stage   | notes |
-|------------------------------------|---------------------------|-------|---------|-------|
-| `xsdm::BioParams` (struct)         | `src/math_to_bio.h`       | A     | 6       | Extended to hold the link-`"ltsgr_iv"` parameters as well; either tagged-union or two-struct approach (implementer's choice during Stage 6). |
-| `xsdm::loglik_bio_tile`            | `src/loglik_bio.h`        | A     | 6       | Switches on link type; `"ltsgr"` branch is the existing code, `"ltsgr_iv"` branch is new. |
-| `xsdm::loglik_math_eval`           | `src/loglik_math.h`       | A     | 7       | Takes `model_structure`-derived data. |
-| `xsdm::math_to_bio_apply`          | `src/math_to_bio.h`       | A     | 4       | Takes `model_structure`-derived dispatch info. |
-| `xsdm::expit_cpp`                  | `src/math_to_bio.h`       | C     | —       | Not changed. |
-| `xsdm::log1mexp_cpp`               | `src/loglik_bio.h`        | C     | —       | Not changed. |
-| `xsdm::log1pexp` (inline in cpp)   | `src/log_prob_detect.h`   | C     | —       | Not changed. |
-| `xsdm::num_par_cpp`                | `src/math_to_bio.h`       | A→D   | 7       | Replaced by a `mathscale_names`-derived count, computed R-side once per call; deleted alongside its R counterpart. |
-| `xsdm::build_orthogonal_matrix_cpp`| `src/expm_skew.h`         | C     | —       | Not changed. |
+| C++ entity | location | class | stage | notes |
+|---------------|-----------|--------|--------|----------------------------|
+| `xsdm::BioParams` (struct) | `src/math_to_bio.h` | A | 6 | Extended to hold the link-`"ltsgr_iv"` parameters as well; either tagged-union or two-struct approach (implementer's choice during Stage 6). |
+| `xsdm::loglik_bio_tile` | `src/loglik_bio.h` | A | 6 | Switches on link type; `"ltsgr"` branch is the existing code, `"ltsgr_iv"` branch is new. |
+| `xsdm::loglik_math_eval` | `src/loglik_math.h` | A | 7 | Takes `model_structure`-derived data. |
+| `xsdm::math_to_bio_apply` | `src/math_to_bio.h` | A | 4 | Takes `model_structure`-derived dispatch info. |
+| `xsdm::expit_cpp` | `src/math_to_bio.h` | C | — | Not changed. |
+| `xsdm::log1mexp_cpp` | `src/loglik_bio.h` | C | — | Not changed. |
+| `xsdm::log1pexp` (inline in cpp) | `src/log_prob_detect.h` | C | — | Not changed. |
+| `xsdm::num_par_cpp` | `src/math_to_bio.h` | A→D | 7 | Replaced by a `mathscale_names`-derived count, computed R-side once per call; deleted alongside its R counterpart. |
+| `xsdm::build_orthogonal_matrix_cpp` | `src/expm_skew.h` | C | — | Not changed. |
 | `xsdm::expm_pade13`, `mm_cm`, `axpy_mat`, `set_scaled_identity`, `inf_norm`, `gauss_solve` | `src/expm_skew.h` | C | — | Low-level matrix-exponential utilities. Not changed. |
-| **new in v2:**                     |                           |       |         | |
-| `xsdm::Sttil_mean_lrv_tile`        | `src/Sttil_mean_lrv.h` (new) | B  | 3a      | C++ kernel header for `Sttil_mean_lrv_cpp`. Computes per-location mean and (optionally) long-run variance of `\tilde{S}_t`. |
+| **new in v2:** |  |  |  |  |
+| `xsdm::Sttil_mean_lrv_tile` | `src/Sttil_mean_lrv.h` (new) | B | 3a | C++ kernel header for `Sttil_mean_lrv_cpp`. Computes per-location mean and (optionally) long-run variance of `\tilde{S}_t`. |
 
 #### Files (data, generated, build)
 
-For completeness, the package also contains data files, auto-
-generated code, and build artefacts. These are not "functions" but
-are listed here so the inventory is genuinely exhaustive:
+For completeness, the package also contains data files, auto- generated
+code, and build artefacts. These are not "functions" but are listed here
+so the inventory is genuinely exhaustive:
 
--   `R/example_1.R`, `R/example_2.R`, `R/example_3.R` — data-doc
-    files. Class **C** (the data is unchanged); the example objects
-    they document have their parameter-vector / parameter-list
-    fixtures reshaped to match v2 in Stage 13.
+-   `R/example_1.R`, `R/example_2.R`, `R/example_3.R` — data-doc files.
+    Class **C** (the data is unchanged); the example objects they
+    document have their parameter-vector / parameter-list fixtures
+    reshaped to match v2 in Stage 13.
 -   `R/RcppExports.R`, `src/RcppExports.cpp` — auto-generated by
     `Rcpp::compileAttributes()`. Regenerated automatically as Tier 3
     signatures change; not manually edited. Class **C** in the sense
@@ -459,28 +458,26 @@ After the v2 staging is complete:
 
 -   **Tier 1 (exported R)**: 26 v1 entries → 24 v2 entries. Six
     deletions (`make_mask_names`, `num_par`, `num_env_var`,
-    `create_mask`, `create_param_vector_masked`, `like_neg_ltsgr`)
-    and four additions (`mathscale_names`,
-    `validate_model_structure`, `validate_params_bio`,
-    `Sttil_mean_lrv`). The remaining 20 are kept, of which most
-    receive a v2 signature change.
+    `create_mask`, `create_param_vector_masked`, `like_neg_ltsgr`) and
+    four additions (`mathscale_names`, `validate_model_structure`,
+    `validate_params_bio`, `Sttil_mean_lrv`). The remaining 20 are kept,
+    of which most receive a v2 signature change.
 -   **Tier 2 (internal R)**: roughly 19 v1 entries → 18 v2 entries.
-    Three deletions (`create_param_vector_masked_r`,
-    `like_neg_ltsgr_r`, `like_neg_ltsgr_cpp`) and three additions
-    (`assemble_params_math_`, `compute_contour_grid_`,
-    `Sttil_mean_lrv_r`).
+    Three deletions (`create_param_vector_masked_r`, `like_neg_ltsgr_r`,
+    `like_neg_ltsgr_cpp`) and three additions (`assemble_params_math_`,
+    `compute_contour_grid_`, `Sttil_mean_lrv_r`).
 -   **Tier 3 (Rcpp-exported)**: 10 v1 entries → 10 or 11 v2 entries
-    depending on the Stage 7 decision about `make_loglik_math_xptr`
-    (the older R-callback variant), and Stage 3a adds one
+    depending on the Stage 7 decision about `make_loglik_math_xptr` (the
+    older R-callback variant), and Stage 3a adds one
     (`Sttil_mean_lrv_cpp`).
 -   **Tier 4 (C++ namespace-scope)**: roughly 12 v1 entries → 12 v2
     entries, with one deletion (`xsdm::num_par_cpp`) and one addition
     (`xsdm::Sttil_mean_lrv_tile`).
 
-In all (A) cases the v1 signature is removed. We do not maintain
-dual signatures: v2 is a major version, the existing branch is
-`version2`, and a controlled mass cutover is much simpler than a
-long deprecation lane.
+In all (A) cases the v1 signature is removed. We do not maintain dual
+signatures: v2 is a major version, the existing branch is `version2`,
+and a controlled mass cutover is much simpler than a long deprecation
+lane.
 
 ### 5.2 The `validate = TRUE` argument convention
 
@@ -581,11 +578,12 @@ Behaviour:
 3.  Returns a numeric vector of length `n_loc`:
     -   `"ltsgr"`: call `Sttil_mean_lrv(..., compute_lrv = FALSE)` to
         get per-location `mean(\tilde{S}_t)`; then compute
-        `h = 0.5 * mean_St`; then return `log(pd) - log1pexp(ctil + h)`.
+        `h = 0.5 * mean_Sttil`; then return `log(pd) - log1pexp(ctil + h)`.
     -   `"ltsgr_iv"`: call
         `Sttil_mean_lrv(..., compute_lrv = TRUE,     max_lag = ...)` to
-        get both `mean_St` and `W` per location; then return
-        `log(pd) - log1pexp(beta - 4*gammatil/W + 2*mean_St/W)`.
+        get both `mean_Sttil` and `lrv_Sttil` per location; then
+        return
+        `log(pd) - log1pexp(beta - 4*gammatil/lrv_Sttil + 2*mean_Sttil/lrv_Sttil)`.
 4.  Honour `return_prob`.
 
 R reference: `log_prob_detect_r` updated; same semantics as exported.
@@ -659,15 +657,15 @@ thin aliases from Stage 2 through Stage 6, so the v1 export surface is
 undisturbed and intermediate stages keep compiling without a flag-day
 rewrite of every internal call site. `create_mask` and
 `create_param_vector_masked` likewise remain exported through Stage 6.
-**All five are deleted entirely in Stage 7** — both the exports and
-the source files — alongside the rest of the math-scale-helper
+**All five are deleted entirely in Stage 7** — both the exports and the
+source files — alongside the rest of the math-scale-helper
 consolidation. After Stage 7, the only canonical-names entry point is
 `mathscale_names(model_structure)`, and the only full-vector-assembly
 entry point is the internal helper `assemble_params_math_()`.
 
 This is a deliberate consolidation: v1 carries five exported helpers
-that are layered on top of one another but produce essentially the
-same canonical-name machinery; v2 carries one (`mathscale_names`).
+that are layered on top of one another but produce essentially the same
+canonical-name machinery; v2 carries one (`mathscale_names`).
 
 ### 5.7 `math_to_bio` / `bio_to_math`
 
@@ -830,8 +828,8 @@ Returns:
     (\ref{eq:St}), evaluated with the supplied widths.
 -   When `compute_lrv = TRUE` (the link `"ltsgr_iv"` use case): a list
     (or two-column matrix) with two slots:
-    -   `mean_St` — per-location $\mean{\tilde{S}_t}$ as above;
-    -   `lrv` — per-location $\tilde{W}$, the long-run variance of
+    -   `mean_Sttil` — per-location $\mean{\tilde{S}_t}$ as above;
+    -   `lrv_Sttil` — per-location $\tilde{W}$, the long-run variance of
         $\{\tilde{S}_t\}$ estimated by the Bartlett-weighted truncated
         autocovariance sum of source1 eq. (\ref{eq:iv_comp}) with
         truncation lag `max_lag`.
@@ -843,7 +841,7 @@ Notes:
     `Sttil_mean_lrv` returns `mean(\tilde{S}_t)` (no factor of 1/2).
     Callers that previously used the half-quantity scale must multiply
     by `0.5` after the call. This is a deliberate cleanup so the
-    function name is meaningful (`mean_St` is what is returned).
+    function name is meaningful (`mean_Sttil` is what is returned).
 -   Both an R version (`Sttil_mean_lrv` in `R/Sttil_mean_lrv.R`) and a
     C++ version (with a thin R wrapper) must be provided, returning
     exactly the same numeric values. They are tested against each other
@@ -1069,11 +1067,11 @@ stages.
 11. **`make_loglik_math_xptr` (the older R-callback XPtr factory in
     `src/loglik_math_xptr.cpp`)** is unused except by its own parity
     test (`tests/testthat/test-loglik_math_xptr_parity.R`), and the
-    comment in `R/profile_likelihood.R:69` documents a known bug
-    that makes it unsuitable for the production hot path. Delete the
-    `.cpp`, the parity test, and the corresponding `RcppExports`
-    entry; the pure-C++ `make_loglik_math_xptr_cpp` factory remains
-    the canonical XPtr factory.
+    comment in `R/profile_likelihood.R:69` documents a known bug that
+    makes it unsuitable for the production hot path. Delete the `.cpp`,
+    the parity test, and the corresponding `RcppExports` entry; the
+    pure-C++ `make_loglik_math_xptr_cpp` factory remains the canonical
+    XPtr factory.
 
 #### 7.1.d Other cleanups that may emerge
 
@@ -1121,11 +1119,11 @@ work for any n \>= 1.** Implement n=1 link `"ltsgr"` / link `"ltsgr_iv"`
 cases and the general n\>=2 case (porting from source3 where
 appropriate). Re-implement `make_mask_names`, `num_par`, `num_env_var`
 as thin wrappers around `mathscale_names`. They remain exported
-(unchanged NAMESPACE) so the v1 export surface is undisturbed
-between Stage 2 and Stage 7; this avoids touching call sites twice.
-`create_mask` and `create_param_vector_masked` continue to work via
-the aliased `make_mask_names` and the existing C++ kernel. Stage 7
-deletes all five at once.
+(unchanged NAMESPACE) so the v1 export surface is undisturbed between
+Stage 2 and Stage 7; this avoids touching call sites twice.
+`create_mask` and `create_param_vector_masked` continue to work via the
+aliased `make_mask_names` and the existing C++ kernel. Stage 7 deletes
+all five at once.
 
 Tests:
 
@@ -1152,7 +1150,7 @@ Tests:
     series and (for the same widths) by parity with
     `2 * like_neg_ltsgr(...)` (since `like_neg_ltsgr` returns half the
     mean).
--   Same file covers the `compute_lrv = TRUE` path (`mean_St` and `lrv`)
+-   Same file covers the `compute_lrv = TRUE` path (`mean_Sttil` and `lrv_Sttil`)
     with hand-computed short series at several values of `max_lag`.
 -   R-vs-C++ parity at tolerance 1e-6.
 
@@ -1254,8 +1252,8 @@ This stage does two things at once: (i) the `model_structure`-aware
 refactor of `loglik_math` and the XPtr factory, and (ii) the full
 consolidation of the math-scale-helper layer described in §5.6. After
 this stage, the v1 helpers `make_mask_names`, `num_par`, `num_env_var`,
-`create_mask`, and `create_param_vector_masked` no longer exist in
-the codebase.
+`create_mask`, and `create_param_vector_masked` no longer exist in the
+codebase.
 
 Work items:
 
@@ -1263,32 +1261,31 @@ Work items:
     reference, and C++ kernel `loglik_math_cpp`). The XPtr factory
     `make_loglik_math_xptr_cpp` is updated analogously: it captures
     `model_structure` along with the data, mask, and threading config,
-    and constructs the closure with `validate = FALSE` semantics for
-    the inner-loop body.
+    and constructs the closure with `validate = FALSE` semantics for the
+    inner-loop body.
 -   Introduce a single internal helper
-    `assemble_params_math_(model_structure, params_math, mask)`
-    in `R/internals.R`. It validates that the names of `params_math`
-    and `mask` together equal `mathscale_names(model_structure)` with
-    no overlap and no missing slots, then delegates the merge to the
-    C++ kernel `.build_canonical_param_vector_cpp` (whose signature is
+    `assemble_params_math_(model_structure, params_math, mask)` in
+    `R/internals.R`. It validates that the names of `params_math` and
+    `mask` together equal `mathscale_names(model_structure)` with no
+    overlap and no missing slots, then delegates the merge to the C++
+    kernel `.build_canonical_param_vector_cpp` (whose signature is
     updated to take `model_structure` instead of `p`). This helper
     contains all the validation logic that previously lived in
-    `create_param_vector_masked`; it is the only place that logic
-    lives.
+    `create_param_vector_masked`; it is the only place that logic lives.
 -   Update every internal call site (`optimize_likelihood`,
     `loglik_math_r`, `dist_between_params`, `dist_between_params_r`)
     that previously called `create_param_vector_masked` to call
     `assemble_params_math_()` instead.
 -   Update every internal call site that used
-    `names(make_mask_names(p))` to use `mathscale_names(model_structure)`
-    directly. This affects `R/dist_between_params.R`,
-    `R/internals.R` (math_to_bio_r and dist_between_params_r),
-    `R/loglik_math.R`, `R/math_to_bio.R`, and `R/bio_to_math.R`. The
-    one `bio_to_math.R` site that uses `make_mask_names(p)` as a
-    NA-vector scaffold is rewritten to either call `setNames(rep(NA_real_,
-    length(nm)), nm)` once or, more cleanly, to assemble the math-scale
-    vector slot-by-slot without a NA scaffold (since all slots are
-    overwritten anyway).
+    `names(make_mask_names(p))` to use
+    `mathscale_names(model_structure)` directly. This affects
+    `R/dist_between_params.R`, `R/internals.R` (math_to_bio_r and
+    dist_between_params_r), `R/loglik_math.R`, `R/math_to_bio.R`, and
+    `R/bio_to_math.R`. The one `bio_to_math.R` site that uses
+    `make_mask_names(p)` as a NA-vector scaffold is rewritten to either
+    call `setNames(rep(NA_real_,     length(nm)), nm)` once or, more
+    cleanly, to assemble the math-scale vector slot-by-slot without a NA
+    scaffold (since all slots are overwritten anyway).
 -   Delete `R/make_mask_names.R`, `R/num_par.R`, `R/num_env_var.R`,
     `R/create_mask.R`, `R/create_param_vector_masked.R`. Delete the
     corresponding `tests/testthat/test-make_mask_names.R`,
@@ -1296,8 +1293,8 @@ Work items:
     `test-create_param_vector_masked.R`,
     `test-create_param_vector_masked_r_vs_cpp.R`. (Their behaviour is
     now exercised through the public-API tests of `loglik_math`,
-    `optimize_likelihood`, and `dist_between_params`, plus a small
-    new `test-assemble_params_math.R` covering the validation paths.)
+    `optimize_likelihood`, and `dist_between_params`, plus a small new
+    `test-assemble_params_math.R` covering the validation paths.)
 -   Update NAMESPACE: remove the five exports.
 -   Update any roxygen `[make_mask_names()]` / `[num_par()]` /
     `[create_mask()]` / `[create_param_vector_masked()]` references in
@@ -1306,18 +1303,18 @@ Work items:
 
 No-deltas: pre-run for `loglik_math`. Snapshot covers `mask = NULL`,
 mask with one fixed `mu`, mask with `Inf` for `sigl`/`sigr`/`pd`. No
-no-deltas snapshots are produced for the deleted helpers; their job
-is now subsumed inside `loglik_math` and `optimize_likelihood`, whose
-own snapshots transitively exercise the new helper.
+no-deltas snapshots are produced for the deleted helpers; their job is
+now subsumed inside `loglik_math` and `optimize_likelihood`, whose own
+snapshots transitively exercise the new helper.
 
 Tests:
 
 -   The corresponding `test-*` files for `loglik_math` and the XPtr
     factory updated.
 -   New `tests/testthat/test-assemble_params_math.R` covers the
-    validation paths (overlap rejection, missing-slot rejection,
-    Inf in non-permitted slots, etc.) directly on the internal
-    helper via `xsdm:::assemble_params_math_`.
+    validation paths (overlap rejection, missing-slot rejection, Inf in
+    non-permitted slots, etc.) directly on the internal helper via
+    `xsdm:::assemble_params_math_`.
 -   `plan/nodeltas/loglik_math/post.R` PASS.
 -   `devtools::check()` is expected to pass at the end of this stage.
 
@@ -1553,8 +1550,10 @@ A defensible default:
 -   `beta` math-scale range `log(c(1e-2, 1, 1e2)) = c(-4.6, 0, 4.6)`
     (centred at `beta = 1`, breadth ±2 orders of magnitude).
 -   `gammatil` math-scale range derived from the empirical scale of
-    `mean_St` and `W` at the centred starting point: pick `gammatil`
-    such that `4 * gammatil / W ≈ mean_St / W`, then take ± a factor.
+    `mean_Sttil` and `lrv_Sttil` at the centred starting point: pick
+    `gammatil` such that
+    `4 * gammatil / lrv_Sttil ≈ mean_Sttil / lrv_Sttil`, then take ±
+    a factor.
 
 These are guesses; before Stage 8 we should run a sensitivity analysis
 on a virtual species to confirm reasonable optimization behaviour.
@@ -1635,7 +1634,7 @@ blocking for v2.0. Listed in §11.
 ### 10.12 (open) C++ implementation of `Sttil_mean_lrv` `compute_lrv = TRUE`
 
 Whether to implement the `compute_lrv = TRUE` path in C++ as a single
-sweep that produces both `mean_St` and `lrv` (preferred), or as two
+sweep that produces both `mean_Sttil` and `lrv_Sttil` (preferred), or as two
 sweeps reusing the existing `like_ltsg` kernel for the mean and a
 separate kernel for the variance. The former is recommended; the latter
 is acceptable as a fallback. Decide during Stage 3a based on what the
@@ -1666,9 +1665,9 @@ Items deferred from the v2 plan that are worth revisiting later:
     accidentally relaxed across patches.
 -   **Hard-deprecate `make_mask_names`, `num_par`, `num_env_var`,
     `create_mask`, `create_param_vector_masked`** fully (they are
-    deleted in v2 Stage 7 — both the exports and the internal aliases
-    — so nothing further is required at the v2 release; listed here
-    for historical completeness).
+    deleted in v2 Stage 7 — both the exports and the internal aliases —
+    so nothing further is required at the v2 release; listed here for
+    historical completeness).
 -   **Refactor `like_ltsg` to expose the per-year `S_t` grid** as a
     first-class output of a lower-level kernel; this is an option for
     the Stage 3a implementation of `Sttil_mean_lrv` C++ path, and may be
@@ -1691,8 +1690,8 @@ A condensed tick-list of what "v2 is done" looks like:
 -   [ ] `Sttil_mean_lrv` replaces `like_neg_ltsgr` (Stages 3a, 3b).
 -   [ ] `make_mask_names`, `num_par`, `num_env_var`, `create_mask`,
     `create_param_vector_masked` are all removed (Stage 7); the only
-    remaining canonical-names entry point is `mathscale_names`, and
-    the only full-vector-assembly entry point is the internal
+    remaining canonical-names entry point is `mathscale_names`, and the
+    only full-vector-assembly entry point is the internal
     `assemble_params_math_()`.
 -   [ ] R reference + C++ kernel duality preserved for every hot-path
     function.
