@@ -18,14 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - { os: macos-latest,   r: 'release' }
-          - { os: windows-latest, r: 'release' }
-          - { os: ubuntu-latest,  r: 'devel',   http-user-agent: 'release' }
-          - { os: ubuntu-latest,  r: 'release' }
-          # Depends: R (>= 4.1.0) -> oldrel-1 covers R 4.4 / oldrel-2 -> 4.3 etc.
-          - { os: ubuntu-latest,  r: 'oldrel-1' }
-          - { os: ubuntu-latest,  r: 'oldrel-2' }
+        config: ${{ fromJSON(github.event_name == 'pull_request' && '[{"os":"ubuntu-latest","r":"release"}]' || '[{"os":"macos-latest","r":"release"},{"os":"windows-latest","r":"release"},{"os":"ubuntu-latest","r":"devel","http-user-agent":"release"},{"os":"ubuntu-latest","r":"release"},{"os":"ubuntu-latest","r":"oldrel-1"},{"os":"ubuntu-latest","r":"oldrel-2"}]') }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
