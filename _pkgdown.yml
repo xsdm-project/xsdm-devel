@@ -71,6 +71,12 @@ reference:
       - habitat_suitability
       - vsp
       - env_data_array
+  - title: "Example data"
+    desc: "Built-in example datasets for vignettes and testing."
+    contents:
+      - example_1
+      - example_2
+      - example_3
   - title: "Utilities"
     desc: "Helper functions."
     contents:
@@ -80,8 +86,14 @@ reference:
       - log1mexp
       - log1pexp
       - log_prob_detect
+      - log_prob_detect_cpp
+      - loglik_bio_cpp
+      - loglik_math_cpp
       - like_ltsg
       - like_neg_ltsgr
+  - title: "Package"
+    contents:
+      - xsdm-package
 
 articles:
   - title: "Getting Started"
