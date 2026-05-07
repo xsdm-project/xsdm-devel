@@ -2,4 +2,20 @@ url: https://xsdm-project.github.io/xsdm-devel/
 template:
   bootstrap: 5
   math-rendering: mathjax
-
+  includes:
+    in_header: |
+      <script>
+      window.MathJax = window.MathJax || {};
+      window.MathJax.tex = window.MathJax.tex || {};
+      window.MathJax.tex.macros = Object.assign(window.MathJax.tex.macros || {}, {
+        mean: ["{\\overline{#1}}", 1],
+        ltsgr: "{\\text{ltsgr}}",
+        expit: "{\\text{expit}}",
+        logit: "{\\text{logit}}",
+        E: "{\\text{E}}",
+        Rp: "{\\text{Re}}",
+        "var": "{\\text{var}}",
+        cov: "{\\text{cov}}",
+        cor: "{\\text{cor}}"
+      });
+      </script>
