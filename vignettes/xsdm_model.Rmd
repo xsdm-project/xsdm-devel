@@ -89,7 +89,7 @@ have helped inspire our work [@nadeau2017coarse; @holt2009bringing; @Evans2016; 
 approach builds on those earlier efforts, in part by emphasizing a computationally tractable
 approach that can be practically applied to commonly available data.
 
-## The xsdm model
+## The xsdm model {#model-definition}
 
 ### Overview of model structure
 
