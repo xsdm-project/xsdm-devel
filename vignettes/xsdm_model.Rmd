@@ -142,6 +142,7 @@ growth rate. The growth-environment function is defined as
 
 $$
 \lambda_t = \lambda_{\text{max}} \prod_{i=1}^n \exp\left( -\frac{1}{2} \left( \frac{u_{t,i}}{\sigma_i(u_{t,i})}  \right)^2 \right),
+\label{eq:gefunc}
 $$
 
 where $\vec{u}_t = O^{-1}(\vec{e}_t-\vec{\mu})$ and $\sigma_i(u_{t,i}) = \sigma_{L,i}$ if
@@ -166,6 +167,7 @@ generalization of a functional form used in the pdf of the multivariate normal d
 
 $$
 \exp\left( -\frac{1}{2}(\vec{e}_t-\vec{\mu})^\tau \Sigma^{-1} (\vec{e}_t-\vec{\mu}) \right),
+\label{eq:multivarnorm}
 $$
 
 where $\Sigma$ is a positive-definite covariance matrix.
