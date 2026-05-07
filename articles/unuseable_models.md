@@ -1,0 +1,468 @@
+# Unusable models: when a model does not have a maximum likelihood
+
+**Abstract.** When an xsdm model does not have a maximum likelihood, it
+should not be used. This document shows an example of how that can
+occur, and how to diagnose it. Along the way, another type of boundary
+model (in addition to the \\p_d=1\\ case described elsewhere) is
+illustrated, where sigma parameters are set to infinity, corresponding
+to insensitivity of annual net growth to environmental changes in a
+certain direction in environment space.
+
+The Eastern glass lizard, *Ophisaurus ventralis*, is a legless lizard
+found in the southeastern United States. It is the longest and heaviest
+species of its genus, growing up to 108cm in total length.
+
+We start by loading the data:
+
+``` r
+
+library(xsdm)
+env_array <-  example_2$env_array
+
+#We divide by 100 to get the correct units in the example
+env_array <-  example_2$env_array/100
+dim(env_array)
+dimnames(env_array)[[3]]
+occ <-  example_2$occ_vec
+length(occ)
+```
+
+Here, there are 6 environmental variables recorded for 39 years in 2728
+locations, with accompanying detections and pseudo-absences in the
+variable `occ`. The first three environmental variables (BIO1, BIO10,
+BIO11) are temperature variables, and the last three (BIO12, BIO16,
+BIO17) are precipitation variables. BIO1 is mean annual temperature,
+BIO10 is mean temperature of the warmest quarter, BIO11 is mean
+temperature of the coldest quarter, BIO12 is annual precipitation, BIO16
+is precipitation of the wettest quarter, and BIO17 is precipitation of
+the driest quarter.
+
+Now look at the distributions of values of environmental variables to
+make sure they are not on very different scales, which would cause
+problems for optimization:
+
+``` r
+
+apply(FUN=quantile, X=env_array, MARGIN=3,prob=c(.025,.25,.5,.75,.975))
+```
+
+These distributions look basically OK.
+
+Now fit 15 models, each from 25 starting conditions:
+
+``` r
+
+models <- matrix(c(1,0,0,0,0,0,
+                  0,1,0,0,0,0,
+                  0,0,1,0,0,0,
+                  0,0,0,1,0,0,
+                  0,0,0,0,1,0,
+                  0,0,0,0,0,1,
+                  1,0,0,1,0,0,
+                  1,0,0,0,1,0,
+                  1,0,0,0,0,1,
+                  0,1,0,1,0,0,
+                  0,1,0,0,1,0,
+                  0,1,0,0,0,1,
+                  0,0,1,1,0,0,
+                  0,0,1,0,1,0,
+                  0,0,1,0,0,1), nrow=15, byrow=TRUE)
+all_model_results <- list()
+for (i in 1:nrow(models))
+{
+  print(i)
+  env_dat <-  env_array[ , , models[i,]==1, drop = FALSE]
+  starts <-  xsdm::start_parms(env_dat,num_starts=25)
+  all_optim_results <-  list()
+  for (j in 1:nrow(starts))
+  {
+    all_optim_results[[j]] <-  optim(par = starts[j,],
+                                   fn = xsdm::loglik_math,
+                                   method = "BFGS",
+                                   env_dat = env_dat,
+                                   occ = occ,
+                                   negative=TRUE,
+                                   control = list(trace=0)
+                                   )
+  }
+  all_model_results[[i]] <- all_optim_results
+}
+```
+
+Within each model, rank the optimization results:
+
+``` r
+
+for (i in 1:length(all_model_results))
+{
+  values <-  sapply(X = all_model_results[[i]], FUN=function(x){x$value})
+  inds <-  order(values)
+  all_model_results[[i]] <-  all_model_results[[i]][inds]
+}
+```
+
+Rank the models by BIC, bearing in mind that we’ve been working with the
+negative of the likelihood:
+
+``` r
+
+model_BICs <- sapply(X=all_model_results,
+                      FUN=function(x){
+                        best_loglik = x[[1]]$value
+                        num_parms = length(x[[1]]$par)
+                        n = length(occ)
+                        BIC = 2*best_loglik + num_parms*log(n)
+                        return(BIC)
+                      }
+                    )
+```
+
+Also by AIC, then display:
+
+``` r
+
+model_AICs <- sapply(X=all_model_results,
+                      FUN=function(x){
+                        best_loglik = x[[1]]$value
+                        num_parms = length(x[[1]]$par)
+                        AIC = 2*best_loglik + 2*num_parms
+                        return(AIC)
+                      }
+                    )
+
+inds <- order(model_BICs)
+rbind(model_BICs[inds],model_AICs[inds])
+plot(model_BICs,model_AICs,type="p",xlab="BIC",ylab="AIC")
+order(model_BICs)
+order(model_AICs)
+```
+
+The AIC and BIC results are pretty well aligned, and the four best
+models are the same:
+
+``` r
+
+models[order(model_BICs)[1:4],]
+```
+
+These four models all use the same predictor, the fifth one, and then
+some use various possible second predictors.
+
+We emphasize that these BIC and AIC values may or may not be meaningful,
+since B/AIC can only be computed when the likelihood has been
+effectively maximized. We will elaborate below, but for now we accept
+these are pseudo-BIC and pseudo-AIC values, subject to later validation
+or rejection.
+
+Among the models we fitted, there is one clear winner in pseudo-BIC (the
+model with the lowest pseudo-BIC). So let’s investigate it further.
+Start by optimizing it a bit harder to see if we can do any better.
+
+``` r
+
+i <- 11
+env_dat <- env_array[,,models[i,]==1,drop=FALSE]
+starts <- xsdm::start_parms(env_dat, num_starts = 100)
+model_11_results <- list()
+for (j in 1:nrow(starts))
+{
+  model_11_results[[j]] <- optim(par=starts[j,],fn=xsdm::loglik_math,
+                                method="BFGS",
+                                env_dat = env_dat,
+                                occ = occ,negative=TRUE,
+                                control = list(trace=0))
+}
+all_model_results[[11]][[1]]$value
+min(sapply(X=model_11_results, FUN=function(y){y$value}))
+```
+
+We did slightly better.
+
+Now move forward by looking at the results for this model, starting by
+writing a convenience function for examine optimization results:
+
+``` r
+
+examine_optim_results <- function(optim_results,mask=NULL)
+{
+  #put optimization results in order from best to worst
+  bestlogliks <- sapply(X=optim_results,FUN=function(x){x$value})
+  inds <- order(bestlogliks)
+  bestlogliks <- bestlogliks[inds]
+  optim_results <- optim_results[inds]
+
+  #model convergence
+  convergences <- sapply(X=optim_results,FUN=function(x){x$convergence})
+
+  #compute distances to the best result in parameter space
+  best_parms_math <- optim_results[[1]]$par
+  parms_dists_to_best <- lapply(
+    X=optim_results,
+    FUN=function(x){
+      xsdm::dist_between_params(
+        x$par,
+        best_parms_math,
+        mask=mask,
+        give_closest_rep=TRUE)
+    }
+  )
+  parms_dists <- sapply(X=parms_dists_to_best, FUN=function(x){x$distance})
+  bestparms <- sapply(X=parms_dists_to_best, FUN=function(x){unlist(x$representative)})
+
+  #put it all together
+  return(rbind(bestlogliks,convergences,parms_dists,bestparms))
+}
+
+h <- examine_optim_results(all_model_results[[11]])
+t(h[ ,1:8])
+```
+
+The very large values of `sigltil2` suggest the boundary model where
+this parameter is set to `Inf`, corresponding to a direction in
+environment space along which annual net growth is insensitive to
+changes in the environment.
+
+So we consider the corresponding boundary model:
+
+``` r
+
+i <- 11
+env_dat <- env_array[ , , models[i,] == 1, drop=FALSE]
+mask <- c(sigltil2 = Inf)
+new_starts <- xsdm::start_parms(env_dat[occ == 1, , , drop=FALSE],
+                               mask = mask,
+                               num_starts = 100)
+
+bdry_optim_results <- list()
+for (j in 1:nrow(new_starts))
+{
+  bdry_optim_results[[j]] <- optim(par = new_starts[j,],
+                                  fn = xsdm::loglik_math,
+                                  method = "BFGS",
+                                  env_dat = env_dat,
+                                  occ = occ,
+                                  mask = mask,
+                                  negative = TRUE,
+                                  control = list(trace=0, maxit=500))
+}
+```
+
+Now look at these results:
+
+``` r
+
+h <- examine_optim_results(bdry_optim_results, mask = mask)
+t(h[ ,1:8])
+```
+
+The best likelihoods obtained for this boundary model are very similar
+to those obtained for the initial, non-boundary model, and the boundary
+model has one fewer parameter, so we tentatively adopt the boundary
+model over the earlier model. However, these optimization results reveal
+that we probably still have not successfully optimized the likelihood,
+or that the likelihood surface may have a ridge or an asymptote or other
+pathological feature. One sees this by observing that whereas the top
+several optimization results are similar in likelihood, they are spread
+out in parameter space (the `parms\_dists` column shows distance in
+parameter space to the top-likelihood result).
+
+To investigate the model further, we profile:
+
+``` r
+
+pnames <-  names(xsdm::make_mask_names(2))
+pnames <-  pnames[!(pnames %in% names(mask))]
+
+values <-  sapply(X=bdry_optim_results, FUN=function(x){x$value})
+inds <-  order(values)
+bdry_optim_results <-  bdry_optim_results[inds]
+
+all_profiles <- list()
+linc <-  rep(0.05, length(pnames))
+rinc <-  rep(0.05, length(pnames))
+linc[8] <-  0.001
+rinc[8] <-  0.001
+for (counter in 1:length(pnames))
+{
+  all_profiles[[counter]] <-  xsdm::profile_likelihood(
+                              profile_parameter = pnames[counter],
+                              increment_left =linc[counter],
+                              increment_right = rinc[counter],
+                              num_steps_left = 50,
+                              num_steps_right = 50,
+                              alpha = 0.95,
+                              optim_param_vector = bdry_optim_results[[1]]$par,
+                              env_dat=env_dat,
+                              occ = occ,
+                              mask = mask,
+                              num_threads = 6
+                            )
+}
+names(all_profiles) <-  pnames
+```
+
+Now plot these profiles:
+
+``` r
+
+plot_tool <- function(ap,index)
+  {
+  x <- ap[[index]]$profile$value_math
+  y <- ap[[index]]$profile$loglik
+  xlab <- names(ap)[index]
+  thresh <- ap[[index]]$threshold
+  plot(x,y,
+       type="o",xlab=xlab,
+       ylab="Log likelihood")
+  lines(range(x),rep(thresh,2),type="l",
+        lty="dashed",col="red")
+}
+
+par(mfrow=c(3,3))
+plot_tool(all_profiles, 1)
+plot_tool(all_profiles, 2)
+plot_tool(all_profiles, 3)
+plot_tool(all_profiles, 4)
+plot_tool(all_profiles, 5)
+plot_tool(all_profiles, 6)
+plot_tool(all_profiles, 7)
+plot_tool(all_profiles, 8)
+```
+
+These profiles are not dome-shaped, and have other idiosyncratic
+features, confirming that we had not effectively optimized the
+likelihood. The `mu2`, `mu2`, and `ctil` profile, in particular, show
+problems.
+
+We do a pairs plot based on the `mu2` profile to investigate further:
+
+``` r
+
+p <- all_profiles[[2]]$parameters
+head(p)
+p <- p[,1:8]
+pairs(p)
+```
+
+This pairs plot helps us see the tradeoff going on between parameters.
+As `mu2` is increased, other parameters, especially `ctil`, change
+monotonically. These results suggest a ridge in the likelihood surface
+that appears to rise asymptotically along some path in parameter space
+for which `mu2` is increasing. We have not identified a maximum of the
+likelihood function, and it looks as though there may not be one if the
+increase is indeed asymptotic.
+
+We look at what the growth-environment function looks like for the best
+parameters we have found so far, maybe that will give some insight into
+what is going wrong:
+
+``` r
+
+param_list <- bdry_optim_results[[1]]$par
+param_list["sigltil2"] <- Inf
+param_list <- param_list[names(xsdm::make_mask_names(2))]
+param_list_bio <- xsdm::math_to_bio(param_list)
+xsdm::interpret_parameters(param_list = param_list_bio,
+                          plot_indices = c(1,2), env_dat=env_dat, occ = occ)
+param_list_bio$mu
+```
+
+Estimated values of `mu2` are outside the range of the environmental
+data. The actual distribution of the species is across Florida and along
+the coasts of the Southeastern United States, and the southern extent of
+the species is very likely constrained, on the southern end of the
+range, by the Atlantic Ocean and the Gulf of Mexico rather than by
+temperature and precipitation. Ultimately the modeling probably fails
+here for these reasons. A Bayesian approach to the same problem could
+likely address some of the limitations, here, by setting appropriate
+priors. In the frequentist setting, one must discard the model. AIC and
+BIC values are invalid when the likelihood has not been adequately
+optimized and when the likelihood surface in the vicinity of the optimum
+is not approximately a dome.
+
+Immediate next steps should include examination of the second- and
+third-best models according to pseudo-BIC, to see if they have similar
+problems. For brevity and because we are just trying to illustrate
+statistical principles and workflows, we skip straight to examining the
+fourth-best model, which may be simpler because it only uses one
+environmental variable.
+
+``` r
+
+i <- 5
+model_5_optim_results <-  all_model_results[[i]]
+h <- examine_optim_results(model_5_optim_results)
+t(h[,1:8])
+```
+
+One can see the boundary model with `sigrtil` set to `Inf` should be
+considered:
+
+``` r
+
+env_dat <- env_array[,,models[i,]==1,drop=FALSE]
+mask <- c(sigrtil1 = Inf)
+new_starts <- xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,
+                               num_starts=100)
+
+bdry_optim_results5 <- list()
+for (j in 1:nrow(new_starts))
+{
+  bdry_optim_results5[[j]] <- optim(par=new_starts[j,],fn=xsdm::loglik_math,
+                                method="BFGS",
+                                env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
+                                control=list(trace=0,maxit=500))
+}
+```
+
+Examine these results:
+
+``` r
+
+h <- examine_optim_results(bdry_optim_results5,mask=mask)
+t(h[,1:8])
+values <- sapply(X=bdry_optim_results5, FUN=function(x){x$value})
+inds <- order(values)
+bdry_optim_results5 <- bdry_optim_results5[inds]
+```
+
+This model looks like it probably optimized well.
+
+Next do profiles:
+
+``` r
+
+all_profiles <- list()
+pnames <- names(xsdm::make_mask_names(1))
+pnames <- pnames[pnames!="sigrtil1"]
+linc <- c(0.05,0.025,0.05,0.05)
+rinc <- c(0.15,0.025,0.05,0.05)
+for (counter in 1:length(pnames))
+{
+  all_profiles[[counter]] <-  xsdm::profile_likelihood(
+                              profile_parameter = pnames[counter],
+                              increment_left  = linc[counter],
+                              increment_right = rinc[counter],
+                              num_steps_left  = 50,
+                              num_steps_right = 50,
+                              alpha = 0.95,
+                              optim_param_vector = bdry_optim_results5[[1]]$par,
+                              env_dat = env_dat,
+                              occ = occ,
+                              mask = mask,
+                              num_threads = 6
+                            )
+}
+names(all_profiles) <- pnames
+
+par(mfrow=c(2,3))
+plot_tool(all_profiles,1)
+plot_tool(all_profiles,2)
+plot_tool(all_profiles,3)
+plot_tool(all_profiles,4)
+```
+
+The profiles look adequate. So the model is suitable for use, unlike the
+previous model. The BIC and AIC for this model are valid. If the second-
+or third-best model is suitable in the same manner, the lowest-BIC model
+suitable model should tend to be preferred.
