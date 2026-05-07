@@ -1,0 +1,560 @@
+\documentclass[11pt]{article}
+
+% --- Packages for math & formatting ---
+\usepackage{amsmath, amssymb, amsthm} % advanced math
+\usepackage{listings}                  % code formatting
+\usepackage{xcolor}                     % color for code
+\usepackage{graphicx}                   % include figures
+\usepackage{hyperref}                   % clickable links
+\usepackage{authblk}                    % author affiliations
+\usepackage[margin=1in]{geometry}
+\usepackage{fvextra} % better verbatim with line wrapping
+\usepackage{float}
+
+% --- Configure code display ---
+\lstset{
+  language=R,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  frame=single,
+  backgroundcolor=\color{gray!10},
+  breaklines=true,
+  captionpos=b
+}
+
+% --- Theorem environment ---
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+% --- New commands ---
+\newcommand*\mean[1]{\overline{#1}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}}
+\newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}}
+
+% --- Header material ---
+\title{How to fit models with species occurrence data using \texttt{xsdm}}
+\author[1]{Daniel C. Reuman}
+\author[1]{Angel Lu\'{i}s Robles Fern\'{a}ndez}
+\affil[1]{Department of Ecology and Evolutionary Biology and Center for Ecological Research,
+University of Kansas}
+\date{}
+
+% --- Make Sweave code/output blocks obey text margins and wrap nicely ---
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+% Optional: if you have Scode blocks too
+\DefineVerbatimEnvironment{Scode}{Verbatim}{
+  fontsize=\small,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
+  breaklines=true,
+  breakanywhere=true,
+  commandchars=\\\{\}
+}
+
+% --- start the doc ---
+\usepackage{Sweave}
+\begin{document}
+\input{howToFit-knitr-concordance}
+
+\begin{Schunk}
+\begin{Sinput}
+> library(knitr)
+> opts_chunk$set(
++ concordance=TRUE
++ )
+\end{Sinput}
+\end{Schunk}
+
+
+\begin{Schunk}
+\begin{Sinput}
+> knitr::opts_chunk$set(
++   echo=TRUE,
++   message=FALSE,
++   warning=FALSE,
++   cache=FALSE
++ )
+\end{Sinput}
+\end{Schunk}
+
+\maketitle
+
+\begin{abstract}
+\noindent After reading the document entitled "The xsdm model", this document
+introduces the statistically and computationally sophisticated user to the 
+main functions of the \texttt{xsdm} package. The package implements a frequentist 
+analysis of the xsdm model. This document should get the user to the point
+of maximizing the likelihood of the model and profiling in ``easy'' cases, 
+with callouts to
+several troubleshooting documents about what to do when the process does
+not go smoothly. Alternative fitted models can also be compared by AIC or another
+criterion. The example worked out here is for a virtual species (i.e., generated 
+data), so we also demonstrate that fitting an xsdm model can recover the true
+parameters if model mis-specification is not an issue.
+\end{abstract}
+
+\section{Introduction to the running example used throughout this document}
+
+This manual uses a small built-in example included with the \texttt{xsdm} R 
+package to illustrate a baseline workflow. The example contains (i) an
+occurrence table for a virtual species, and (ii) two environmental
+\texttt{terra} raster time series representing CHELSA-derived 
+bioclimatic variables for a region of interest over 39 years.
+
+Load the data and get oriented to the first bioclimatic variable, which is mean annual temperature
+in units of $100 \times ^\circ$C for 39 years for a particular region of interest. 
+And make it units of $^\circ$C: 
+\begin{Schunk}
+\begin{Sinput}
+> library(xsdm)
+> library(terra)
+> data("example_1")
+> bio_1 <- terra::unwrap(example_1$bio01) 
+> class(bio_1)
+\end{Sinput}
+\begin{Soutput}
+[1] "SpatRaster"
+attr(,"package")
+[1] "terra"
+\end{Soutput}
+\begin{Sinput}
+> dim(bio_1)
+\end{Sinput}
+\begin{Soutput}
+[1] 128 123  39
+\end{Soutput}
+\begin{Sinput}
+> mm <- terra::global(bio_1,fun=c("min","max"))
+> min(mm$min) #global min over all years and all locations
+\end{Sinput}
+\begin{Soutput}
+[1] -154
+\end{Soutput}
+\begin{Sinput}
+> max(mm$max) #global max
+\end{Sinput}
+\begin{Soutput}
+[1] 2061
+\end{Soutput}
+\begin{Sinput}
+> bio_1 <- bio_1/100 #Make it degrees C
+\end{Sinput}
+\end{Schunk}
+
+Now load the second environmental variable, which is annual total precipitation, in units of kg/m$^2$, for
+the same 39 years and the same region of interest:
+\begin{Schunk}
+\begin{Sinput}
+> bio_12 <- terra::unwrap(example_1$bio12) 
+> class(bio_12)
+\end{Sinput}
+\begin{Soutput}
+[1] "SpatRaster"
+attr(,"package")
+[1] "terra"
+\end{Soutput}
+\begin{Sinput}
+> dim(bio_12)
+\end{Sinput}
+\begin{Soutput}
+[1] 128 123  39
+\end{Soutput}
+\begin{Sinput}
+> mm <-  terra::global(bio_12,fun=c("min","max"))
+> min(mm$min) #again the global min, all years and locations
+\end{Sinput}
+\begin{Soutput}
+[1] 45
+\end{Soutput}
+\begin{Sinput}
+> max(mm$max) #global max
+\end{Sinput}
+\begin{Soutput}
+[1] 1761
+\end{Soutput}
+\end{Schunk}
+
+If the scales of your environmental variables are vastly different, it can cause problems
+with optimization (see the document ``Troubleshooting: Optimization problems related to scaling").
+So we change the units for precipitation to make the range of values similar to those for temperature.
+Now the units are going to be dg/m$^2$:
+\begin{Schunk}
+\begin{Sinput}
+> bio_12 = bio_12/100
+> mm <- terra::global(bio_1,fun=c("min","max"))
+> min(mm$min)
+\end{Sinput}
+\begin{Soutput}
+[1] -1.54
+\end{Soutput}
+\begin{Sinput}
+> max(mm$max)
+\end{Sinput}
+\begin{Soutput}
+[1] 20.61
+\end{Soutput}
+\begin{Sinput}
+> mm <- terra::global(bio_12,fun=c("min","max"))
+> min(mm$min)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.45
+\end{Soutput}
+\begin{Sinput}
+> max(mm$max)
+\end{Sinput}
+\begin{Soutput}
+[1] 17.61
+\end{Soutput}
+\end{Schunk}
+
+Next load data on detections and non-detections/pseudo-absences for a species:
+\begin{Schunk}
+\begin{Sinput}
+> d <- example_1$occ_df
+> class(d)
+\end{Sinput}
+\begin{Soutput}
+[1] "tbl_df"     "tbl"        "data.frame"
+\end{Soutput}
+\begin{Sinput}
+> dim(d)
+\end{Sinput}
+\begin{Soutput}
+[1] 4000    4
+\end{Soutput}
+\begin{Sinput}
+> head(d)
+\end{Sinput}
+\begin{Soutput}
+               name      lon     lat presence
+1 Species virtualis -1108723 1402222        1
+2 Species virtualis  -883723 1402222        0
+3 Species virtualis  -808723 1422222        1
+4 Species virtualis -1168723 1552222        0
+5 Species virtualis -1028723 1437222        0
+6 Species virtualis  -948723 1452222        1
+\end{Soutput}
+\begin{Sinput}
+> sum(d$presence == 1)
+\end{Sinput}
+\begin{Soutput}
+[1] 1609
+\end{Soutput}
+\end{Schunk}
+%DAN: Note, this chunk will change when the data for the species become wrapped in the package 
+
+Now take a basic look at the environmental variables and the species data, just to see what we
+have. Start
+by getting the means through time of the environmental time series and plotting:
+\begin{Schunk}
+\begin{Sinput}
+> m_bio_1 = terra::app(bio_1,mean)
+> m_bio_12 = terra::app(bio_12,mean)
+> par(mfrow=c(1,2))
+> terra::plot(m_bio_1,axes=TRUE,main="Mean, bio1",xlab="x",ylab="y",legend=TRUE)
+> terra::plot(m_bio_12,axes=TRUE,main="Mean, bio12",xlab="x",ylab="y",legend=TRUE)
+\end{Sinput}
+\end{Schunk}
+%DAN: The spacing here is bad (way too much whitespace), and the sizing of the figures is sub-optimal
+%They should be bigger. Not sure how to fix.
+
+\noindent Now do the same for standard deviations:
+\begin{Schunk}
+\begin{Sinput}
+> sd_bio_1 = terra::app(bio_1,sd)
+> sd_bio_12 = terra::app(bio_12,sd)
+> par(mfrow=c(1,2))
+> terra::plot(sd_bio_1,axes=TRUE,main="SD, bio1",xlab="x",ylab="y",legend=TRUE)
+> terra::plot(sd_bio_12,axes=TRUE,main="SD, bio12",xlab="x",ylab="y",legend=TRUE)
+\end{Sinput}
+\end{Schunk}
+
+\noindent Now plot the species detections and non-detections/pseudo-absences on a backdrop of the mean of bio 1:
+\begin{Schunk}
+\begin{Sinput}
+> d <- as.data.frame(d)
+> pts_0 <- terra::vect(d[d$presence == 0, ],
++                      geom=c("lon","lat"),
++                      crs=terra::crs(m_bio_1))
+> pts_1 <- terra::vect(d[d$presence == 1, ],
++                      geom = c("lon","lat"),
++                      crs=terra::crs(m_bio_1))
+> par(mfrow=c(1,2))
+> terra::plot(m_bio_1,
++             axes = TRUE,
++             main = "Non-detections",
++             xlab="x",
++             ylab="y",
++             legend = TRUE)
+> terra::plot(pts_0, add=TRUE,col="black",pch=20,cex=.2)
+> terra::plot(m_bio_1,
++             axes = TRUE,
++             main = "Detections",
++             xlab = "x",
++             ylab = "y",
++             legend = TRUE)
+> terra::plot(pts_1, add=TRUE,col="black",pch=20,cex=.2)
+\end{Sinput}
+\end{Schunk}
+
+The fitting tools offered by \texttt{xsdm} use a more succinct version of the data,
+since only the environmental time series at the locations for which there is a 
+detection or a non-detection/pseudo-absence matter; though we will return to using 
+rasters after fitting and model selection. So, for now, we cut out only those
+time series at the species locations and store them in an array using the convenience 
+function \texttt{env\_data\_array}:
+
+\begin{Schunk}
+\begin{Sinput}
+> env_data <- list(bio_1 = bio_1, bio_12 = bio_12)  # order defines variable 1 and 2
+> env_array <- env_data_array(env_data, d)  # (n locations) x (time) x (p vars)
+> class(env_array)
+\end{Sinput}
+\begin{Soutput}
+[1] "array"
+\end{Soutput}
+\begin{Sinput}
+> dim(env_array) 
+\end{Sinput}
+\begin{Soutput}
+[1] 4000   39    2
+\end{Soutput}
+\end{Schunk}
+
+\noindent And we pull out the presences/pseudo-absences as a binary vector:
+\begin{Schunk}
+\begin{Sinput}
+> occ <- d$presence
+> length(occ)
+\end{Sinput}
+\begin{Soutput}
+[1] 4000
+\end{Soutput}
+\end{Schunk}
+
+\noindent Now we are ready to think about how the xsdm model applies to our data.
+
+\section{Evaluating the likelihood}
+
+The xsdm model's likelihood function is described in the document "The xsdm model",
+where model parameter are also described in detail. Parameters are:
+\begin{itemize}
+\item $\vec{\mu}$, which encodes ideal values for population growth 
+of the two environmental variables (a length-2 vector for the present 
+scenario of two environmental variables, unconstrained values); 
+\item $\tilde{\vec{\sigma}}_L$, which has to do with breadth of the growth-environment
+function ``to the left'' with respect to two basis vectors (a length-2 vector for our case,
+positive entries);
+%Note, here I am NOT saying these can be Inf, will cover the boundary models in another doc
+\item $\tilde{\vec{\sigma}}_R$, which is similar but ``to the right'' (a length-2 vector,
+positive entries);
+\item $\tilde{c}$ and $p_d$, which relate to species detection (scalars, $\tilde{c}$ is 
+unconstrained and $0<p_d\leq 1$); and
+\item $O$, which is an orthogonal matrix which 
+describes the basis vectors mentioned above ($2 \times 2$ for the present example, must be
+orthogonal, i.e., $OO^{\tau}=I$ for $\tau$ the transpose).
+\end{itemize}
+In code, the above parameters are denoted \texttt{mu}, \texttt{sigltil}, \texttt{sigrtil},
+\texttt{ctil}, \texttt{pd}, and \texttt{o\_mat}.
+
+The likelihood is coded as \texttt{loglik\_bio}, so as an introduction to the function 
+let's evaluate it at a haphazardly chosen set of parameters:
+\begin{Schunk}
+\begin{Sinput}
+> mu <- c(1, 1)
+> sigltil <- c(1, 4)
+> sigrtil <- c(2, 3)
+> ctil <- -10
+> pd <- 0.8
+> o_mat <- diag(2)
+> loglik_bio(env_dat = env_array,
++            occ = occ,
++            mu = mu,
++            sigltil = sigltil,
++            sigrtil = sigrtil,
++            o_mat = o_mat,
++            ctil = ctil,
++            pd = pd)
+\end{Sinput}
+\begin{Soutput}
+[1] -2110.297
+\end{Soutput}
+\end{Schunk}
+\noindent By default, the function gives the log likelihood, but you can also get the linear-scale
+likelihood:
+\begin{Schunk}
+\begin{Sinput}
+> loglik_bio(env_array,
++            occ,
++            mu,
++            sigltil,
++            sigrtil,
++            o_mat,
++            ctil,
++            pd,
++            return_prob = TRUE)
+\end{Sinput}
+\begin{Soutput}
+[1] 0
+\end{Soutput}
+\end{Schunk}
+\noindent For these haphazardly chosen parameters, the (linear-scale) likelihood is zero to within 
+numeric precision - this is typical. We next optimize.
+ 
+\section{An unconstrained parameter space}
+ 
+Some model parameters are constrained, i.e., only certain values are allowed (specifically, 
+\texttt{sigltil}, \texttt{sigrtil}, \texttt{pd}, and \texttt{o\_mat}; see previous section). 
+Rather than attempt to perform optimizations subject to these constraints, we 
+here define a transformation from an unconstrained Euclidean space to 
+the space of allowed parameters, and we subsequently optimize on the unconstrained space. 
+Parameters in the unconstrained space are henceforth called
+``math-scale'' parameters, and the constrained parameters described above are called 
+``biological-scale'' parameters because they more directly represent biological quantities. 
+When a distinction is needed in mathematical notation, we denote biological-scale parameters with a superscript
+$(b)$, and math-scale parameters with a superscript $(m)$, i.e., $\vec{\mu}^{(b)}$, $O^{(b)}$, 
+$\tilde{\vec{\sigma}}_L^{(b)}$,
+$\tilde{\vec{\sigma}}_R^{(b)}$, $\tilde{c}^{(b)}$, and $p_d^{(b)}$ versus $\vec{\mu}^{(m)}$, $O^{(m)}$, 
+$\tilde{\vec{\sigma}}_L^{(m)}$,
+$\tilde{\vec{\sigma}}_R^{(m)}$, $\tilde{c}^{(m)}$, and $p_d^{(m)}$.
+
+The transformation from math- to biological-scale parameters acts separately on each parameter, 
+as follows for all the parameters except $O$:
+\begin{align}
+\vec{\mu}^{(b)} &= \vec{\mu}^{(m)} \label{eq:mutrans}\\
+\tilde{\vec{\sigma}}_L^{(b)} &= \exp(\tilde{\vec{\sigma}}_L^{(m)}) \label{eq:sigLtrans}\\
+\tilde{\vec{\sigma}}_R^{(b)} &= \exp(\tilde{\vec{\sigma}}_R^{(m)}) \label{eq:sigRtrans}\\
+\tilde{c}^{(b)} &= \tilde{c}^{(m)} \label{eq:ctrans}\\
+p_d^{(b)} &= \expit(p_d^{(m)}). \label{eq:pdtrans}
+\end{align}
+Here, $\exp$ of a vector is interpreted to be the vector resulting from
+$\exp$-transforming each component, and $\expit$ is the standard logistic sigmoid
+function $1/(1+\exp(-x))$, i.e., the inverse of the $\logit$ function.
+
+The parameter $O^{(m)}$ is interpreted to be an unconstrained Euclidean vector
+of dimension $\frac{p^2-p}{2}$, where $p$ is the number of environmental variables being considered
+($p=2$ in our running example), and $O^{(b)}$ is obtained from $O^{(m)}$
+by using $O^{(m)}$ to form a skew-symmetric matrix of dimensions $p \times p$, 
+and then applying the matrix exponential map to that skew-symmetric matrix. It is known that
+the matrix exponential of a skew-symmetric matrix is an orthogonal matrix.
+
+The unconstrained space of parameters (the space of math-scale parameters) 
+is thus a Euclidean space of dimensions $3p+\frac{p^2-p}{2}+2$. 
+The $3p$ term in this expression comes from the parameters $\vec{\mu}^{(m)}$,
+$\tilde{\vec{\sigma}}_L^{(m)}$, and $\tilde{\vec{\sigma}}_R^{(m)}$;
+the $2$ in this expression comes from the parameters $\tilde{c}^{(m)}$ and
+$p_d^{(m)}$; and the term $\frac{p^2-p}{2}$ in the expression comes from
+$O^{(m)}$.
+
+The transformation from math-scale to bio-scale parameters is implemented
+in \texttt{xsdm} using the function \texttt{math\_to\_bio}, which takes an unconstrained
+numeric vector as its argument and returns a named list of of biological-scale
+parameters. But it is not so common for the end-user to call \texttt{math\_to\_bio}
+directly because we have written the likelihood directly in terms of the math-scale
+parameters in a function \texttt{loglik\_math}. We now demonstrate \texttt{math\_to\_bio}
+and \texttt{loglik\_math}:
+\begin{Schunk}
+\begin{Sinput}
+> #loglik_bio and math_to_bio require a named argument to help prevent errors - 
+> #see below - make_mask_names helps set it up
+> param_vector <- make_mask_names(p = 2) #p = 2 environmental variables in our case
+> param_vector 
+\end{Sinput}
+\begin{Soutput}
+     mu1      mu2 sigltil1 sigltil2 sigrtil1 sigrtil2     ctil       pd 
+      NA       NA       NA       NA       NA       NA       NA       NA 
+  o_par1 
+      NA 
+\end{Soutput}
+\begin{Sinput}
+> set.seed(101)
+> param_vector[1:9] <- rnorm(9) #fill with random values just to try it
+> math_to_bio(param_vector)
+\end{Sinput}
+\begin{Soutput}
+$mu
+[1] -0.3260365  0.5524619
+
+$sigltil
+[1] 0.509185 1.239068
+
+$sigrtil
+[1] 1.364474 3.234797
+
+$ctil
+[1] 0.6187899
+
+$pd
+[1] 0.4718462
+
+$o_mat
+          [,1]       [,2]
+[1,] 0.6081818 -0.7937978
+[2,] 0.7937978  0.6081818
+\end{Soutput}
+\begin{Sinput}
+> loglik_math(param_vector, env_dat = env_array, occ = occ, negative = FALSE)
+\end{Sinput}
+\begin{Soutput}
+[1] -52393.06
+\end{Soutput}
+\end{Schunk}
+\noindent The function \texttt{loglik\_math} first transforms parameters to the 
+biological scale using \texttt{math\_to\_bio} and
+then evaluates \texttt{loglik\_bio}; so one optimizes it directly 
+(see below). If your favorite optimizer minimizes by default, you can use:
+\begin{Schunk}
+\begin{Sinput}
+> loglik_math(param_vector, env_dat = env_array, occ = occ, negative = TRUE)
+\end{Sinput}
+\begin{Soutput}
+[1] 52393.06
+\end{Soutput}
+\end{Schunk}
+\noindent Before moving on to optimizing, we note that \texttt{loglik\_math}
+requires a named vector for its input \texttt{param\_vector}. This is to reduce
+the possibility of errors stemming form parameter ordering. There is a 
+naming convention for arguments which must be followed exactly, and which is described 
+in the documentation for \texttt{loglik\_math}. 
+The function \texttt{make\_mask\_names} helps the user by giving the parameter names which
+are required for a model making use of a given number of environmental variables.
+
+\section{Optimizing the likelihood}
+
+Maximizing the likelihood from one initial parameter guess is straightforward using the built-in
+R function \texttt{optim} (and a variety of other optimizers are also available):
+\begin{Schunk}
+\begin{Sinput}
+> optim(par = param_vector,
++       fn = loglik_math,
++       method = "BFGS",
++       env_dat = env_array,
++       occ = occ,
++       negative = TRUE,
++       control = list(trace=100))
