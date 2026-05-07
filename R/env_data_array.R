@@ -45,7 +45,7 @@ env_data_array <- function(env_data, occ = NULL) {
     checkmate::assert_names(names(occ),
       must.include = c("lon", "lat", "presence")
     )
-    pts <- terra::vect(occ, geom = c("lon", "lat"))
+    pts <- terra::vect(as.data.frame(occ), geom = c("lon", "lat"))
   } else {
     pts <- NULL
   }
