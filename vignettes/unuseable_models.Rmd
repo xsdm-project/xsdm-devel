@@ -3,7 +3,7 @@ title: "Unusable models: when a model does not have a maximum likelihood"
 author:
   - name: "Daniel C. Reuman"
     affiliation: "Department of Ecology and Evolutionary Biology and Center for Ecological Research, University of Kansas"
-  - name: "Angel Luis Robles Fern\'{a"
+  - name: "Angel Luís Robles Fernández"
     affiliation: "Department of Ecology and Evolutionary Biology and Center for Ecological Research, University of Kansas"
 output: rmarkdown::html_vignette
 vignette: >
@@ -59,8 +59,8 @@ occ <-  example_2$occ_vec
 length(occ)
 ```
 
-Here, there are `r dim(env_array)[3]` environmental variables recorded for 
-`r dim(env_array)[2]` years in `r dim(env_array)[1]` locations, with 
+Here, there are 6 environmental variables recorded for 
+39 years in 2728 locations, with 
 accompanying detections and pseudo-absences in the variable `occ`.
 The first three environmental variables (BIO1, BIO10, BIO11) are temperature
 variables, and the last three (BIO12, BIO16, BIO17) are precipitation variables.
@@ -171,8 +171,8 @@ B/AIC can only be computed when the likelihood has been effectively maximized.
 We will elaborate below, but for now we accept these are pseudo-BIC and 
 pseudo-AIC values, subject to later validation or rejection.
 
-Among the models we fitted, there is one clear winner in pseudo-BIC, model 
-`r order(model_BICs)[1]`. So let's investigate it further. 
+Among the models we fitted, there is one clear winner in pseudo-BIC (the model
+with the lowest pseudo-BIC). So let's investigate it further. 
 Start by optimizing it a bit harder to see if we can 
 do any better.
 ```{r check_model_11,cache=TRUE}
@@ -383,11 +383,10 @@ one must discard the model. AIC and BIC values are invalid when the
 likelihood has not been adequately optimized and when the likelihood 
 surface in the vicinity of the optimum is not approximately a dome. 
 
-Immediate next steps should include examination of models 
-`r order(model_BICs)[2]` and `r order(model_BICs)[3]`, which were the 
-next-best models according to pseudo-BIC, to see if they have similar problems.
+Immediate next steps should include examination of the 
+second- and third-best models according to pseudo-BIC, to see if they have similar problems.
 For brevity and because we are just trying to illustrate statistical principles and
-workflows, we skip straight to examining model `r order(model_BICs)[4]`, 
+workflows, we skip straight to examining the fourth-best model, 
 which may be simpler because it only uses one environmental variable. 
 ```{r examine_result_model_5}
 i <- 5
@@ -458,6 +457,6 @@ plot_tool(all_profiles,4)
 ```
 
 The profiles look adequate. So the model is suitable for use, unlike 
-the previous model. The BIC and AIC for this model are valid. If model `r order(model_BICs)[2]` or 
-`r order(model_BICs)[3]` is suitable in the same manner, the lowest-BIC model
+the previous model. The BIC and AIC for this model are valid. If the second- or 
+third-best model is suitable in the same manner, the lowest-BIC model
 suitable model should tend to be preferred.

@@ -54,8 +54,8 @@ occ <- example_3$occ_vec
 length(occ)
 ```
 
-Here, there are `r dim(env_array)[3]` environmental variables recorded for 
-`r dim(env_array)[2]` years in `r dim(env_array)[1]` locations, with 
+Here, there are 6 environmental variables recorded for 
+39 years in 1156 locations, with 
 accompanying detections and pseudo-absences in the variable `occ`.
 The first three environmental variables (BIO1, BIO10, BIO11) are temperature
 variables, and the last three (BIO12, BIO16, BIO17) are precipitation variables.

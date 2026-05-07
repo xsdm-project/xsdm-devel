@@ -306,7 +306,7 @@ starts
 ```
 
 We recommend, for real data, at least 50 initial conditions for optimization, or more if using more than two
-environmental variables or if warranted after running 50 (see below). But for this exercise we use only `r num_starts` 
+environmental variables or if warranted after running 50 (see below). But for this exercise we use only 10
 to keep run times low. 
 We now optimize from all the start parameters:
 ```{r optimizing_many, cache=TRUE}
@@ -336,9 +336,9 @@ bestlogliks <- bestlogliks[inds]
 bestlogliks
 ```
 
-These results indicate that: 1) most of the `r num_starts` optimizations appear to have
+These results indicate that: 1) most of the 10 optimizations appear to have
 converged according to the diagnostics of `optim` (0 means convergence for 
-`optim`); and 2) five of the `r num_starts` optimizations returned the same, highest 
+`optim`); and 2) five of the 10 optimizations returned the same, highest 
 log-likelihood to within 3 digits. This, already, is pretty good evidence that 
 multiple optimizations arrived at the same place in parameter space, i.e., the same 
 maximum-likelihood parameters - it would be unusual for two distinct local maxima of the 
@@ -615,7 +615,7 @@ example_1_true_parameters_bio <- list(
   mu=c(9,2.5),
   sigltil=c(0.3,0.2),
   sigrtil=c(0.5,0.8),
-  ctil<--9,
+  ctil=-9,
   pd=0.8649783,
   o_mat=matrix(c(0.9800666,0.1986693,-0.1986693,0.9800666),2,2)
 ) #DAN: Note, this needs to be embedded in the package
@@ -803,7 +803,7 @@ area_novar
 delta_area
 ```
 
-So we see variability reduces area by `r round(100*delta_area,2)`%
+So we see variability reduces area by a certain percentage
 for this virtual species.
 
 ## Interpreting model parameters
