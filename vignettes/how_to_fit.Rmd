@@ -819,7 +819,6 @@ The contours are enough to tell the user what the optimal environment is for the
 species, and how sensitive annual net growth is to departures from this optimum
 for each environmental variable, relative to the other environmental variables:
 ```{r interpret_parameters, fig.height=4}
-devtools::load_all()
 
 par(mfrow=c(1,2))
 interpret_parameters(param_list=ML_parameters_bio,
