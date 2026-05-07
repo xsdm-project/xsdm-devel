@@ -13,7 +13,7 @@ vignette: >
 ---
 
 $$
-\newcommand*\mean[1]{\overline{#1}}
+\newcommand{\mean}[1]{\overline{#1}}
 \newcommand{\var}{\text{var}}
 \newcommand{\cov}{\text{cov}}
 \newcommand{\cor}{\text{cor}}
