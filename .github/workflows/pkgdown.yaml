@@ -32,21 +32,14 @@ jobs:
         with:
           use-public-rspm: true
 
-      # Install pak package
-      - name: Install pak
+      - name: Install system dependencies
         run: |
-          install.packages("pak", repos = "https://cloud.r-project.org/")
-        shell: Rscript {0}
-
-      # Install the GitHub dependency before setting up other dependencies
-      - name: Install GitHub dependency
-        run: |
-          pak::pkg_install("alrobles/ucminfcpp")
-        shell: Rscript {0}
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libgdal-dev libgeos-dev libproj-dev libudunits2-dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, local::., github::alrobles/ucminfcpp
           needs: website
 
       - name: Build site
