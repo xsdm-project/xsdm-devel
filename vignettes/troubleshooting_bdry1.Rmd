@@ -8,7 +8,7 @@ author:
 output:
   rmarkdown::html_vignette:
     includes:
-      in_header: mathjax-macros.html
+      before_body: mathjax-macros.html
 vignette: >
   %\VignetteIndexEntry{Troubleshooting: boundary models, 1}
   %\VignetteEngine{knitr::rmarkdown}
