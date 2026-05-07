@@ -14,10 +14,10 @@ vignette: >
 
 Angel to draft this.
 Quickstart - Very brief orientation to the reason for using the package (variability
-and process-oriented SDMs - see the beginning of the xsdmModel document, but the 
+and process-oriented SDMs - see the beginning of the xsdmModel document, but the
 version here should be much shorter),
-then basically gets the user to their first call to optim_mll, and that's it. Write this 
-later since we have not finalized optim_mll yet. Then at the end it's a brief 
+then basically gets the user to their first call to optim_mll, and that's it. Write this
+later since we have not finalized optim_mll yet. Then at the end it's a brief
 outline of the other vignette materials and what orders you might want to read
 them in depending on your needs - Dan can write that part.
 Mostly aimed at  basic user, but also kinda aimed at the impatient advanced user
