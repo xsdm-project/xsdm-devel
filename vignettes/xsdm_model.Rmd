@@ -3,7 +3,10 @@ title: "The xsdm model"
 author:
   - name: "Daniel C. Reuman"
     affiliation: "Department of Ecology and Evolutionary Biology and Center for Ecological Research, University of Kansas"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    includes:
+      in_header: mathjax-macros.html
 vignette: >
   %\VignetteIndexEntry{The xsdm model}
   %\VignetteEngine{knitr::rmarkdown}
@@ -11,19 +14,6 @@ vignette: >
 bibliography: references.bib
 ---
 
-<div style="display:none">
-$$
-\newcommand{\mean}[1]{\overline{#1}}
-\newcommand{\var}{\text{var}}
-\newcommand{\cov}{\text{cov}}
-\newcommand{\cor}{\text{cor}}
-\newcommand{\Rp}{\text{Re}}
-\newcommand{\E}{\text{E}}
-\newcommand{\ltsgr}{\text{ltsgr}}
-\newcommand{\expit}{\text{expit}}
-\newcommand{\logit}{\text{logit}}
-$$
-</div>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
