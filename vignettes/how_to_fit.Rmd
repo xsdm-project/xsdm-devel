@@ -370,11 +370,11 @@ different; so we need to take this redundancy into account when judging whether
 different optimizations resulted in the same parameters. 
 
 These issues are described further in the document "Troubleshooting: Dealing 
-with parameter redundancy," but the function `distance\_between\_params\_hungarian`
+with parameter redundancy," but the function `dist\_between\_params`
 provides an easy way around these complexities. The function directly calculates for the user
 the distance between two sets 
 of xsdm model parameters while taking into account the redundancy 
-described; i.e., if `distance\_between\_params\_hungarian` indicates a very small
+described; i.e., if `dist\_between\_params` indicates a very small
 difference between two sets of parameters, they give essentially the same xsdm model and can be considered
 to be close to each other in parameter space even if they appear different. 
 So use the function as the test of parameter similarity, as follows:
@@ -383,7 +383,7 @@ dists_to_first <- NA*numeric(num_starts)
 for (counter in 1:num_starts)
 {
   dists_to_first[counter] <- 
-    distance_between_params_hungarian(
+    dist_between_params(
       all_optim_results[[1]]$par,
       all_optim_results[[counter]]$par
     )
@@ -396,7 +396,7 @@ parameter space to the first parameter optimization result.
 
 If, as in this case, sufficiently many of the initial conditions optimized to give the same, highest
 maximized likelihood, and these also gave parameter results which are reported using 
-`distance\_between\_params\_hungarian` to be close to each other in parameter space, we
+`dist\_between\_params` to be close to each other in parameter space, we
 can be sufficiently confident that we have successfully maximized the likelihood. 
 Profiling, which is covered below, provides additional checks. 
 
@@ -440,7 +440,7 @@ dists_to_first_1 <- NA*numeric(num_starts)
 for (counter in 1:num_starts)
 {
   dists_to_first_1[counter] <- 
-    distance_between_params_hungarian(all_optim_results_1[[1]]$par,
+    dist_between_params(all_optim_results_1[[1]]$par,
                               all_optim_results_1[[counter]]$par)
 } 
 dists_to_first_1
@@ -465,7 +465,7 @@ dists_to_first_2 <- NA*numeric(num_starts)
 for (counter in 1:num_starts)
 {
   dists_to_first_2[counter] <- 
-    distance_between_params_hungarian(all_optim_results_2[[1]]$par,
+    dist_between_params(all_optim_results_2[[1]]$par,
                               all_optim_results_2[[counter]]$par)
 } 
 dists_to_first_2
@@ -621,7 +621,7 @@ example_1_true_parameters_bio <- list(
 ) #DAN: Note, this needs to be embedded in the package
 ML_parameters_bio <- math_to_bio(all_optim_results[[1]]$par)
 example_1_true_parameters_bio<-
-  distance_between_params_hungarian(example_1_true_parameters_bio,
+  dist_between_params(example_1_true_parameters_bio,
                                     ML_parameters_bio,
                                     give_closest_rep=TRUE)$representative
 example_1_true_parameters_bio
@@ -719,17 +719,15 @@ a Bayesian approach may have advantages.
 We have now fitted several models, selected a best one, verified that the profiles 
 look good, and shown that fitting captures the true model parameters. 
 Habitat suitability maps are done with 
-the `vsp` function. The `vsp` function has the dual purposes of 
-allowing the user to experiment with creating virtual species, and producing 
-habitat suitability maps. We here use it for the latter.
+the `habitat\_suitability` function.
 ```{r habitat_suitability}
 #plot the habitat suitability map
 par(mfrow=c(2,3))
-hab_suit <- vsp(env_data,ML_parameters_bio,return_raster=TRUE)
+hab_suit <- habitat_suitability(param_list=ML_parameters_bio, env_list=env_data)
 terra::plot(hab_suit,main="Habitat suitability",xlab="x",ylab="y",legend=TRUE)
 
 #plot the true habitat suitability map
-hab_suit_true <- vsp(env_data,example_1_true_parameters_bio,return_raster=TRUE)
+hab_suit_true <- habitat_suitability(param_list=example_1_true_parameters_bio, env_list=env_data)
 terra::plot(hab_suit,main="Habitat suitability, true",
             xlab="x",ylab="y",legend=TRUE)
 
@@ -768,14 +766,14 @@ mean for that variable and location. We use inferred parameters.
 ```{r habitat_suitability_novar}
 #plot the habitat suitability map again, to ease comparisons
 par(mfrow=c(2,3))
-hab_suit <- vsp(env_data,ML_parameters_bio,return_raster=TRUE)
+hab_suit <- habitat_suitability(param_list=ML_parameters_bio, env_list=env_data)
 terra::plot(hab_suit,main="Habitat suitability",xlab="x",ylab="y",legend=TRUE)
 
 #plot the habitat suitability map without variability
 m_bio_1_ts <- rep(m_bio_1,terra::nlyr(bio_1))
 m_bio_12_ts <- rep(m_bio_12,terra::nlyr(bio_12))
 m_env_data <- list(m_bio_1=m_bio_1_ts,m_bio_12=m_bio_12_ts)
-m_hab_suit <- vsp(m_env_data,ML_parameters_bio,return_raster=TRUE)
+m_hab_suit <- habitat_suitability(param_list=ML_parameters_bio, env_list=m_env_data)
 terra::plot(m_hab_suit,main="Habitat suitability, no var",
             xlab="x",ylab="y",legend=TRUE)
 

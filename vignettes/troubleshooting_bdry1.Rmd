@@ -184,11 +184,11 @@ examine_optim_results <- function(optim_results,mask=NULL)
   parms_dists_to_best <- lapply(
     X=optim_results,
     FUN=function(x){
-      xsdm::distance_between_params_hungarian(
+      xsdm::dist_between_params(
         x$par,
         best_parms_math,
         mask=mask,
-        GiveClosestRep=TRUE)
+        give_closest_rep=TRUE)
     }
   )
   parms_dists <- sapply(X=parms_dists_to_best, FUN=function(x){x$distance})
