@@ -1,22 +1,4 @@
-<!-- MathJax v3 configuration (must precede the MathJax script tag) -->
-<script>
-window.MathJax = {
-  tex: {
-    macros: {
-      mean: ["{\\overline{#1}}", 1],
-      ltsgr: "{\\text{ltsgr}}",
-      expit: "{\\text{expit}}",
-      logit: "{\\text{logit}}",
-      E: "{\\text{E}}",
-      Rp: "{\\text{Re}}",
-      var: "{\\text{var}}",
-      cov: "{\\text{cov}}",
-      cor: "{\\text{cor}}"
-    }
-  }
-};
-</script>
-<!-- MathJax v2 fallback -->
+<!-- MathJax v2 macros (text/x-mathjax-config is processed only by v2) -->
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
   TeX: {
@@ -33,4 +15,22 @@ MathJax.Hub.Config({
     }
   }
 });
+</script>
+<!-- MathJax v3 macros (merge into existing config, do not replace) -->
+<script>
+if (!window.MathJax || !window.MathJax.Hub) {
+  window.MathJax = window.MathJax || {};
+  window.MathJax.tex = window.MathJax.tex || {};
+  window.MathJax.tex.macros = Object.assign(window.MathJax.tex.macros || {}, {
+    mean: ["{\\overline{#1}}", 1],
+    ltsgr: "{\\text{ltsgr}}",
+    expit: "{\\text{expit}}",
+    logit: "{\\text{logit}}",
+    E: "{\\text{E}}",
+    Rp: "{\\text{Re}}",
+    "var": "{\\text{var}}",
+    cov: "{\\text{cov}}",
+    cor: "{\\text{cor}}"
+  });
+}
 </script>
