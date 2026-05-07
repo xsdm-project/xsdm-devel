@@ -12,6 +12,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<div style="display:none">
+$$
 \newcommand{\mean}[1]{\overline{#1}}
 \newcommand{\var}{\text{var}}
 \newcommand{\cov}{\text{cov}}
@@ -21,6 +23,8 @@ vignette: >
 \newcommand{\ltsgr}{\text{ltsgr}}
 \newcommand{\expit}{\text{expit}}
 \newcommand{\logit}{\text{logit}}
+$$
+</div>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
