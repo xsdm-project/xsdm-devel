@@ -8,7 +8,7 @@ author:
 output:
   rmarkdown::html_vignette:
     includes:
-      before_body: mathjax-macros.html
+      in_header: mathjax-macros.html
 vignette: >
   %\VignetteIndexEntry{Unusable models: when a model does not have a maximum likelihood}
   %\VignetteEngine{knitr::rmarkdown}

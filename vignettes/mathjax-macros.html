@@ -1,11 +1,36 @@
-\(
-\newcommand{\mean}[1]{\overline{#1}}
-\newcommand{\var}{\text{var}}
-\newcommand{\cov}{\text{cov}}
-\newcommand{\cor}{\text{cor}}
-\newcommand{\Rp}{\text{Re}}
-\newcommand{\E}{\text{E}}
-\newcommand{\ltsgr}{\text{ltsgr}}
-\newcommand{\expit}{\text{expit}}
-\newcommand{\logit}{\text{logit}}
-\)
+<!-- MathJax v3 configuration (must precede the MathJax script tag) -->
+<script>
+window.MathJax = {
+  tex: {
+    macros: {
+      mean: ["{\\overline{#1}}", 1],
+      ltsgr: "{\\text{ltsgr}}",
+      expit: "{\\text{expit}}",
+      logit: "{\\text{logit}}",
+      E: "{\\text{E}}",
+      Rp: "{\\text{Re}}",
+      var: "{\\text{var}}",
+      cov: "{\\text{cov}}",
+      cor: "{\\text{cor}}"
+    }
+  }
+};
+</script>
+<!-- MathJax v2 fallback -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: {
+    Macros: {
+      mean: ["{\\overline{#1}}", 1],
+      ltsgr: "{\\text{ltsgr}}",
+      expit: "{\\text{expit}}",
+      logit: "{\\text{logit}}",
+      E: "{\\text{E}}",
+      Rp: "{\\text{Re}}",
+      "var": "{\\text{var}}",
+      cov: "{\\text{cov}}",
+      cor: "{\\text{cor}}"
+    }
+  }
+});
+</script>
