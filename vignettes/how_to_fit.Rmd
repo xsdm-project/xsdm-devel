@@ -728,7 +728,7 @@ terra::plot(hab_suit,main="Habitat suitability",xlab="x",ylab="y",legend=TRUE)
 
 #plot the true habitat suitability map
 hab_suit_true <- habitat_suitability(param_list=example_1_true_parameters_bio, env_list=env_data)
-terra::plot(hab_suit,main="Habitat suitability, true",
+terra::plot(hab_suit_true,main="Habitat suitability, true",
             xlab="x",ylab="y",legend=TRUE)
 
 #plot the difference
