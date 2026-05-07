@@ -6,7 +6,7 @@ author:
 output:
   rmarkdown::html_vignette:
     includes:
-      before_body: mathjax-macros.html
+      in_header: mathjax-macros.html
 vignette: >
   %\VignetteIndexEntry{The xsdm model}
   %\VignetteEngine{knitr::rmarkdown}
