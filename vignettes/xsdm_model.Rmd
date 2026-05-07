@@ -132,10 +132,10 @@ $\tau$ represents matrix transpose) encoding the axes used. Let $\lambda_{\text{
 population growth under optimal conditions, i.e., the maximum possible annual net
 growth rate. The growth-environment function is defined as
 
-$$
+\begin{equation}
 \lambda_t = \lambda_{\text{max}} \prod_{i=1}^n \exp\left( -\frac{1}{2} \left( \frac{u_{t,i}}{\sigma_i(u_{t,i})}  \right)^2 \right),
 \label{eq:gefunc}
-$$
+\end{equation}
 
 where $\vec{u}_t = O^{-1}(\vec{e}_t-\vec{\mu})$ and $\sigma_i(u_{t,i}) = \sigma_{L,i}$ if
 $u_{t,i} \leq 0$ and $\sigma_i(u_{t,i}) = \sigma_{R,i}$ if $u_{t,i} > 0$.
@@ -157,10 +157,10 @@ for extreme values of $e_t$, though it may do so asymmetrically.
 For similar reasons, the multivariate growth-environment function is an asymmetric
 generalization of a functional form used in the pdf of the multivariate normal distribution,
 
-$$
+\begin{equation}
 \exp\left( -\frac{1}{2}(\vec{e}_t-\vec{\mu})^\tau \Sigma^{-1} (\vec{e}_t-\vec{\mu}) \right),
 \label{eq:multivarnorm}
-$$
+\end{equation}
 
 where $\Sigma$ is a positive-definite covariance matrix.
 To define an asymmetric generalization of eq. \eqref{eq:multivarnorm}, we first
@@ -338,15 +338,13 @@ $$
 Plugging this into the detection link gives a probability of detection for
 the location of
 
-$$
-\begin{aligned}
+\begin{align}
 P(X=1) &=
-\frac{p_d}{1+\exp\left( -b(\ltsgr-c) \right)} \\
-&= \frac{p_d}{1+\exp\left(\frac{b}{2}\sum_{i=1}^n \mean{\left( \frac{u_{t,i}}{\sigma_i(u_{t,i})} \right)^2}  +b(c-\log(\lambda_{\text{max}}))\right)} \\
+\frac{p_d}{1+\exp\left( -b(\ltsgr-c) \right)} \notag \\
+&= \frac{p_d}{1+\exp\left(\frac{b}{2}\sum_{i=1}^n \mean{\left( \frac{u_{t,i}}{\sigma_i(u_{t,i})} \right)^2}  +b(c-\log(\lambda_{\text{max}}))\right)} \notag \\
 &= \frac{p_d}{1+\exp\left(\frac{1}{2}\sum_{i=1}^n \mean{\left( \frac{u_{t,i}}{\sigma_i(u_{t,i})/\sqrt{b}} \right)^2}  +b(c-\log(\lambda_{\text{max}}))\right)} \label{eq:structnonident}\\
 &= \frac{p_d}{1+\exp\left(\frac{1}{2}\sum_{i=1}^n \mean{\left( \frac{u_{t,i}}{\tilde{\sigma}_i(u_{t,i})} \right)^2}  +\tilde{c}\right)},\label{eq:probdetect}
-\end{aligned}
-$$
+\end{align}
 
 where $\tilde{c} = b(c-\log(\lambda_{\text{max}}))$ and
 $\tilde{\sigma}_i(u_{t,i}) = \tilde{\sigma}_{L,i} \equiv \sigma_{L,i}/\sqrt{b}$
