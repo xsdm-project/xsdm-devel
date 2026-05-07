@@ -1,0 +1,392 @@
+# xsdm
+
+**xsdm** is an R package that integrates concepts of *stochastic
+demography* into species distribution modelling (SDM). Instead of
+treating environmental conditions as a static snapshot, xsdm uses
+**multi-year environmental time-series** together with species
+presence/absence records to:
+
+- Reconstruct a species’ **fundamental ecological niche** via
+  maximum-likelihood estimation.
+- Account for **inter-annual climate variability** when estimating niche
+  breadth and position.
+- Project the species’ **potential geographic range** under current or
+  future climate scenarios.
+
+The statistical underpinning is described in:
+
+> Berti, E., Robles Fernández, A.L., Rosenbaum, B., Peterson, T.A.,
+> Soberón, J., & Reuman, D.C. (2025). *The impacts of climate
+> variability on the niche concept and distributions of species*.
+> bioRxiv. <https://doi.org/10.1101/2024.10.30.621023>
+
+------------------------------------------------------------------------
+
+## Installation
+
+### CRAN (coming soon)
+
+``` r
+install.packages("xsdm")   # not yet on CRAN — see development install below
+```
+
+### Development version
+
+Install the latest version directly from GitHub:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("xsdm-project/xsdm-devel")
+```
+
+xsdm requires **R ≥ 4.1** and links to C++ via Rcpp/RcppParallel, so a
+working compiler (e.g. Rtools on Windows, Xcode CLT on macOS) is needed.
+
+------------------------------------------------------------------------
+
+## Full end-to-end workflow
+
+### 1 · Load and prepare environmental time series
+
+xsdm expects **bioclimatic time-series rasters** — one `SpatRaster` per
+variable with each layer representing one year (or time step). The
+built-in data cover southern New Mexico, USA, over 39 years (1980–2018)
+using [CHELSA v2.1](https://www.chelsa-climate.org/) bio1 (mean annual
+temperature) and bio12 (annual precipitation).
+
+``` r
+library(xsdm)
+library(terra)
+
+bio_1 <- terra::unwrap(example_1$bio01)
+bio_1 <- bio_1 / 100
+
+bio_12 <- terra::unwrap(example_1$bio12)
+bio_12 <- bio_12 / 100
+```
+
+Take a look at the temporal means and standard deviations of the
+environmental variables:
+
+``` r
+m_bio_1 <- terra::app(bio_1, mean)
+m_bio_12 <- terra::app(bio_12, mean)
+sd_bio_1 <- terra::app(bio_1, sd)
+sd_bio_12 <- terra::app(bio_12, sd)
+par(mfrow = c(2, 2), mar = c(3, 3, 2, 4))
+terra::plot(m_bio_1, main = "Mean, bio1", xlab = "x", ylab = "y")
+terra::plot(m_bio_12, main = "Mean, bio12", xlab = "x", ylab = "y")
+terra::plot(sd_bio_1, main = "SD, bio1", xlab = "x", ylab = "y")
+terra::plot(sd_bio_12, main = "SD, bio12", xlab = "x", ylab = "y")
+```
+
+![](reference/figures/README-plot-env-1.png)
+
+### 2 · Species occurrence data
+
+Load the occurrence data and visualize detections and non-detections on
+top of the mean temperature map:
+
+``` r
+d <- example_1$occ_df
+pts_0 <- terra::vect(d[d$presence == 0, ], geom = c("lon", "lat"),
+                     crs = terra::crs(m_bio_1))
+pts_1 <- terra::vect(d[d$presence == 1, ], geom = c("lon", "lat"),
+                     crs = terra::crs(m_bio_1))
+par(mfrow = c(1, 2), mar = c(3, 3, 2, 4))
+terra::plot(m_bio_1, main = "Non-detections", xlab = "x", ylab = "y")
+terra::plot(pts_0, add = TRUE, col = "black", pch = 20, cex = 0.2)
+terra::plot(m_bio_1, main = "Detections", xlab = "x", ylab = "y")
+terra::plot(pts_1, add = TRUE, col = "red", pch = 20, cex = 0.2)
+```
+
+![](reference/figures/README-plot-occ-1.png)
+
+### 3 · Build the environmental data array
+
+[`env_data_array()`](https://xsdm-project.github.io/xsdm-devel/reference/env_data_array.md)
+extracts and stacks environmental values at the locations given in a
+presence/absence data frame, returning a 3-D array
+`(locations × time × variables)`.
+
+``` r
+env_data <- list(bio_1 = bio_1, bio_12 = bio_12)
+env_dat <- env_data_array(env_data, occ = d)
+dim(env_dat)
+#> [1] 4000   39    2
+occ <- d$presence
+```
+
+### 4 · Fit the model
+
+[`optimize_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/optimize_likelihood.md)
+runs multiple optimizations from Latin-hypercube starting points and
+returns every solution sorted by decreasing log-likelihood:
+
+``` r
+result <- optimize_likelihood(
+  env_dat    = env_dat,
+  occ        = occ,
+  num_starts = 20L,
+  parallel   = FALSE,
+  verbose    = FALSE
+)
+
+head(result$solutions[, c("start_id", "loglik", "convergence")])
+#>   start_id    loglik convergence
+#> 1       11 -1042.503           4
+#> 2        5 -1042.503           4
+#> 3       18 -1042.503           4
+#> 4       16 -1042.503           4
+#> 5       17 -1042.503           4
+#> 6        2 -1042.503           4
+result$best$loglik
+#> [1] -1042.503
+```
+
+### 5 · Interpret the fitted parameters
+
+Convert the best math-scale parameter vector to the biologically
+interpretable scale and plot the inferred log growth–environment
+function:
+
+``` r
+best_bio <- math_to_bio(result$best$par)
+
+par(mfrow = c(1, 2))
+interpret_parameters(
+  best_bio,
+  plot_indices = c(1, 2),
+  env_dat      = env_dat,
+  occ          = occ
+)
+```
+
+![](reference/figures/README-interpret-1.png)
+
+### 6 · Habitat suitability map
+
+Use the fitted parameters to project a habitat suitability map over the
+full raster extent:
+
+``` r
+hab_suit <- habitat_suitability(
+  param_list = best_bio,
+  env_list   = env_data
+)
+terra::plot(hab_suit, main = "Habitat suitability", xlab = "x", ylab = "y")
+```
+
+![](reference/figures/README-hab-suit-1.png)
+
+------------------------------------------------------------------------
+
+## Key functions
+
+| Function | Purpose |
+|----|----|
+| [`env_data_array()`](https://xsdm-project.github.io/xsdm-devel/reference/env_data_array.md) | Build a `(locations × time × variables)` array from raster time series and an occurrence table |
+| [`optimize_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/optimize_likelihood.md) | Multi-start MLE fitting; returns solutions sorted by log-likelihood |
+| [`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md) | Evaluate the log-likelihood at any math-scale parameter vector |
+| [`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md) | Convert math-scale vector → biological-scale parameter list |
+| [`bio_to_math()`](https://xsdm-project.github.io/xsdm-devel/reference/bio_to_math.md) | Convert biological-scale parameter list → math-scale vector |
+| [`start_parms()`](https://xsdm-project.github.io/xsdm-devel/reference/start_parms.md) | Generate Latin-hypercube starting points from presence-only data |
+| [`profile_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/profile_likelihood.md) | Profile one parameter while re-optimising over the rest |
+| [`habitat_suitability()`](https://xsdm-project.github.io/xsdm-devel/reference/habitat_suitability.md) | Produce a spatial probability-of-detection map |
+| [`interpret_parameters()`](https://xsdm-project.github.io/xsdm-devel/reference/interpret_parameters.md) | Diagnostic plots of the niche shape |
+| [`dist_between_params()`](https://xsdm-project.github.io/xsdm-devel/reference/dist_between_params.md) | Distance between two parameter sets (Hungarian algorithm, equivalence-class aware) |
+
+------------------------------------------------------------------------
+
+## For developers and contributors
+
+### Install from source
+
+``` r
+# Clone the repository and install locally
+install.packages("devtools")
+devtools::install_github("xsdm-project/xsdm-devel")
+```
+
+### Reporting issues
+
+Please file bugs and feature requests on the [GitHub issue
+tracker](https://github.com/xsdm-project/xsdm-devel/issues). When
+reporting a bug, include the output of
+[`sessionInfo()`](https://rdrr.io/r/utils/sessionInfo.html) and a
+minimal reproducible example.
+
+------------------------------------------------------------------------
+
+## Citation
+
+If you use xsdm in published work, please cite:
+
+``` R
+Berti, E., Robles Fernández, A.L., Rosenbaum, B., Peterson, T.A.,
+Soberón, J., & Reuman, D.C. (2025). The impacts of climate variability
+on the niche concept and distributions of species. bioRxiv.
+https://doi.org/10.1101/2024.10.30.621023
+```
+
+BibTeX:
+
+``` bibtex
+@article{bertiXSDM1,
+  title  = {The impacts of climate variability on the niche concept and
+            distributions of species},
+  author = {Berti, E. and Fern\'{a}ndez, ALR and Rosenbaum, B and
+            Peterson, TA and Sober\'{o}n, J and Reuman, DC},
+  journal = {bioRxiv},
+  doi    = {10.1101/2024.10.30.621023},
+  year   = {2025},
+  url    = {https://doi.org/10.1101/2024.10.30.621023}
+}
+```
+
+------------------------------------------------------------------------
+
+## License
+
+xsdm is released under the [GNU Affero General Public License v3 or
+later](https://xsdm-project.github.io/xsdm-devel/LICENSE.md).
+
+# Package index
+
+## All functions
+
+- [`bio_to_math()`](https://xsdm-project.github.io/xsdm-devel/reference/bio_to_math.md)
+  : Converts parameters from the biological scale to the math
+  (unconstrained) scale
+
+- [`build_orthogonal_matrix()`](https://xsdm-project.github.io/xsdm-devel/reference/build_orthogonal_matrix.md)
+  : Build an orthogonal matrix from a real-parameter vector
+
+- [`convert_equivalence_class()`](https://xsdm-project.github.io/xsdm-devel/reference/convert_equivalence_class.md)
+  : Converts a set of parameters to other representatives of the same
+  equivalence class
+
+- [`create_mask()`](https://xsdm-project.github.io/xsdm-devel/reference/create_mask.md)
+  : Create a parameter mask aligned with \`make_mask_names()\`
+
+- [`create_param_vector_masked()`](https://xsdm-project.github.io/xsdm-devel/reference/create_param_vector_masked.md)
+  : Create a complete parameter vector with canonical names (no NAs
+  allowed)
+
+- [`dist_between_params()`](https://xsdm-project.github.io/xsdm-devel/reference/dist_between_params.md)
+  : Distance in parameter space between two sets of parameters
+
+- [`env_data_array()`](https://xsdm-project.github.io/xsdm-devel/reference/env_data_array.md)
+  : Get an array of environmental data from presence-absence points.
+
+- [`example_1`](https://xsdm-project.github.io/xsdm-devel/reference/example_1.md)
+  : Consolidated example data for the xsdm package
+
+- [`example_2`](https://xsdm-project.github.io/xsdm-devel/reference/example_2.md)
+  : Consolidated example data for the xsdm. This is environmental data
+  array and an occurrence presence absence vector of Ophisaurus
+  ventralis. A named list containing all example datasets used in the
+  package's documentation and examples.
+
+- [`example_3`](https://xsdm-project.github.io/xsdm-devel/reference/example_3.md)
+  : Consolidated example data for the xsdm. This is environmental data
+  array and an occurrence presence absence vector Blarina carolinensis A
+  named list containing all example datasets used in the package's
+  documentation and examples.
+
+- [`expit()`](https://xsdm-project.github.io/xsdm-devel/reference/expit.md)
+  : Functions to take the expit of numerical vectors. expit exp(x)/(1 +
+  exp(x))
+
+- [`extract_orthogonal_matrix_parameters()`](https://xsdm-project.github.io/xsdm-devel/reference/extract_orthogonal_matrix_parameters.md)
+  : Extract a math-scale real-parameter vector corresponding to a
+  special orthogonal matrix
+
+- [`habitat_suitability()`](https://xsdm-project.github.io/xsdm-devel/reference/habitat_suitability.md)
+  : Tiled habitat-suitability map from environmental raster stacks
+
+- [`interpret_parameters()`](https://xsdm-project.github.io/xsdm-devel/reference/interpret_parameters.md)
+  : Tool to help interpret xsdm model parameters
+
+- [`like_ltsg`](https://xsdm-project.github.io/xsdm-devel/reference/like_ltsg.md)
+  : Compute likelihood for LTSG model
+
+- [`like_neg_ltsgr()`](https://xsdm-project.github.io/xsdm-devel/reference/like_neg_ltsgr.md)
+  : Long-term stochastic growth rate worker function for the xsdm model
+
+- [`log1mexp()`](https://xsdm-project.github.io/xsdm-devel/reference/log1mexp.md)
+  : Numerically stable \`log(1 - exp(-a))\`
+
+- [`log1pexp()`](https://xsdm-project.github.io/xsdm-devel/reference/log1pexp.md)
+  : Numerically stable \`log(1 + exp(x))\`
+
+- [`loglik_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_bio.md)
+  : Log-likelihood function for the xsdm model, parameters on the
+  biological scale.
+
+- [`loglik_bio_cpp()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_bio_cpp.md)
+  : Pure-C++ log-likelihood for the xsdm model (biological-scale
+  parameters)
+
+- [`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md)
+  : Log-likelihood function for the xsdm model, parameters on the math
+  scale.
+
+- [`loglik_math_cpp()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math_cpp.md)
+  : Pure-C++ log-likelihood for the xsdm model (math-scale parameters)
+
+- [`log_prob_detect()`](https://xsdm-project.github.io/xsdm-devel/reference/log_prob_detect.md)
+  : Probability of detection of the species in each location
+
+- [`log_prob_detect_cpp()`](https://xsdm-project.github.io/xsdm-devel/reference/log_prob_detect_cpp.md)
+  : Compute log detection probabilities from a flat environmental data
+  vector
+
+- [`make_mask_names()`](https://xsdm-project.github.io/xsdm-devel/reference/make_mask_names.md)
+  :
+
+  Function to facilitate the creation of the argument `mask` to the
+  function `loglik_math`
+
+- [`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md)
+  : Convert parameters from the math scale to the biological scale
+
+- [`num_env_var()`](https://xsdm-project.github.io/xsdm-devel/reference/num_env_var.md)
+  : Get the number of environmental variables given the number of
+  parameters
+
+- [`num_par()`](https://xsdm-project.github.io/xsdm-devel/reference/num_par.md)
+  : Get the number of parameters of the main xsdm model given the number
+  of environmental variables to be considered
+
+- [`optimize_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/optimize_likelihood.md)
+  : Optimize the xsdm log-likelihood from multiple starts (ucminfcpp)
+
+- [`profile_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/profile_likelihood.md)
+  : Basic (non-adaptive) tool for profiling the likelihood
+
+- [`start_parms()`](https://xsdm-project.github.io/xsdm-devel/reference/start_parms.md)
+  : Starting parameters for the optimization
+
+- [`vsp()`](https://xsdm-project.github.io/xsdm-devel/reference/vsp.md)
+  : Generate a virtual species probability map with presence/absence
+  sampling
+
+- [`xsdm`](https://xsdm-project.github.io/xsdm-devel/reference/xsdm-package.md)
+  [`xsdm-package`](https://xsdm-project.github.io/xsdm-devel/reference/xsdm-package.md)
+  : xsdm: Demographic Approach to Species Distribution Model
+
+# Articles
+
+### All vignettes
+
+- [How to fit xsdm models with species occurrence data using
+  xsdm](https://xsdm-project.github.io/xsdm-devel/articles/how_to_fit.md):
+- [End-to-end MLE workflow with
+  xsdm](https://xsdm-project.github.io/xsdm-devel/articles/optimize-likelihood-walkthrough.md):
+- [Troubleshooting: boundary models,
+  1](https://xsdm-project.github.io/xsdm-devel/articles/troubleshooting_bdry1.md):
+- [Unusable models: when a model does not have a maximum
+  likelihood](https://xsdm-project.github.io/xsdm-devel/articles/unuseable_models.md):
+- [The xsdm
+  model](https://xsdm-project.github.io/xsdm-devel/articles/xsdm_model.md):

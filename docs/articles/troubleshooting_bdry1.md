@@ -1,0 +1,363 @@
+# Troubleshooting: boundary models, 1
+
+**Abstract.** We here show a troublshooting example in the case where
+the best model considered does not show adequate evidence that the
+likelihood function was fully optimized, the best parameters obtained by
+optimization show \\p_d\\ close to \\1\\, and the profile for \\p_d\\ is
+not dome shaped. This is a common case. The boundary model with \\p_d =
+1\\ is used. This example is based on occurrence data from GBIF for
+*Blarina carolinensis*, the southern short-tailed shrew.
+
+The southern short-tailed shrew, *Blarina carolinensis*, is found in the
+southeastern United States.
+
+We start by loading in the data:
+
+``` r
+library(xsdm)
+env_array <- example_3$env_array
+dim(env_array)
+dimnames(env_array)[[3]]
+occ <- example_3$occ_vec
+length(occ)
+```
+
+Here, there are 6 environmental variables recorded for 39 years in 1156
+locations, with accompanying detections and pseudo-absences in the
+variable `occ`. The first three environmental variables (BIO1, BIO10,
+BIO11) are temperature variables, and the last three (BIO12, BIO16,
+BIO17) are precipitation variables. BIO1 is mean annual temperature,
+BIO10 is mean temperature of the warmest quarter, BIO11 is mean
+temperature of the coldest quarter, BIO12 is annual precipitation, BIO16
+is precipitation of the wettest quarter, and BIO17 is precipitation of
+the driest quarter.
+
+Now look at the distributions of values of environmental variables to
+make sure they are not on wildly different scales, which would cause
+problems for optimization:
+
+``` r
+apply(FUN=quantile, X=env_array, MARGIN=3,prob=c(.025,.25,.5,.75,.975))
+```
+
+These distributions look basically OK.
+
+Now fit 15 models, each from 25 starting conditions:
+
+``` r
+models <- matrix(c(1,0,0,0,0,0,
+                  0,1,0,0,0,0,
+                  0,0,1,0,0,0,
+                  0,0,0,1,0,0,
+                  0,0,0,0,1,0,
+                  0,0,0,0,0,1,
+                  1,0,0,1,0,0,
+                  1,0,0,0,1,0,
+                  1,0,0,0,0,1,
+                  0,1,0,1,0,0,
+                  0,1,0,0,1,0,
+                  0,1,0,0,0,1,
+                  0,0,1,1,0,0,
+                  0,0,1,0,1,0,
+                  0,0,1,0,0,1), nrow=15, byrow=TRUE)
+all_model_results <- list()
+for (i in 1:nrow(models))
+{
+  env_dat <- env_array[,,models[i,]==1,drop=FALSE]
+  starts <- xsdm::start_parms(env_dat,num_starts=25)
+  all_optim_results <- list()
+  for (j in 1:nrow(starts))
+  {
+    all_optim_results[[j]] <- optim(par=starts[j,],fn=xsdm::loglik_math,
+                                   method="BFGS",
+                                   env_dat=env_dat, occ=occ,negative=TRUE,
+                                   control=list(trace=0))
+  }
+  all_model_results[[i]] <- all_optim_results
+}
+```
+
+Rank the models by BIC, bearing in mind that we’ve been working with the
+negative of the likelihood:
+
+``` r
+model_BICs <- sapply(X=all_model_results,
+                      FUN=function(x){
+                        best_loglik = min(sapply(X=x, FUN=function(y){y$value}))
+                        num_parms = length(x[[1]]$par)
+                        n = length(occ)
+                        BIC = 2*best_loglik + num_parms*log(n)
+                        return(BIC)
+                      }
+                    )
+```
+
+Also by AIC:
+
+``` r
+model_AICs <- sapply(X=all_model_results,
+                      FUN=function(x){
+                        best_loglik = min(sapply(X=x, FUN=function(y){y$value}))
+                        num_parms = length(x[[1]]$par)
+                        AIC = 2*best_loglik + 2*num_parms
+                        return(AIC)
+                      }
+                    )
+inds <- order(model_BICs)
+rbind(model_BICs[inds],model_AICs[inds])
+plot(model_BICs,model_AICs,type="p",xlab="BIC",ylab="AIC")
+order(model_BICs)
+order(model_AICs)
+```
+
+Looks like in this case the AIC and the BIC are pretty aligned with each
+other. Look at the best two model models:
+
+``` r
+models[order(model_BICs)[1:2],]
+```
+
+So these are two-variable models.
+
+Let’s use the best model. Optimize it a bit harder:
+
+``` r
+i <- 9
+env_dat <- env_array[,,models[i,]==1,drop=FALSE]
+starts <- xsdm::start_parms(env_dat,num_starts=100)
+best_model_results <- list()
+for (j in 1:nrow(starts))
+{
+  best_model_results[[j]] <- optim(par=starts[j,],fn=xsdm::loglik_math,
+                                 method="BFGS",
+                                 env_dat=env_dat, occ=occ,negative=TRUE,
+                                 control=list(trace=0))
+}
+values <- sapply(X=best_model_results, FUN=function(y){y$value})
+inds <- order(values)
+best_model_results <- best_model_results[inds]
+min(sapply(X=all_model_results[[i]], FUN=function(y){y$value}))
+best_model_results[[1]]$value
+```
+
+Pretty similar, so we HAD pretty much fully optimized before.
+
+Now have a look at the result for this model.
+
+``` r
+examine_optim_results <- function(optim_results,mask=NULL)
+{
+  #put optimization results in order from best to worst
+  bestlogliks <- sapply(X=optim_results,FUN=function(x){x$value})
+  inds <- order(bestlogliks)
+  bestlogliks <- bestlogliks[inds]
+  optim_results <- optim_results[inds]
+
+  #model convergence
+  convergences <- sapply(X=optim_results,FUN=function(x){x$convergence})
+
+  #compute distances to the best result in parameter space
+  best_parms_math <- optim_results[[1]]$par
+  parms_dists_to_best <- lapply(
+    X=optim_results,
+    FUN=function(x){
+      xsdm::dist_between_params(
+        x$par,
+        best_parms_math,
+        mask=mask,
+        give_closest_rep=TRUE)
+    }
+  )
+  parms_dists <- sapply(X=parms_dists_to_best, FUN=function(x){x$distance})
+
+  #look at the best 5 results in parameter space
+  bestparms <- sapply(X=parms_dists_to_best, FUN=function(x){unlist(x$representative)})
+
+  #put it all together
+  return(rbind(bestlogliks,convergences,parms_dists,bestparms))
+}
+
+h <- examine_optim_results(best_model_results)
+t(h[,1:8])
+```
+
+This looks good, in the sense that it looks like multiple optimizations
+arrived at about the same place in parameter space, which is some
+evidence that we may have found the global maximum of the likelihood
+function The only problem is that \\p_d\\ is very close to \\1\\.
+
+Let’s profile this model and see what we get:
+
+``` r
+pnames <- names(xsdm::make_mask_names(2))
+
+all_profiles <- list()
+linc <- c(rep(0.05,8),0.01)
+rinc <- c(rep(0.05,8),0.01)
+for (counter in 1:9)
+{
+  all_profiles[[counter]] <- xsdm::profile_likelihood(
+                              profile_parameter=pnames[counter],
+                              increment_left=linc[counter],
+                              increment_right=rinc[counter],
+                              num_steps_left=50,
+                              num_steps_right=50,
+                              alpha=0.95,
+                              optim_param_vector=best_model_results[[1]]$par,
+                              env_dat=env_dat,
+                              occ=occ,
+                              mask=NULL,
+                              num_threads=6
+                            )
+}
+names(all_profiles) <- pnames
+```
+
+Now plot these profiles:
+
+``` r
+plot_tool <- function(ap,index)
+{
+  x <- ap[[index]]$profile$value_math
+  y <- ap[[index]]$profile$loglik
+  xlab <- names(ap)[index]
+  thresh <- ap[[index]]$threshold
+  plot(x,y,
+       type="o",xlab=xlab,
+       ylab="Log likelihood")
+  lines(range(x),rep(thresh,2),type="l",
+        lty="dashed",col="red")
+}
+
+par(mfrow=c(3,3))
+plot_tool(all_profiles,1)
+plot_tool(all_profiles,2)
+plot_tool(all_profiles,3)
+plot_tool(all_profiles,4)
+plot_tool(all_profiles,5)
+plot_tool(all_profiles,6)
+plot_tool(all_profiles,7)
+plot_tool(all_profiles,8)
+plot_tool(all_profiles,9)
+```
+
+So yes, there is the expected problem with pd. This is a common problem
+and it manifests in the manner illustrated here.
+
+The solution is to use the boundary model with \\p_d = 1\\:
+
+``` r
+env_dat <- env_array[,,models[i,]==1,drop=FALSE]
+dim(env_dat)
+mask <- c(pd=Inf) #use Inf because masks are given on the math scale
+mask
+new_starts <- xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],
+                                  mask=mask,num_starts=100)
+head(new_starts)
+
+bdry_optim_results <- list()
+for (j in 1:nrow(new_starts))
+{
+  bdry_optim_results[[j]] <- optim(par=new_starts[j,],fn=xsdm::loglik_math,
+                                method="BFGS",
+                                env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
+                                control=list(trace=0,maxit=500))
+}
+```
+
+Have a look at these results:
+
+``` r
+h <- examine_optim_results(bdry_optim_results,mask=mask)
+t(h[,1:10])
+```
+
+This looks like enough of them converged to the same thing to say that
+it looks like I successfully optimized. Get the likelihood:
+
+``` r
+values <- sapply(X=bdry_optim_results, FUN=function(y){y$value})
+inds <- order(values)
+bdry_optim_results <- bdry_optim_results[inds]
+best_model_results[[1]]$value
+bdry_optim_results[[1]]$value
+```
+
+So the likelihood is the same as for the previous (non-boundary) model.
+But we have one less parameter that has been fitted. Get the AIC and BIC
+to see the effects:
+
+``` r
+AIC <- unname(2*bdry_optim_results[[1]]$value+
+               2*length(bdry_optim_results[[1]]$par))
+AIC_old <- unname(2*best_model_results[[1]]$value+
+                   2*length(best_model_results[[1]]$par))
+AIC
+AIC_old
+AIC-AIC_old
+BIC <- unname(2*bdry_optim_results[[1]]$value+
+               log(length(occ))*length(bdry_optim_results[[1]]$par))
+BIC_old <- unname(2*best_model_results[[1]]$value+
+               log(length(occ))*length(best_model_results[[1]]$par))
+BIC
+BIC_old
+BIC-BIC_old
+log(length(occ))
+```
+
+So the AIC and BIC are better for the boundary model compared to the
+earlier model, and by the expected amounts. We go with the simpler
+model.
+
+Let’s profile this boundary model and see what we get:
+
+``` r
+pnames <- names(xsdm::make_mask_names(2))
+pnames <- pnames[pnames!="pd"]
+mask
+
+all_bdry_profiles <- list()
+linc <- c(rep(0.05,7),0.01)
+rinc <- c(rep(0.05,7),0.01)
+for (counter in 1:8)
+{
+  all_bdry_profiles[[counter]] <- xsdm::profile_likelihood(
+                              profile_parameter=pnames[counter],
+                              increment_left=linc[counter],
+                              increment_right=rinc[counter],
+                              num_steps_left=50,
+                              num_steps_right=50,
+                              alpha=0.95,
+                              optim_param_vector=bdry_optim_results[[1]]$par,
+                              env_dat=env_dat,
+                              occ=occ,
+                              mask=mask,
+                              num_threads=6
+                            )
+}
+names(all_bdry_profiles) <- pnames
+```
+
+Now plot these profiles:
+
+``` r
+par(mfrow=c(3,3))
+plot_tool(all_bdry_profiles,1)
+plot_tool(all_bdry_profiles,2)
+plot_tool(all_bdry_profiles,3)
+plot_tool(all_bdry_profiles,4)
+plot_tool(all_bdry_profiles,5)
+plot_tool(all_bdry_profiles,6)
+plot_tool(all_bdry_profiles,7)
+plot_tool(all_bdry_profiles,8)
+```
+
+These are dome-shaped, suggesting the likelihood function is
+well-behaved in the vacinity of the maximum we found, and inferences can
+be made. Note these profiles look essentially the same as those obtained
+previously, except \\\vec{\sigma}\_L\\ and \\\vec{\sigma}\_R\\ have been
+switched (which can happen, given redundancy in parameters explained in
+“How to fit xsdm models with species occurrence data using xsdm”). The
+overall lesson is, when optimizing the xsdm likelihood function gives a
+best model with \\p_d\\ close to \\1\\ and a non-dome-shaped profile for
+\\p_d\\, use the boundary model with \\p_d = 1\\.
