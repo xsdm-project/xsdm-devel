@@ -11,7 +11,6 @@ vignette: >
 bibliography: references.bib
 ---
 
-$$
 \newcommand{\mean}[1]{\overline{#1}}
 \newcommand{\var}{\text{var}}
 \newcommand{\cov}{\text{cov}}
@@ -21,7 +20,6 @@ $$
 \newcommand{\ltsgr}{\text{ltsgr}}
 \newcommand{\expit}{\text{expit}}
 \newcommand{\logit}{\text{logit}}
-$$
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
