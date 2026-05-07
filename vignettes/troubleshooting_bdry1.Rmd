@@ -46,10 +46,11 @@ southeastern United States.
 
 We start by loading in the data:
 ```{r bring_in_the_data}
-env_array <- readRDS("blarina_carolinensis_env.Rds")
+library(xsdm)
+env_array <- example_3$env_array
 dim(env_array)
 dimnames(env_array)[[3]]
-occ <- readRDS("blarina_carolinensis_occ.Rds")
+occ <- example_3$occ_vec
 length(occ)
 ```
 
