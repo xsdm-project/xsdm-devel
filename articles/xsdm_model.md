@@ -114,9 +114,9 @@ represent population growth under optimal conditions, i.e., the maximum
 possible annual net growth rate. The growth-environment function is
 defined as
 
-\\ \lambda_t = \lambda\_{\text{max}} \prod\_{i=1}^n \exp\left(
--\frac{1}{2} \left( \frac{u\_{t,i}}{\sigma_i(u\_{t,i})} \right)^2
-\right), \label{eq:gefunc} \\
+\\\begin{equation} \lambda_t = \lambda\_{\text{max}} \prod\_{i=1}^n
+\exp\left( -\frac{1}{2} \left( \frac{u\_{t,i}}{\sigma_i(u\_{t,i})}
+\right)^2 \right), \label{eq:gefunc} \end{equation}\\
 
 where \\\vec{u}\_t = O^{-1}(\vec{e}\_t-\vec{\mu})\\ and
 \\\sigma_i(u\_{t,i}) = \sigma\_{L,i}\\ if \\u\_{t,i} \leq 0\\ and
@@ -141,8 +141,9 @@ reasons, the multivariate growth-environment function is an asymmetric
 generalization of a functional form used in the pdf of the multivariate
 normal distribution,
 
-\\ \exp\left( -\frac{1}{2}(\vec{e}\_t-\vec{\mu})^\tau \Sigma^{-1}
-(\vec{e}\_t-\vec{\mu}) \right), \label{eq:multivarnorm} \\
+\\\begin{equation} \exp\left( -\frac{1}{2}(\vec{e}\_t-\vec{\mu})^\tau
+\Sigma^{-1} (\vec{e}\_t-\vec{\mu}) \right), \label{eq:multivarnorm}
+\end{equation}\\
 
 where \\\Sigma\\ is a positive-definite covariance matrix. To define an
 asymmetric generalization of eq. \\\eqref{eq:multivarnorm}\\, we first
@@ -220,16 +221,16 @@ The long-term stochastic growth rate (ltsgr) for a given location is
 Plugging this into the detection link gives a probability of detection
 for the location of
 
-\\ \begin{aligned} P(X=1) &= \frac{p_d}{1+\exp\left( -b(\ltsgr-c)
-\right)} \\ &= \frac{p_d}{1+\exp\left(\frac{b}{2}\sum\_{i=1}^n
+\\\begin{align} P(X=1) &= \frac{p_d}{1+\exp\left( -b(\ltsgr-c) \right)}
+\notag \\ &= \frac{p_d}{1+\exp\left(\frac{b}{2}\sum\_{i=1}^n
 \mean{\left( \frac{u\_{t,i}}{\sigma_i(u\_{t,i})} \right)^2}
-+b(c-\log(\lambda\_{\text{max}}))\right)} \\ &=
++b(c-\log(\lambda\_{\text{max}}))\right)} \notag \\ &=
 \frac{p_d}{1+\exp\left(\frac{1}{2}\sum\_{i=1}^n \mean{\left(
 \frac{u\_{t,i}}{\sigma_i(u\_{t,i})/\sqrt{b}} \right)^2}
 +b(c-\log(\lambda\_{\text{max}}))\right)} \label{eq:structnonident}\\ &=
 \frac{p_d}{1+\exp\left(\frac{1}{2}\sum\_{i=1}^n \mean{\left(
 \frac{u\_{t,i}}{\tilde{\sigma}\_i(u\_{t,i})} \right)^2}
-+\tilde{c}\right)},\label{eq:probdetect} \end{aligned} \\
++\tilde{c}\right)},\label{eq:probdetect} \end{align}\\
 
 where \\\tilde{c} = b(c-\log(\lambda\_{\text{max}}))\\ and
 \\\tilde{\sigma}\_i(u\_{t,i}) = \tilde{\sigma}\_{L,i} \equiv

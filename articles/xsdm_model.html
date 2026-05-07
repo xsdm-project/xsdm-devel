@@ -9,6 +9,7 @@
 <!-- MathJax configuration with custom macros (must precede MathJax script) --><script>
 window.MathJax = {
   tex: {
+    tags: 'ams',
     macros: {
       mean: ["{\\overline{#1}}", 1],
       ltsgr: "{\\text{ltsgr}}",
@@ -209,11 +210,11 @@ the left and to the right, respectively, with respect to some axes. Let
 encoding the axes used. Let <span class="math inline">\(\lambda_{\text{max}}\)</span> represent population
 growth under optimal conditions, i.e., the maximum possible annual net
 growth rate. The growth-environment function is defined as</p>
-<p><span class="math display">\[
+<p><span class="math display">\[\begin{equation}
 \lambda_t = \lambda_{\text{max}} \prod_{i=1}^n \exp\left( -\frac{1}{2}
 \left( \frac{u_{t,i}}{\sigma_i(u_{t,i})}  \right)^2 \right),
 \label{eq:gefunc}
-\]</span></p>
+\end{equation}\]</span></p>
 <p>where <span class="math inline">\(\vec{u}_t =
 O^{-1}(\vec{e}_t-\vec{\mu})\)</span> and <span class="math inline">\(\sigma_i(u_{t,i}) = \sigma_{L,i}\)</span> if <span class="math inline">\(u_{t,i} \leq 0\)</span> and <span class="math inline">\(\sigma_i(u_{t,i}) = \sigma_{R,i}\)</span> if <span class="math inline">\(u_{t,i} &gt; 0\)</span>. the figure below shows
 examples of functions that can be obtained from <span class="math inline">\(\eqref{eq:gefunc}\)</span> in one and two
@@ -233,11 +234,11 @@ values of <span class="math inline">\(e_t\)</span>, though it may do so
 asymmetrically. For similar reasons, the multivariate growth-environment
 function is an asymmetric generalization of a functional form used in
 the pdf of the multivariate normal distribution,</p>
-<p><span class="math display">\[
+<p><span class="math display">\[\begin{equation}
 \exp\left( -\frac{1}{2}(\vec{e}_t-\vec{\mu})^\tau \Sigma^{-1}
 (\vec{e}_t-\vec{\mu}) \right),
 \label{eq:multivarnorm}
-\]</span></p>
+\end{equation}\]</span></p>
 <p>where <span class="math inline">\(\Sigma\)</span> is a
 positive-definite covariance matrix. To define an asymmetric
 generalization of eq. <span class="math inline">\(\eqref{eq:multivarnorm}\)</span>, we first note,
@@ -321,13 +322,12 @@ is</p>
 \]</span></p>
 <p>Plugging this into the detection link gives a probability of
 detection for the location of</p>
-<p><span class="math display">\[
-\begin{aligned}
+<p><span class="math display">\[\begin{align}
 P(X=1) &amp;=
-\frac{p_d}{1+\exp\left( -b(\ltsgr-c) \right)} \\
+\frac{p_d}{1+\exp\left( -b(\ltsgr-c) \right)} \notag \\
 &amp;= \frac{p_d}{1+\exp\left(\frac{b}{2}\sum_{i=1}^n \mean{\left(
 \frac{u_{t,i}}{\sigma_i(u_{t,i})}
-\right)^2}  +b(c-\log(\lambda_{\text{max}}))\right)} \\
+\right)^2}  +b(c-\log(\lambda_{\text{max}}))\right)} \notag \\
 &amp;= \frac{p_d}{1+\exp\left(\frac{1}{2}\sum_{i=1}^n \mean{\left(
 \frac{u_{t,i}}{\sigma_i(u_{t,i})/\sqrt{b}}
 \right)^2}  +b(c-\log(\lambda_{\text{max}}))\right)}
@@ -335,8 +335,7 @@ P(X=1) &amp;=
 &amp;= \frac{p_d}{1+\exp\left(\frac{1}{2}\sum_{i=1}^n \mean{\left(
 \frac{u_{t,i}}{\tilde{\sigma}_i(u_{t,i})}
 \right)^2}  +\tilde{c}\right)},\label{eq:probdetect}
-\end{aligned}
-\]</span></p>
+\end{align}\]</span></p>
 <p>where <span class="math inline">\(\tilde{c} =
 b(c-\log(\lambda_{\text{max}}))\)</span> and <span class="math inline">\(\tilde{\sigma}_i(u_{t,i}) = \tilde{\sigma}_{L,i}
 \equiv \sigma_{L,i}/\sqrt{b}\)</span> for <span class="math inline">\(u_{t,i} \leq 0\)</span> and <span class="math inline">\(\tilde{\sigma}_i(u_{t,i}) = \tilde{\sigma}_{R,i}

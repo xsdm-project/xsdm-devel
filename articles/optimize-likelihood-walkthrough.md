@@ -63,10 +63,11 @@ fit <- optimize_likelihood(
   control     = list(maxeval = 200),
   verbose     = FALSE
 )
-#>  ■■■■■                             12% |  ETA: 14s
-#>  ■■■■■■■■■                         25% |  ETA: 13s
-#>  ■■■■■■■■■■■■■■■■                  50% |  ETA:  9s
-#>  ■■■■■■■■■■■■■■■■■■■■              62% |  ETA:  6s
+#>  ■■■■■                             12% |  ETA: 16s
+#>  ■■■■■■■■■                         25% |  ETA: 15s
+#>  ■■■■■■■■■■■■                      38% |  ETA: 13s
+#>  ■■■■■■■■■■■■■■■■■■■■              62% |  ETA:  7s
+#>  ■■■■■■■■■■■■■■■■■■■■■■■           75% |  ETA:  5s
 #>  ■■■■■■■■■■■■■■■■■■■■■■■■■■■       88% |  ETA:  2s
 
 # Best solution and its log-likelihood
