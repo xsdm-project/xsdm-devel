@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-docs
 inst/doc
 README.html
 README_cache/
