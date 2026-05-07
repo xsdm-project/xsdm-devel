@@ -220,11 +220,11 @@ as follows for all the parameters except $O$:
 
 $$
 \begin{aligned}
-\vec{\mu}^{(b)} &= \vec{\mu}^{(m)} \label{eq:mutrans}\\
-\tilde{\vec{\sigma}}_L^{(b)} &= \exp(\tilde{\vec{\sigma}}_L^{(m)}) \label{eq:sigLtrans}\\
-\tilde{\vec{\sigma}}_R^{(b)} &= \exp(\tilde{\vec{\sigma}}_R^{(m)}) \label{eq:sigRtrans}\\
-\tilde{c}^{(b)} &= \tilde{c}^{(m)} \label{eq:ctrans}\\
-p_d^{(b)} &= \expit(p_d^{(m)}). \label{eq:pdtrans}
+\vec{\mu}^{(b)} &= \vec{\mu}^{(m)} \\
+\tilde{\vec{\sigma}}_L^{(b)} &= \exp(\tilde{\vec{\sigma}}_L^{(m)}) \\
+\tilde{\vec{\sigma}}_R^{(b)} &= \exp(\tilde{\vec{\sigma}}_R^{(m)}) \\
+\tilde{c}^{(b)} &= \tilde{c}^{(m)} \\
+p_d^{(b)} &= \expit(p_d^{(m)}).
 \end{aligned}
 $$
 
