@@ -15,6 +15,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+$$
+\newcommand{\mean}[1]{\overline{#1}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}}
+\newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}}
+$$
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -263,7 +274,7 @@ have not successfully optimized the likelihood, or that the  likelihood
 surface may have a ridge or an asymptote or other pathological feature.
 One sees this by observing that whereas the top several optimization results
 are similar in likelihood, they are spread out in parameter space (the
-`parms\_dists` column shows distance in parameter space to the
+`parms_dists` column shows distance in parameter space to the
 top-likelihood result).
 
 To investigate the model further, we profile:
