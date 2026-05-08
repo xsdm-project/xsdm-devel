@@ -1,5 +1,11 @@
 # How to fit xsdm models with species occurrence data using xsdm
 
+\\ \newcommand{\mean}\[1\]{\overline{#1}} \newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}} \newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}} \newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}} \newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}} \\
+
 **Abstract.** After reading the document entitled “The xsdm model”, this
 document introduces the statistically and computationally sophisticated
 user to the main functions of the `xsdm` package. The package implements
@@ -31,36 +37,10 @@ library(xsdm)
 
 bio_1 <- terra::unwrap(example_1$bio01)
 class(bio_1)
-```
-
-    ## [1] "SpatRaster"
-    ## attr(,"package")
-    ## [1] "terra"
-
-``` r
-
 dim(bio_1)
-```
-
-    ## [1] 128 123  39
-
-``` r
-
 mm <- terra::global(bio_1,fun=c("min","max"))
 min(mm$min) #global min over all years and all locations
-```
-
-    ## [1] -154
-
-``` r
-
 max(mm$max) #global max
-```
-
-    ## [1] 2061
-
-``` r
-
 bio_1 <- bio_1/100 #Make it degrees C
 ```
 
@@ -72,33 +52,11 @@ same region of interest:
 
 bio_12 <- terra::unwrap(example_1$bio12)
 class(bio_12)
-```
-
-    ## [1] "SpatRaster"
-    ## attr(,"package")
-    ## [1] "terra"
-
-``` r
-
 dim(bio_12)
-```
-
-    ## [1] 128 123  39
-
-``` r
-
 mm <- terra::global(bio_12,fun=c("min","max"))
 min(mm$min) #again the global min, all years and locations
-```
-
-    ## [1] 45
-
-``` r
-
 max(mm$max) #global max
 ```
-
-    ## [1] 1761
 
 If the scales of your environmental variables are vastly different, it
 can cause problems with optimization (see the document “Troubleshooting:
@@ -111,31 +69,11 @@ temperature. Now the units are going to be dg/m\\^2\\:
 bio_12 <- bio_12/100
 mm <- terra::global(bio_1,fun=c("min","max"))
 min(mm$min)
-```
-
-    ## [1] -1.54
-
-``` r
-
 max(mm$max)
-```
-
-    ## [1] 20.61
-
-``` r
-
 mm <- terra::global(bio_12,fun=c("min","max"))
 min(mm$min)
-```
-
-    ## [1] 0.45
-
-``` r
-
 max(mm$max)
 ```
-
-    ## [1] 17.61
 
 Next load data on detections and non-detections/pseudo-absences for a
 species:
@@ -144,36 +82,10 @@ species:
 
 d <- example_1$occ_df
 class(d)
-```
-
-    ## [1] "tbl_df"     "tbl"        "data.frame"
-
-``` r
-
 dim(d)
-```
-
-    ## [1] 4000    4
-
-``` r
-
 head(d)
-```
-
-    ##                name      lon     lat presence
-    ## 1 Species virtualis -1108723 1402222        1
-    ## 2 Species virtualis  -883723 1402222        0
-    ## 3 Species virtualis  -808723 1422222        1
-    ## 4 Species virtualis -1168723 1552222        0
-    ## 5 Species virtualis -1028723 1437222        0
-    ## 6 Species virtualis  -948723 1452222        1
-
-``` r
-
 sum(d$presence==1)
 ```
-
-    ## [1] 1609
 
 Now take a basic look at the environmental variables and the species
 data, just to see what we have. Start by getting the means through time
@@ -188,8 +100,6 @@ terra::plot(m_bio_1,axes=TRUE,main="Mean, bio1",xlab="x",ylab="y",legend=TRUE)
 terra::plot(m_bio_12,axes=TRUE,main="Mean, bio12",xlab="x",ylab="y",legend=TRUE)
 ```
 
-![](how_to_fit_files/figure-html/look_at_data_01-1.png)
-
 Now do the same for standard deviations:
 
 ``` r
@@ -201,23 +111,19 @@ terra::plot(sd_bio_1,axes=TRUE,main="SD, bio1",xlab="x",ylab="y",legend=TRUE)
 terra::plot(sd_bio_12,axes=TRUE,main="SD, bio12",xlab="x",ylab="y",legend=TRUE)
 ```
 
-![](how_to_fit_files/figure-html/look_at_data_02-1.png)
-
 Now plot the species detections and non-detections/pseudo-absences on a
 backdrop of the mean of bio 1:
 
 ``` r
 
-pts_0 <- terra::vect(as.data.frame(d[d$presence==0,]),geom=c("lon","lat"),crs=terra::crs(m_bio_1))
-pts_1 <- terra::vect(as.data.frame(d[d$presence==1,]),geom=c("lon","lat"),crs=terra::crs(m_bio_1))
+pts_0 <- terra::vect(d[d$presence==0,],geom=c("lon","lat"),crs=terra::crs(m_bio_1))
+pts_1 <- terra::vect(d[d$presence==1,],geom=c("lon","lat"),crs=terra::crs(m_bio_1))
 par(mfrow=c(1,2))
 terra::plot(m_bio_1,axes=TRUE,main="Non-detections",xlab="x",ylab="y",legend=TRUE)
 terra::plot(pts_0,add=TRUE,col="black",pch=20,cex=.2)
 terra::plot(m_bio_1,axes=TRUE,main="Detections",xlab="x",ylab="y",legend=TRUE)
 terra::plot(pts_1,add=TRUE,col="black",pch=20,cex=.2)
 ```
-
-![](how_to_fit_files/figure-html/look_at_data_03-1.png)
 
 The fitting tools offered by `xsdm` use a more succinct version of the
 data, since only the environmental time series at the locations for
@@ -232,16 +138,8 @@ locations and store them in an array using the convenience function
 env_data <- list(bio_1=bio_1, bio_12=bio_12)  # order defines variable 1 and 2
 env_array <- env_data_array(env_data, d)  # (n locations) x (time) x (p vars)
 class(env_array)
-```
-
-    ## [1] "array"
-
-``` r
-
 dim(env_array)
 ```
-
-    ## [1] 4000   39    2
 
 And we pull out the presences/pseudo-absences as a binary vector:
 
@@ -250,8 +148,6 @@ And we pull out the presences/pseudo-absences as a binary vector:
 occ <- d$presence
 length(occ)
 ```
-
-    ## [1] 4000
 
 Now we are ready to think about how the xsdm model applies to our data.
 
@@ -289,20 +185,16 @@ sigrtil <- c(2,3)
 ctil <- -10
 pd <- 0.8
 o_mat <- diag(2)
-loglik_bio(env_array,occ,mu,sigltil,sigrtil,o_mat=o_mat,ctil=ctil,pd=pd)
+loglik_bio(env_array,occ,mu,sigltil,sigrtil,ctil,pd,o_mat)
 ```
-
-    ## [1] -2110.297
 
 By default, the function gives the log likelihood, but you can also get
 the linear-scale likelihood:
 
 ``` r
 
-loglik_bio(env_array,occ,mu,sigltil,sigrtil,o_mat=o_mat,ctil=ctil,pd=pd,return_prob=TRUE)
+loglik_bio(env_array,occ,mu,sigltil,sigrtil,ctil,pd,o_mat,return_prob=TRUE)
 ```
-
-    ## [1] 0
 
 For these haphazardly chosen parameters, the (linear-scale) likelihood
 is zero to within numeric precision - this is typical. We next optimize.
@@ -373,46 +265,13 @@ directly in terms of the math-scale parameters in a function
 #see below - make_mask_names helps set it up
 param_vector <- make_mask_names(p=2) #p = 2 environmental variables in our case
 param_vector
-```
-
-    ##      mu1      mu2 sigltil1 sigltil2 sigrtil1 sigrtil2     ctil       pd 
-    ##       NA       NA       NA       NA       NA       NA       NA       NA 
-    ##   o_par1 
-    ##       NA
-
-``` r
 
 set.seed(101)
 param_vector[1:9] <- rnorm(9) #fill with random values just to try it
 math_to_bio(param_vector)
-```
-
-    ## $mu
-    ## [1] -0.3260365  0.5524619
-    ## 
-    ## $sigltil
-    ## [1] 0.509185 1.239068
-    ## 
-    ## $sigrtil
-    ## [1] 1.364474 3.234797
-    ## 
-    ## $ctil
-    ## [1] 0.6187899
-    ## 
-    ## $pd
-    ## [1] 0.4718462
-    ## 
-    ## $o_mat
-    ##           [,1]       [,2]
-    ## [1,] 0.6081818 -0.7937978
-    ## [2,] 0.7937978  0.6081818
-
-``` r
 
 loglik_math(param_vector,env_dat=env_array,occ=occ,negative=FALSE)
 ```
-
-    ## [1] -52393.06
 
 The function `loglik\_math` first transforms parameters to the
 biological scale using `math\_to\_bio` and then evaluates `loglik\_bio`;
@@ -423,8 +282,6 @@ minimizes by default, you can use:
 
 loglik_math(param_vector,env_dat=env_array,occ=occ,negative=TRUE)
 ```
-
-    ## [1] 52393.06
 
 Before moving on to optimizing, we note that `loglik\_math` requires a
 named vector for its input `param\_vector`. This is to reduce the
@@ -448,29 +305,6 @@ optim(par=param_vector,fn=loglik_math,method="BFGS",
       control=list(trace=100))
 ```
 
-    ## initial  value 52393.064895 
-    ## final  value 2695.653693 
-    ## converged
-
-    ## $par
-    ##         mu1         mu2    sigltil1    sigltil2    sigrtil1    sigrtil2 
-    ##  74.2810628  17.7714932  -0.6749438 294.5651129 509.1899967   1.1739658 
-    ##        ctil          pd      o_par1 
-    ## -19.3033406  -0.3960988 -71.7462579 
-    ## 
-    ## $value
-    ## [1] 2695.654
-    ## 
-    ## $counts
-    ## function gradient 
-    ##       37        9 
-    ## 
-    ## $convergence
-    ## [1] 0
-    ## 
-    ## $message
-    ## NULL
-
 But multiple optimizations should typically be done starting from
 different initial conditions to improve chances of finding the global
 maximum to the likelihood function.
@@ -484,20 +318,6 @@ num_starts <- 10
 starts <- start_parms(env_array[occ==1,,],num_starts=num_starts)
 starts
 ```
-
-    ## # A tibble: 10 × 9
-    ##      mu1   mu2 sigltil1 sigltil2 sigrtil1  sigrtil2   ctil     pd o_par1
-    ##    <dbl> <dbl>    <dbl>    <dbl>    <dbl>     <dbl>  <dbl>  <dbl>  <dbl>
-    ##  1  8.68  3.38  -0.277    0.124   -0.0442 -0.216    -1.47   1.92   -5.89
-    ##  2  9.92  4.68   0.417   -0.569   -0.737   0.477    -0.993 -0.275   3.53
-    ##  3 10.5   2.73   0.0700   0.470   -0.391   0.131    -0.753  0.824  -1.18
-    ##  4  9.30  4.03  -0.623   -0.223    0.302   0.824    -1.23  -1.37    8.25
-    ##  5  8.99  3.06   0.590   -0.0494  -0.217   0.650    -1.35  -0.824  -8.25
-    ##  6 10.2   4.36  -0.103   -0.743    0.476  -0.0428   -0.873  1.37    1.18
-    ##  7  9.61  3.71  -0.450    0.297    0.129   0.304    -0.633 -1.92   -3.53
-    ##  8  8.37  5.01   0.243   -0.396   -0.564  -0.389    -1.11   0.275   5.89
-    ##  9  8.45  3.79   0.460   -0.266   -0.434   0.000542 -1.02   1.51    5.30
-    ## 10  9.52  3.68  -0.0166  -0.136   -0.131   0.217    -0.927  0       0
 
 We recommend, for real data, at least 50 initial conditions for
 optimization, or more if using more than two environmental variables or
@@ -531,21 +351,10 @@ First, we look at the maximized likelihood values:
 bestlogliks <- sapply(X=all_optim_results,FUN=function(x){x$value})
 convergence <- sapply(X=all_optim_results,FUN=function(x){x$convergence})
 table(convergence)
-```
-
-    ## convergence
-    ## 0 1 
-    ## 9 1
-
-``` r
-
 inds <- order(bestlogliks)
 bestlogliks <- bestlogliks[inds]
 bestlogliks
 ```
-
-    ##  [1] 1009.447 1009.447 1009.447 1009.447 1009.447 1034.676 1107.866 1112.943
-    ##  [9] 1161.071 1174.072
 
 These results indicate that: 1) most of the 10 optimizations appear to
 have converged according to the diagnostics of `optim` (0 means
@@ -565,27 +374,6 @@ all_optim_results <- all_optim_results[inds]
 allpars <- sapply(X=all_optim_results,FUN=function(x){x$par})
 allpars
 ```
-
-    ##                [,1]       [,2]       [,3]       [,4]       [,5]       [,6]
-    ## mu1       8.9308684  8.9307258  8.9306340  8.9309420  8.9320049  8.2945352
-    ## mu2       2.2155105  2.2156080  2.2153084  2.2153566  2.2151750  3.4362910
-    ## sigltil1 -1.3377407 -1.3377801 -1.8986340 -1.3376978 -0.1539165 -0.4147331
-    ## sigltil2 -1.8983845 -1.8982674 -0.6244625 -1.8984457 -1.3370435 -1.5973825
-    ## sigrtil1 -0.6245251 -0.6244731 -0.1541976 -0.6244635 -1.8986953 14.4328482
-    ## sigrtil2 -0.1541893 -0.1542019 -1.3380042 -0.1541155 -0.6247372 -0.4664596
-    ## ctil     -9.0143189 -9.0139479 -9.0152724 -9.0136131 -9.0118765 -7.6008188
-    ## pd        2.0470009  2.0470328  2.0469530  2.0470708  2.0470954  2.0499038
-    ## o_par1   -6.0630898 -6.0631312  1.7908738  0.2201439 -1.3504479 -1.5701632
-    ##                [,7]       [,8]       [,9]      [,10]
-    ## mu1      10.1913091 10.9338412  8.4428284 11.0363274
-    ## mu2       2.9649252  1.9506633 -0.8976550  1.0242092
-    ## sigltil1  7.0235236  5.6594633 -1.2515513 -1.5374616
-    ## sigltil2 -1.5170334 -0.5053416 -0.6322023  0.1061578
-    ## sigrtil1 -1.0466329 -2.7633944  7.1289572 25.7327839
-    ## sigrtil2 -0.1323561 -0.9790362 -1.3378986 -8.1260956
-    ## ctil     -6.5713459 -3.4807479 -7.3945909 -9.8885679
-    ## pd        1.7686846  2.4585925  1.4668705  1.4501687
-    ## o_par1    6.8581352 -0.9567979  1.5242340  9.7751744
 
 These are in the same order as the maximized likelihood values above.
 Note that the first five sets of optimized parameters appear the same,
@@ -629,9 +417,6 @@ for (counter in 1:num_starts)
 }
 dists_to_first
 ```
-
-    ##  [1] 0.000000e+00 9.021237e-04 2.191317e-03 8.640199e-04 4.371897e-03
-    ##  [6] 4.551695e+00 4.583577e+00 1.121000e+01 4.916093e+00 3.374898e+03
 
 Note that the first five parameter optimization results are all reported
 to be close in parameter space to the first parameter optimization
@@ -678,24 +463,10 @@ Now examine results of the first of the two simpler models:
 #Eaxamine results from the first simpler model
 convergence_1 <- sapply(X=all_optim_results_1,FUN=function(x){x$convergence})
 table(convergence_1)
-```
-
-    ## convergence_1
-    ##  0 
-    ## 10
-
-``` r
-
 bestlogliks_1 <- sapply(X=all_optim_results_1,FUN=function(x){x$value})
 inds <- order(bestlogliks_1)
 bestlogliks_1 <- bestlogliks_1[inds]
 bestlogliks_1
-```
-
-    ##  [1] 1162.205 1162.205 1162.205 1162.205 1162.205 1162.205 1162.205 1162.205
-    ##  [9] 1162.205 1162.207
-
-``` r
 
 #Look at distance in parameter space
 all_optim_results_1 <- all_optim_results_1[inds]
@@ -709,9 +480,6 @@ for (counter in 1:num_starts)
 dists_to_first_1
 ```
 
-    ##  [1] 0.0000000000 0.0002518379 0.0003977229 0.0005398182 0.0009154969
-    ##  [6] 0.0003561009 0.0008043828 0.0008854432 0.0042296241 0.0609974894
-
 The results suggest that the likelihood function of this model has been
 adequately maximized.
 
@@ -722,24 +490,10 @@ Now examine results of the second of the two simpler models:
 #Examine results from the second simpler model
 convergence_2 <- sapply(X=all_optim_results_2,FUN=function(x){x$convergence})
 table(convergence_2)
-```
-
-    ## convergence_2
-    ## 0 1 
-    ## 9 1
-
-``` r
-
 bestlogliks_2 <- sapply(X=all_optim_results_2,FUN=function(x){x$value})
 inds <- order(bestlogliks_2)
 bestlogliks_2 <- bestlogliks_2[inds]
 bestlogliks_2
-```
-
-    ##  [1] 2289.336 2289.336 2289.336 2289.337 2289.337 2289.338 2289.345 2289.352
-    ##  [9] 2289.458 2624.992
-
-``` r
 
 #Look at distances in parameter space
 all_optim_results_2 <- all_optim_results_2[inds]
@@ -753,9 +507,6 @@ for (counter in 1:num_starts)
 dists_to_first_2
 ```
 
-    ##  [1] 0.000000e+00 8.706586e-05 1.487843e-05 1.133798e-04 5.216498e-04
-    ##  [6] 7.136674e-05 2.960058e-03 5.284775e-03 6.007975e-03 3.150746e+01
-
 The results suggest that the likelihood function of this model has been
 adequately maximized.
 
@@ -768,26 +519,13 @@ results are already negative log-likelihoods:
 #2*(maximized log likelihood)
 AIC <- 2*length(make_mask_names(2))+2*bestlogliks[1]
 AIC
-```
-
-    ## [1] 2036.893
-
-``` r
 
 #AICs of the two simpler models
 AIC_1 <- 2*length(make_mask_names(1))+2*bestlogliks_1[1]
 AIC_1
-```
-
-    ## [1] 2334.41
-
-``` r
-
 AIC_2 <- 2*length(make_mask_names(1))+2*bestlogliks_2[1]
 AIC_2
 ```
-
-    ## [1] 4588.671
 
 The best model (lowest AIC) is the two-environmental-variable model, by
 a considerable margin. This confirms expectation, since the data come
@@ -832,22 +570,8 @@ prof1 <- profile_likelihood(
   num_threads=4
 )
 names(prof1)
-```
-
-    ## [1] "profile"      "found_better" "threshold"    "parameters"
-
-``` r
-
 head(prof1$profile)
 ```
-
-    ##   param value_math    loglik convergence
-    ## 6   mu1   8.430868 -1011.369           4
-    ## 5   mu1   8.530868 -1010.618           4
-    ## 4   mu1   8.630868 -1010.066           4
-    ## 3   mu1   8.730868 -1009.705           4
-    ## 2   mu1   8.830868 -1009.509           1
-    ## 1   mu1   8.930868 -1009.447          NA
 
 Note that the convergence column is returning the convergence flagged
 returned by the optimizer
@@ -867,8 +591,6 @@ lines(range(prof1$profile$value_math),rep(prof1$threshold,2),type="l",
                                           lty="dashed",col="red")
 ```
 
-![](how_to_fit_files/figure-html/plot_profile-1.png)
-
 Note that the profiler stops its leftward (respectively, rightward)
 progress when `num\_steps\_left` (resp., `num\_steps\_right`) is
 exceeded, or when the threshold is crossed, whichever happens first.
@@ -885,29 +607,8 @@ can be done using the `parameters` output of `profile\_likelihood`:
 ``` r
 
 head(prof1$parameters)
-```
-
-    ##        mu1      mu2  sigltil1  sigltil2   sigrtil1   sigrtil2      ctil
-    ## 1 8.430868 2.385365 -1.672136 -1.761930 -0.5080694 -0.2362573 -9.616335
-    ## 2 8.530868 2.338274 -1.602737 -1.796108 -0.5310032 -0.2196097 -9.517670
-    ## 3 8.630868 2.295531 -1.535397 -1.829401 -0.5538254 -0.2024121 -9.408629
-    ## 4 8.730868 2.266375 -1.467272 -1.851749 -0.5773758 -0.1872151 -9.283128
-    ## 5 8.830868 2.240150 -1.401260 -1.874225 -0.6009627 -0.1712216 -9.150581
-    ## 6 8.930868 2.215511 -1.337741 -1.898384 -0.6245251 -0.1541893 -9.014319
-    ##         pd    o_par1
-    ## 1 2.032595 -6.170572
-    ## 2 2.035252 -6.148227
-    ## 3 2.038070 -6.126338
-    ## 4 2.040940 -6.105323
-    ## 5 2.043959 -6.084290
-    ## 6 2.047001 -6.063090
-
-``` r
-
 pairs(prof1$parameters)
 ```
-
-![](how_to_fit_files/figure-html/parameters_profile_output-1.png)
 
 As a reminder, these are math-scale parameters.
 
@@ -920,8 +621,6 @@ likelihood:
 
 prof1$found_better
 ```
-
-    ## [1] FALSE
 
 In this case, a better value was not found, which provides additional
 evidence that we had previously already succeeded in adequately
@@ -985,26 +684,6 @@ example_1_true_parameters_bio<-
                                     give_closest_rep=TRUE)$representative
 example_1_true_parameters_bio
 ```
-
-    ## $mu
-    ## [1] 9.0 2.5
-    ## 
-    ## $sigltil
-    ## [1] 0.3 0.2
-    ## 
-    ## $sigrtil
-    ## [1] 0.5 0.8
-    ## 
-    ## $ctil
-    ## [1] -9
-    ## 
-    ## $pd
-    ## [1] 0.8649783
-    ## 
-    ## $o_mat
-    ##           [,1]       [,2]
-    ## [1,] 0.9800666 -0.1986693
-    ## [2,] 0.1986693  0.9800666
 
 Now plot profiles. Recall we are plotting on the biological scale, so
 each parameter is transformed before the profile is plotted:
@@ -1089,8 +768,6 @@ plot_tool(x = x,
   true_param = example_1_true_parameters_bio$o_mat[1,1])
 ```
 
-![](how_to_fit_files/figure-html/plot_all_profiles-1.png)
-
 Note that transforming `o\_par` profiles to the biological scale will
 not work the same way for more than two environmental variables because,
 in that case, there are multiple `o\_par` parameters, and they interact
@@ -1130,34 +807,15 @@ terra::plot((hab_suit_true>.5),main="Species range, true",
 terra::plot((hab_suit>.5)-(hab_suit_true>.5),
             main="Difference",
             xlab="x",ylab="y",legend=TRUE)
-```
-
-![](how_to_fit_files/figure-html/habitat_suitability-1.png)
-
-``` r
 
 #compute percent error in range
 area <- sum(as.data.frame((hab_suit_true>.5)))
 area_setdiff <- sum(abs(as.data.frame((hab_suit>.5)-(hab_suit_true>.5))-0)>1e-1)
 delta <- (area_setdiff)/area
 area
-```
-
-    ## [1] 2058
-
-``` r
-
 area_setdiff
-```
-
-    ## [1] 69
-
-``` r
-
 delta
 ```
-
-    ## [1] 0.0335277
 
 As you can see, both the inferred habitat suitability map and the
 associated species range are similar to the true versions.
@@ -1198,34 +856,15 @@ terra::plot((m_hab_suit>.5),main="Species range, no var",
 terra::plot((m_hab_suit>.5)-(hab_suit>.5),
             main="Difference",
             xlab="x",ylab="y",legend=TRUE)
-```
-
-![](how_to_fit_files/figure-html/habitat_suitability_novar-1.png)
-
-``` r
 
 #compute change in area due to variability
 area <- sum(as.data.frame((hab_suit>.5)))
 area_novar <- sum(as.data.frame((m_hab_suit>.5)))
 delta_area <- (area_novar-area)/area_novar
 area
-```
-
-    ## [1] 2003
-
-``` r
-
 area_novar
-```
-
-    ## [1] 2716
-
-``` r
-
 delta_area
 ```
-
-    ## [1] 0.2625184
 
 So we see variability reduces area by a certain percentage for this
 virtual species.
@@ -1252,20 +891,18 @@ variable, relative to the other environmental variables:
 par(mfrow=c(1,2))
 interpret_parameters(param_list=ML_parameters_bio,
                      plot_indices=c(1,2),
-                     plot_lims=list(c(-9.5,13),c(-5.5,17)))
-title(main="Inferred")
+                     plot_lims=list(c(-9.5,13),c(-5.5,17)),
+                     main="Inferred")
 points(env_array[occ==1,,1],env_array[occ==1,,2],pch=20,
        col=rgb(0,0,0,.2),cex=0.2)
 
 interpret_parameters(param_list=ML_parameters_bio,
                      plot_indices=c(1,2),
-                     plot_lims=list(c(-9.5,13),c(-5.5,17)))
-title(main="Inferred")
+                     plot_lims=list(c(-9.5,13),c(-5.5,17)),
+                     main="Inferred")
 points(env_array[occ==0,,1],env_array[occ==0,,2],pch=20,
        col=rgb(0,0,0,.2),cex=0.2)
 ```
-
-![](how_to_fit_files/figure-html/interpret_parameters-1.png)
 
 The points displayed here are all values of the environmental variables,
 in any year, in locations for which the species was detected (left) or
@@ -1289,20 +926,18 @@ Now we plot the same thing for the true parameters:
 par(mfrow=c(1,2))
 interpret_parameters(param_list=example_1_true_parameters_bio,
                      plot_indices=c(1,2),
-                     plot_lims=list(c(-9.5,13),c(-5.5,17)))
-title(main="True")
+                     plot_lims=list(c(-9.5,13),c(-5.5,17)),
+                     main="True")
 points(env_array[occ==1,,1],env_array[occ==1,,2],pch=20,
        col=rgb(0,0,0,.2),cex=0.2)
 
 interpret_parameters(param_list=example_1_true_parameters_bio,
                      plot_indices=c(1,2),
-                     plot_lims=list(c(-9.5,13),c(-5.5,17)))
-title(main="True")
+                     plot_lims=list(c(-9.5,13),c(-5.5,17)),
+                     main="True")
 points(env_array[occ==0,,1],env_array[occ==0,,2],pch=20,
        col=rgb(0,0,0,.2),cex=0.2)
 ```
-
-![](how_to_fit_files/figure-html/interpret_parameters_true-1.png)
 
 Results were quite similar. Plots against one environmental variable are
 also possible, holding the other one at optimal values. See the
