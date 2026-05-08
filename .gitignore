@@ -5,4 +5,5 @@
 inst/doc
 README.html
 README_cache/
-docs
+vignettes/*_cache/
+vignettes/*_files/
