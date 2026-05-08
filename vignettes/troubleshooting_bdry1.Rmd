@@ -21,8 +21,8 @@ knitr::opts_chunk$set(
   echo=TRUE,
   message=FALSE,
   warning=FALSE,
-  cache=TRUE,
-  eval=TRUE
+  cache=FALSE,
+  eval=FALSE
 )
 ```
 
@@ -112,7 +112,7 @@ model_BICs <- sapply(X=all_model_results,
 ```
 
 Also by AIC:
-```{r rank_by_AIC, fig.width=6, fig.height=5}
+```{r rank_by_AIC}
 model_AICs <- sapply(X=all_model_results,
                       FUN=function(x){
                         best_loglik = min(sapply(X=x, FUN=function(y){y$value}))
@@ -228,7 +228,7 @@ names(all_profiles) <- pnames
 ```
 
 Now plot these profiles:
-```{r plot_profiles_first, fig.width=9, fig.height=9}
+```{r plot_profiles_first}
 plot_tool <- function(ap,index)
 {
   x <- ap[[index]]$profile$value_math
@@ -347,7 +347,7 @@ names(all_bdry_profiles) <- pnames
 ```
 
 Now plot these profiles:
-```{r plot_profiles, fig.width=9, fig.height=9}
+```{r plot_profiles}
 par(mfrow=c(3,3))
 plot_tool(all_bdry_profiles,1)
 plot_tool(all_bdry_profiles,2)
