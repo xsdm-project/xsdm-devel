@@ -21,8 +21,8 @@ knitr::opts_chunk$set(
   echo=TRUE,
   message=FALSE,
   warning=FALSE,
-  cache=FALSE,
-  eval=FALSE
+  cache=TRUE,
+  eval=TRUE
 )
 ```
 
@@ -132,7 +132,7 @@ model_BICs <- sapply(X=all_model_results,
 ```
 
 Also by AIC, then display:
-```{r rank_by_AIC}
+```{r rank_by_AIC, fig.width=6, fig.height=5}
 model_AICs <- sapply(X=all_model_results,
                       FUN=function(x){
                         best_loglik = x[[1]]$value
@@ -302,7 +302,7 @@ names(all_profiles) <-  pnames
 ```
 
 Now plot these profiles:
-```{r plot_profiles}
+```{r plot_profiles, fig.width=9, fig.height=9}
 plot_tool <- function(ap,index)
   {
   x <- ap[[index]]$profile$value_math
@@ -332,7 +332,7 @@ confirming that we had not effectively optimized the likelihood.
 The `mu2`, `mu2`, and `ctil` profile, in particular, show problems.
 
 We do a pairs plot based on the `mu2` profile to investigate further:
-```{r make_pairs_plot_again}
+```{r make_pairs_plot_again, fig.width=9, fig.height=9}
 p <- all_profiles[[2]]$parameters
 head(p)
 p <- p[,1:8]
@@ -351,7 +351,7 @@ be one if the increase is indeed asymptotic.
 We look at what the growth-environment function looks like
 for the best parameters we have found so far, maybe that will give some insight into what
 is going wrong:
-```{r look_at_inferred_ge_func,fig.height=4}
+```{r look_at_inferred_ge_func, fig.width=7, fig.height=4}
 param_list <- bdry_optim_results[[1]]$par
 param_list["sigltil2"] <- Inf
 param_list <- param_list[names(xsdm::make_mask_names(2))]
@@ -417,7 +417,7 @@ bdry_optim_results5 <- bdry_optim_results5[inds]
 This model looks like it probably optimized well.
 
 Next do profiles:
-```{r profile_model_5, cache=TRUE}
+```{r profile_model_5, cache=TRUE, fig.width=9, fig.height=6}
 all_profiles <- list()
 pnames <- names(xsdm::make_mask_names(1))
 pnames <- pnames[pnames!="sigrtil1"]
