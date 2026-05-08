@@ -1,5 +1,11 @@
 # Troubleshooting: boundary models, 1
 
+\\ \newcommand{\mean}\[1\]{\overline{#1}} \newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}} \newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}} \newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}} \newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}} \\
+
 **Abstract.** We here show a troublshooting example in the case where
 the best model considered does not show adequate evidence that the
 likelihood function was fully optimized, the best parameters obtained by

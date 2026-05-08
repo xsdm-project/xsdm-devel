@@ -1,5 +1,11 @@
 # Unusable models: when a model does not have a maximum likelihood
 
+\\ \newcommand{\mean}\[1\]{\overline{#1}} \newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}} \newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}} \newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}} \newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}} \\
+
 **Abstract.** When an xsdm model does not have a maximum likelihood, it
 should not be used. This document shows an example of how that can
 occur, and how to diagnose it. Along the way, another type of boundary
@@ -395,7 +401,7 @@ that we probably still have not successfully optimized the likelihood,
 or that the likelihood surface may have a ridge or an asymptote or other
 pathological feature. One sees this by observing that whereas the top
 several optimization results are similar in likelihood, they are spread
-out in parameter space (the `parms\_dists` column shows distance in
+out in parameter space (the `parms_dists` column shows distance in
 parameter space to the top-likelihood result).
 
 To investigate the model further, we profile:

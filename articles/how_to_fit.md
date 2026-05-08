@@ -131,7 +131,7 @@ which there is a detection or a non-detection/pseudo-absence matter;
 though we will return to using rasters after fitting and model
 selection. So, for now, we cut out only those time series at the species
 locations and store them in an array using the convenience function
-`env\_data\_array`:
+[`env_data_array()`](https://xsdm-project.github.io/xsdm-devel/reference/env_data_array.md):
 
 ``` r
 
@@ -172,10 +172,12 @@ Parameters are:
   orthogonal, i.e., \\OO^{\tau}=I\\ for \\\tau\\ the transpose).
 
 In code, the above parameters are denoted `mu`, `sigltil`, `sigrtil`,
-`ctil`, `pd`, and `o\_mat`.
+`ctil`, `pd`, and `o_mat`.
 
-The likelihood is coded as `loglik\_bio`, so as an introduction to the
-function let’s evaluate it at a haphazardly chosen set of parameters:
+The likelihood is coded as
+[`loglik_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_bio.md),
+so as an introduction to the function let’s evaluate it at a haphazardly
+chosen set of parameters:
 
 ``` r
 
@@ -202,7 +204,7 @@ is zero to within numeric precision - this is typical. We next optimize.
 ## An unconstrained parameter space
 
 Some model parameters are constrained, i.e., only certain values are
-allowed (specifically, `sigltil`, `sigrtil`, `pd`, and `o\_mat`; see
+allowed (specifically, `sigltil`, `sigrtil`, `pd`, and `o_mat`; see
 previous section). Rather than attempt to perform optimizations subject
 to these constraints, we here define a transformation from an
 unconstrained Euclidean space to the space of allowed parameters, and we
@@ -252,12 +254,19 @@ comes from the parameters \\\tilde{c}^{(m)}\\ and \\p_d^{(m)}\\; and the
 term \\\frac{p^2-p}{2}\\ in the expression comes from \\O^{(m)}\\.
 
 The transformation from math-scale to bio-scale parameters is
-implemented in `xsdm` using the function `math\_to\_bio`, which takes an
-unconstrained numeric vector as its argument and returns a named list of
-of biological-scale parameters. But it is not so common for the end-user
-to call `math\_to\_bio` directly because we have written the likelihood
-directly in terms of the math-scale parameters in a function
-`loglik\_math`. We now demonstrate `math\_to\_bio` and `loglik\_math`:
+implemented in `xsdm` using the function
+[`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md),
+which takes an unconstrained numeric vector as its argument and returns
+a named list of of biological-scale parameters. But it is not so common
+for the end-user to call
+[`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md)
+directly because we have written the likelihood directly in terms of the
+math-scale parameters in a function
+[`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md).
+We now demonstrate
+[`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md)
+and
+[`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md):
 
 ``` r
 
@@ -273,8 +282,12 @@ math_to_bio(param_vector)
 loglik_math(param_vector,env_dat=env_array,occ=occ,negative=FALSE)
 ```
 
-The function `loglik\_math` first transforms parameters to the
-biological scale using `math\_to\_bio` and then evaluates `loglik\_bio`;
+The function
+[`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md)
+first transforms parameters to the biological scale using
+[`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md)
+and then evaluates
+[`loglik_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_bio.md);
 so one optimizes it directly (see below). If your favorite optimizer
 minimizes by default, you can use:
 
@@ -283,14 +296,17 @@ minimizes by default, you can use:
 loglik_math(param_vector,env_dat=env_array,occ=occ,negative=TRUE)
 ```
 
-Before moving on to optimizing, we note that `loglik\_math` requires a
-named vector for its input `param\_vector`. This is to reduce the
-possibility of errors stemming form parameter ordering. There is a
+Before moving on to optimizing, we note that
+[`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md)
+requires a named vector for its input `param_vector`. This is to reduce
+the possibility of errors stemming form parameter ordering. There is a
 naming convention for arguments which must be followed exactly, and
-which is described in the documentation for `loglik\_math`. The function
-`make\_mask\_names` helps the user by giving the parameter names which
-are required for a model making use of a given number of environmental
-variables.
+which is described in the documentation for
+[`loglik_math()`](https://xsdm-project.github.io/xsdm-devel/reference/loglik_math.md).
+The function
+[`make_mask_names()`](https://xsdm-project.github.io/xsdm-devel/reference/make_mask_names.md)
+helps the user by giving the parameter names which are required for a
+model making use of a given number of environmental variables.
 
 ## Optimizing the likelihood
 
@@ -309,8 +325,9 @@ But multiple optimizations should typically be done starting from
 different initial conditions to improve chances of finding the global
 maximum to the likelihood function.
 
-The function `start\_parms` can be used to find plausible initial
-conditions for optimization:
+The function
+[`start_parms()`](https://xsdm-project.github.io/xsdm-devel/reference/start_parms.md)
+can be used to find plausible initial conditions for optimization:
 
 ``` r
 
@@ -379,30 +396,32 @@ These are in the same order as the maximized likelihood values above.
 Note that the first five sets of optimized parameters appear the same,
 to within a few digits, for the `mu1`, `mu2`, `ctil`, and `pd`
 parameters, but that they appear to differ from each other with respect
-to the `o\_par1` parameter. And the `sigltil1`, `sigltil2`, `sigrtil1`,
+to the `o_par1` parameter. And the `sigltil1`, `sigltil2`, `sigrtil1`,
 `sigrtil2` parameters for one optimization result appear to be the same,
 up to a few digits, as for another optimization results *if permuted*.
-These complexities reflect the fact that the `math\_to\_bio` mapping is
-many-to-one, and that there are also multiple ways to parameterize the
-identical xsdm model with distinct biological-scale parameters. These
-redundancies affect the `sigltil1`, `sigltil2`, `sigrtil1`, `sigrtil2`,
-and `o\_par1` parameters. For models making use of more than two
-environmental variables, all the `o\_par` parameters are affected. In
-essence, parameters can be the same, in the sense of giving the same
-xsdm model, even if they appear different; so we need to take this
-redundancy into account when judging whether different optimizations
-resulted in the same parameters.
+These complexities reflect the fact that the
+[`math_to_bio()`](https://xsdm-project.github.io/xsdm-devel/reference/math_to_bio.md)
+mapping is many-to-one, and that there are also multiple ways to
+parameterize the identical xsdm model with distinct biological-scale
+parameters. These redundancies affect the `sigltil1`, `sigltil2`,
+`sigrtil1`, `sigrtil2`, and `o_par1` parameters. For models making use
+of more than two environmental variables, all the `o_par` parameters are
+affected. In essence, parameters can be the same, in the sense of giving
+the same xsdm model, even if they appear different; so we need to take
+this redundancy into account when judging whether different
+optimizations resulted in the same parameters.
 
 These issues are described further in the document “Troubleshooting:
 Dealing with parameter redundancy,” but the function
-`dist\_between\_params` provides an easy way around these complexities.
-The function directly calculates for the user the distance between two
-sets of xsdm model parameters while taking into account the redundancy
-described; i.e., if `dist\_between\_params` indicates a very small
-difference between two sets of parameters, they give essentially the
-same xsdm model and can be considered to be close to each other in
-parameter space even if they appear different. So use the function as
-the test of parameter similarity, as follows:
+[`dist_between_params()`](https://xsdm-project.github.io/xsdm-devel/reference/dist_between_params.md)
+provides an easy way around these complexities. The function directly
+calculates for the user the distance between two sets of xsdm model
+parameters while taking into account the redundancy described; i.e., if
+[`dist_between_params()`](https://xsdm-project.github.io/xsdm-devel/reference/dist_between_params.md)
+indicates a very small difference between two sets of parameters, they
+give essentially the same xsdm model and can be considered to be close
+to each other in parameter space even if they appear different. So use
+the function as the test of parameter similarity, as follows:
 
 ``` r
 
@@ -424,7 +443,8 @@ result.
 
 If, as in this case, sufficiently many of the initial conditions
 optimized to give the same, highest maximized likelihood, and these also
-gave parameter results which are reported using `dist\_between\_params`
+gave parameter results which are reported using
+[`dist_between_params()`](https://xsdm-project.github.io/xsdm-devel/reference/dist_between_params.md)
 to be close to each other in parameter space, we can be sufficiently
 confident that we have successfully maximized the likelihood. Profiling,
 which is covered below, provides additional checks.
@@ -553,7 +573,8 @@ test - see basic texts on maximum likelihood methods for additional
 details.
 
 To calculate profiles using `xsdm`, use the function
-`profile\_likelihood`, here for :
+[`profile_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/profile_likelihood.md),
+here for :
 
 ``` r
 
@@ -592,17 +613,18 @@ lines(range(prof1$profile$value_math),rep(prof1$threshold,2),type="l",
 ```
 
 Note that the profiler stops its leftward (respectively, rightward)
-progress when `num\_steps\_left` (resp., `num\_steps\_right`) is
-exceeded, or when the threshold is crossed, whichever happens first.
-Profiling is often a trial-and-error process of selecting values for
-`increment\_left`, `increment\_right`, `num\_steps\_left`, and
-`num\_steps\_right` to get complete and smooth profiles within the
-limits of available computational resources. See “Troubleshooting:
-Profiles” for additional details.
+progress when `num_steps_left` (resp., `num_steps_right`) is exceeded,
+or when the threshold is crossed, whichever happens first. Profiling is
+often a trial-and-error process of selecting values for
+`increment_left`, `increment_right`, `num_steps_left`, and
+`num_steps_right` to get complete and smooth profiles within the limits
+of available computational resources. See “Troubleshooting: Profiles”
+for additional details.
 
 Often one wants to plot the values of the other parameters which
 optimized the likelihood for each value of the profiled parameter. This
-can be done using the `parameters` output of `profile\_likelihood`:
+can be done using the `parameters` output of
+[`profile_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/profile_likelihood.md):
 
 ``` r
 
@@ -612,9 +634,10 @@ pairs(prof1$parameters)
 
 As a reminder, these are math-scale parameters.
 
-Finally, the `found\_better` output of `profile\_likelihood` is a flag
-which tells you whether, in the course of profiling, a higher likelihood
-was found than what was previously believed to be the maximum
+Finally, the `found_better` output of
+[`profile_likelihood()`](https://xsdm-project.github.io/xsdm-devel/reference/profile_likelihood.md)
+is a flag which tells you whether, in the course of profiling, a higher
+likelihood was found than what was previously believed to be the maximum
 likelihood:
 
 ``` r
@@ -624,7 +647,7 @@ prof1$found_better
 
 In this case, a better value was not found, which provides additional
 evidence that we had previously already succeeded in adequately
-maximizing the likelihood. If `found\_better` is `TRUE`, it means you
+maximizing the likelihood. If `found_better` is `TRUE`, it means you
 have to go back and re-optimize, either with more initial conditions, or
 with tighter tolerances on the optimizer used, or with a different
 optimizer. Although sometimes it can be sufficient to simply re-start
@@ -768,18 +791,19 @@ plot_tool(x = x,
   true_param = example_1_true_parameters_bio$o_mat[1,1])
 ```
 
-Note that transforming `o\_par` profiles to the biological scale will
-not work the same way for more than two environmental variables because,
-in that case, there are multiple `o\_par` parameters, and they interact
-with each other in the transformation to the biological scale. In that
-case, a Bayesian approach may have advantages.
+Note that transforming `o_par` profiles to the biological scale will not
+work the same way for more than two environmental variables because, in
+that case, there are multiple `o_par` parameters, and they interact with
+each other in the transformation to the biological scale. In that case,
+a Bayesian approach may have advantages.
 
 ## Habitat suitability maps
 
 We have now fitted several models, selected a best one, verified that
 the profiles look good, and shown that fitting captures the true model
 parameters. Habitat suitability maps are done with the
-`habitat\_suitability` function.
+[`habitat_suitability()`](https://xsdm-project.github.io/xsdm-devel/reference/habitat_suitability.md)
+function.
 
 ``` r
 
@@ -876,15 +900,16 @@ what we can about how the species responds to the environment. This is
 rendered a bit more challenging due to the parameter reduction step
 which was carried out for the model to eliminate structural
 non-identifiability (see “The xsdm model” for details). The function
-`interpret\_parameters` helps with this, displaying plots which describe
-the inferred growth-environment function (the relationship between the
-environment, \\\vec{e}\_t\\, in a given year in a location and the
-annual net growth rate, \\\lambda_t\\). For instance, for our example,
-the contours of that function are determined, though their heights are
-not determined. The contours are enough to tell the user what the
-optimal environment is for the species, and how sensitive annual net
-growth is to departures from this optimum for each environmental
-variable, relative to the other environmental variables:
+[`interpret_parameters()`](https://xsdm-project.github.io/xsdm-devel/reference/interpret_parameters.md)
+helps with this, displaying plots which describe the inferred
+growth-environment function (the relationship between the environment,
+\\\vec{e}\_t\\, in a given year in a location and the annual net growth
+rate, \\\lambda_t\\). For instance, for our example, the contours of
+that function are determined, though their heights are not determined.
+The contours are enough to tell the user what the optimal environment is
+for the species, and how sensitive annual net growth is to departures
+from this optimum for each environmental variable, relative to the other
+environmental variables:
 
 ``` r
 
@@ -941,4 +966,6 @@ points(env_array[occ==0,,1],env_array[occ==0,,2],pch=20,
 
 Results were quite similar. Plots against one environmental variable are
 also possible, holding the other one at optimal values. See the
-documentation of `interpret\_parameters` for details.
+documentation of
+[`interpret_parameters()`](https://xsdm-project.github.io/xsdm-devel/reference/interpret_parameters.md)
+for details.

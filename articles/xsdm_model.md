@@ -1,5 +1,11 @@
 # The xsdm model
 
+\\ \newcommand{\mean}\[1\]{\overline{#1}} \newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}} \newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}} \newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}} \newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}} \\
+
 **Abstract.** This document is the intended point of entry for the
 statistically and computationally sophisticated researcher to begin
 using the xsdm package. We state the scientific purpose of the xsdm

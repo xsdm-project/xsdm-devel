@@ -98,6 +98,17 @@ Ecological Research, University of Kansas<br><small class="dont-index">Source: <
 
     
     
+<p><span class="math display">\[
+\newcommand{\mean}[1]{\overline{#1}}
+\newcommand{\var}{\text{var}}
+\newcommand{\cov}{\text{cov}}
+\newcommand{\cor}{\text{cor}}
+\newcommand{\Rp}{\text{Re}}
+\newcommand{\E}{\text{E}}
+\newcommand{\ltsgr}{\text{ltsgr}}
+\newcommand{\expit}{\text{expit}}
+\newcommand{\logit}{\text{logit}}
+\]</span></p>
 <p><strong>Abstract.</strong> When an xsdm model does not have a maximum
 likelihood, it should not be used. This document shows an example of how
 that can occur, and how to diagnose it. Along the way, another type of
@@ -409,7 +420,7 @@ results reveal that we probably still have not successfully optimized
 the likelihood, or that the likelihood surface may have a ridge or an
 asymptote or other pathological feature. One sees this by observing that
 whereas the top several optimization results are similar in likelihood,
-they are spread out in parameter space (the <code>parms\_dists</code>
+they are spread out in parameter space (the <code>parms_dists</code>
 column shows distance in parameter space to the top-likelihood
 result).</p>
 <p>To investigate the model further, we profile:</p>
