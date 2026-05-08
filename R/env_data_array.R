@@ -49,6 +49,9 @@ env_data_array <- function(env_data, occ = NULL) {
   } else {
     pts <- NULL
   }
+  
+  occ <- as.data.frame(occ)
+  
   # Helper to extract data: returns matrix M x N (or C x N)
   extract_one <- function(r, pts) {
     if (!is.null(pts)) {
