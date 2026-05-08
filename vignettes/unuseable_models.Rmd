@@ -43,8 +43,6 @@ We start by loading the data:
 library(xsdm)
 env_array <-  example_2$env_array
 
-#We divide by 100 to get the correct units in the example
-env_array <-  example_2$env_array/100
 dim(env_array)
 dimnames(env_array)[[3]]
 occ <-  example_2$occ_vec
