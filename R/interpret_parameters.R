@@ -143,7 +143,7 @@ auto_plot_lims_ <- function(env_dat,
 #' and the numeric values of the image colors in the bivariate plot carry
 #' no units of their own.
 #'
-#' @importFrom graphics abline image mtext par points
+#' @importFrom graphics abline contour image mtext par points
 #' @importFrom grDevices hcl.colors adjustcolor
 #' @export
 #'
@@ -366,6 +366,7 @@ interpret_parameters <- function(param_list,
         dots,
         list(...)
       ))
+      contour(x_1, x_2, z, add = TRUE, drawlabels = FALSE, nlevels = 5)
       points(
         param_list$mu[idx1], param_list$mu[idx2],
         pch = 16, col = "green", cex = 1
