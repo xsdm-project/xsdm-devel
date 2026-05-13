@@ -1,10 +1,9 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/404.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/LICENSE.html</loc></url>
+<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/boundary_models.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/articles/how_to_fit.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/articles/index.html</loc></url>
-<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/optimize-likelihood-walkthrough.html</loc></url>
-<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/troubleshooting_bdry1.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/articles/unuseable_models.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/articles/xsdm_model.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/authors.html</loc></url>

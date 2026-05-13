@@ -2,12 +2,11 @@ pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
+  boundary_models: boundary_models.html
   how_to_fit: how_to_fit.html
-  optimize-likelihood-walkthrough: optimize-likelihood-walkthrough.html
-  troubleshooting_bdry1: troubleshooting_bdry1.html
   unuseable_models: unuseable_models.html
   xsdm_model: xsdm_model.html
-last_built: 2026-05-10T14:10Z
+last_built: 2026-05-13T14:33Z
 urls:
   reference: https://xsdm-project.github.io/xsdm-devel/reference
   article: https://xsdm-project.github.io/xsdm-devel/articles

@@ -1,4 +1,4 @@
-# The xsdm model
+# The xsdm statistical model
 
 \\ \newcommand{\mean}\[1\]{\overline{#1}} \newcommand{\var}{\text{var}}
 \newcommand{\cov}{\text{cov}} \newcommand{\cor}{\text{cor}}
