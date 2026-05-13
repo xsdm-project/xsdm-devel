@@ -1,5 +1,5 @@
 ---
-title: "The xsdm model"
+title: "The xsdm statistical model"
 author:
   - name: "Daniel C. Reuman"
     affiliation: "Department of Ecology and Evolutionary Biology and Center for Ecological Research, University of Kansas"
@@ -8,7 +8,7 @@ output:
     includes:
       in_header: mathjax-macros.html
 vignette: >
-  %\VignetteIndexEntry{The xsdm model}
+  %\VignetteIndexEntry{The xsdm statistical model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib

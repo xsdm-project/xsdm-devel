@@ -1,5 +1,5 @@
 ---
-title: "Troubleshooting: boundary models, 1"
+title: "Boundary models"
 author:
   - name: "Daniel C. Reuman"
     affiliation: "Department of Ecology and Evolutionary Biology and Center for Ecological Research, University of Kansas"
