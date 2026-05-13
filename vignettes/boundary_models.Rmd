@@ -10,7 +10,7 @@ output:
     includes:
       in_header: mathjax-macros.html
 vignette: >
-  %\VignetteIndexEntry{Troubleshooting: boundary models, 1}
+  %\VignetteIndexEntry{Boundary models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

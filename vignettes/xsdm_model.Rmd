@@ -217,7 +217,7 @@ parameter $O$ controls the orthonormal basis. One can envision $O$ encoding a
 rigid transformation that transforms the standard coordinate axes into the
 orthonormal basis.
 
-```{r growht-env-funct, echo=FALSE}
+```{r growht-env-funct, echo=FALSE, fig.width=8, fig.height=8}
 library(xsdm)
 
 # univariate growth-environment function
