@@ -94,9 +94,9 @@ window.MathJax = {
 <div class="section level3">
 <h3 id="validation--robustness-1-0-0">Validation &amp; robustness<a class="anchor" aria-label="anchor" href="#validation--robustness-1-0-0"></a></h3>
 <ul><li>
-<code><a href="../reference/optimize_likelihood.html">optimize_likelihood()</a></code>, <code><a href="../reference/start_parms.html">start_parms()</a></code>, and <code><a href="../reference/get_start_parms_.html">get_start_parms_()</a></code> now reject <code>num_starts &lt; 3</code> early with an informative <code>checkmate</code> error, rather than crashing inside <code><a href="https://rdrr.io/pkg/pomp/man/design.html" class="external-link">pomp::sobol_design()</a></code> (which segfaults at <code>nseq = 0</code> and returns a malformed vector at <code>nseq = 1</code>).</li>
+<code><a href="../reference/optimize_likelihood.html">optimize_likelihood()</a></code>, <code><a href="../reference/start_parms.html">start_parms()</a></code>, and <code><a href="../reference/get_start_parms_.html">get_start_parms_()</a></code> now reject <code>num_starts &lt; 3</code> early with an informative <code>checkmate</code> error, rather than crashing inside <code><a href="https://alrobles.github.io/sobol/reference/sobol_design.html" class="external-link">sobol::sobol_design()</a></code> (which segfaults at <code>nseq = 0</code> and returns a malformed vector at <code>nseq = 1</code>).</li>
 <li>
-<code><a href="../reference/start_parms.html">start_parms()</a></code> runtime: <code><a href="https://rdrr.io/pkg/pomp/man/design.html" class="external-link">pomp::sobol_design</a></code> output is defensively coerced to a <code>data.frame</code>, protecting against future <code>pomp</code> behaviour changes.</li>
+<code><a href="../reference/start_parms.html">start_parms()</a></code> runtime: <code><a href="https://alrobles.github.io/sobol/reference/sobol_design.html" class="external-link">sobol::sobol_design</a></code> output is defensively coerced to a <code>data.frame</code>, protecting against future behaviour changes.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="build--packaging-1-0-0">Build &amp; packaging<a class="anchor" aria-label="anchor" href="#build--packaging-1-0-0"></a></h3>

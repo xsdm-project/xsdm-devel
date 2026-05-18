@@ -70,14 +70,14 @@ First public release.
   [`get_start_parms_()`](https://xsdm-project.github.io/xsdm-devel/reference/get_start_parms_.md)
   now reject `num_starts < 3` early with an informative `checkmate`
   error, rather than crashing inside
-  [`pomp::sobol_design()`](https://rdrr.io/pkg/pomp/man/design.html)
+  [`sobol::sobol_design()`](https://alrobles.github.io/sobol/reference/sobol_design.html)
   (which segfaults at `nseq = 0` and returns a malformed vector at
   `nseq = 1`).
 - [`start_parms()`](https://xsdm-project.github.io/xsdm-devel/reference/start_parms.md)
   runtime:
-  [`pomp::sobol_design`](https://rdrr.io/pkg/pomp/man/design.html)
+  [`sobol::sobol_design`](https://alrobles.github.io/sobol/reference/sobol_design.html)
   output is defensively coerced to a `data.frame`, protecting against
-  future `pomp` behaviour changes.
+  future behaviour changes.
 
 ### Build & packaging
 

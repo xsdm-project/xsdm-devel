@@ -231,20 +231,20 @@ the negative of the likelihood:</p>
 <span><span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">model_BICs</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">model_BICs</span><span class="op">[</span><span class="va">inds</span><span class="op">]</span>,<span class="va">model_AICs</span><span class="op">[</span><span class="va">inds</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]</span></span>
-<span><span class="co">## [1,] 2419.976 2475.012 2483.864 2550.383 2580.205 2586.123 2593.541 2595.887</span></span>
-<span><span class="co">## [2,] 2366.774 2421.810 2430.662 2520.826 2550.648 2556.567 2540.339 2542.685</span></span>
+<span><span class="co">## [1,] 2419.839 2473.841 2482.646 2550.383 2580.205 2586.126 2593.545 2594.406</span></span>
+<span><span class="co">## [2,] 2366.637 2420.639 2429.444 2520.826 2550.648 2556.569 2540.343 2541.204</span></span>
 <span><span class="co">##          [,9]    [,10]    [,11]    [,12]    [,13]    [,14]    [,15]</span></span>
-<span><span class="co">## [1,] 2598.207 2602.745 2604.566 2676.652 2682.972 2915.417 2945.895</span></span>
-<span><span class="co">## [2,] 2545.005 2549.543 2551.364 2647.095 2629.771 2885.860 2916.339</span></span></code></pre>
+<span><span class="co">## [1,] 2595.994 2602.754 2603.486 2676.651 2683.060 2915.417 2945.961</span></span>
+<span><span class="co">## [2,] 2542.792 2549.553 2550.284 2647.095 2629.858 2885.860 2916.404</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_BICs</span>,<span class="va">model_AICs</span>,type<span class="op">=</span><span class="st">"p"</span>,xlab<span class="op">=</span><span class="st">"BIC"</span>,ylab<span class="op">=</span><span class="st">"AIC"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="04-unuseable_models_files/figure-html/rank_by_AIC-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">model_BICs</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] 11  8 14  5  3  1 13 15  7 10  9  2 12  4  6</span></span></code></pre>
+<pre><code><span><span class="co">##  [1] 11  8 14  5  3  1 13  7 15 10  9  2 12  4  6</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">model_AICs</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] 11  8 14  5 13 15  7 10  3  9  1 12  2  4  6</span></span></code></pre>
+<pre><code><span><span class="co">##  [1] 11  8 14  5 13  7 15 10  9  3  1 12  2  4  6</span></span></code></pre>
 <p>The AIC and BIC results are pretty well aligned, and the four best
 models are the same:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -278,10 +278,10 @@ Start by optimizing it a bit harder to see if we can do any better.</p>
 <span>                                control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>trace<span class="op">=</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">all_model_results</span><span class="op">[[</span><span class="fl">11</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1174.387</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1174.318</span></span></code></pre>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span>X<span class="op">=</span><span class="va">model_11_results</span>, FUN<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="va">y</span><span class="op">$</span><span class="va">value</span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1174.358</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1174.359</span></span></code></pre>
 <p>We did slightly better.</p>
 <p>Now move forward by looking at the results for this model, starting
 by writing a convenience function for examine optimization results:</p>
@@ -319,32 +319,32 @@ by writing a convenience function for examine optimization results:</p>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu">examine_optim_results</span><span class="op">(</span><span class="va">all_model_results</span><span class="op">[[</span><span class="fl">11</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">h</span><span class="op">[</span> ,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      bestlogliks convergences parms_dists      mu1      mu2 sigltil1  sigltil2</span></span>
-<span><span class="co">## [1,]    1174.387            1   0.0000000 29.57020 49.29810 6.756977 0.3229890</span></span>
-<span><span class="co">## [2,]    1174.401            0   0.5859204 29.51797 48.76833 6.712916 0.3204482</span></span>
-<span><span class="co">## [3,]    1174.402            0   0.9789580 29.48883 48.51728 6.743663 0.3206293</span></span>
-<span><span class="co">## [4,]    1174.501            0   4.5949969 29.27613 45.08749 6.389406 0.3216162</span></span>
-<span><span class="co">## [5,]    1174.651            0   8.1485420 29.02521 41.69399 5.967757 0.3223082</span></span>
-<span><span class="co">## [6,]    1174.914            1  11.1587772 28.75596 38.79300 5.554391 0.3166147</span></span>
-<span><span class="co">## [7,]    1175.863            1  17.9850159 28.24080 32.26778 4.556045 0.3343546</span></span>
-<span><span class="co">## [8,]    1191.515            1  26.0302129 25.49789 25.89912 3.692422 0.1491745</span></span>
-<span><span class="co">##          sigrtil1  sigrtil2       ctil        pd     o_mat1    o_mat2</span></span>
-<span><span class="co">## [1,] 7.046197e+07 0.6289928 -13.341008 0.5391707 0.08390085 0.9964741</span></span>
-<span><span class="co">## [2,] 1.384284e+03 0.6350676 -13.097945 0.5397470 0.08322911 0.9965304</span></span>
-<span><span class="co">## [3,] 7.271401e+00 0.6414683 -12.773869 0.5423547 0.08273170 0.9965719</span></span>
-<span><span class="co">## [4,] 7.432221e+01 0.6429637 -11.525366 0.5447050 0.08524555 0.9963600</span></span>
-<span><span class="co">## [5,] 3.051849e+03 0.6411525 -10.463891 0.5446606 0.08697090 0.9962109</span></span>
-<span><span class="co">## [6,] 1.675251e+02 0.6467664  -9.667969 0.5407474 0.08542828 0.9963443</span></span>
-<span><span class="co">## [7,] 1.450113e+03 0.6305582  -7.715589 0.5425700 0.09176909 0.9957803</span></span>
-<span><span class="co">## [8,] 2.001261e+02 1.4406561  -3.561796 0.6463683 0.05403175 0.9985392</span></span>
-<span><span class="co">##          o_mat3      o_mat4</span></span>
-<span><span class="co">## [1,] -0.9964741  0.08390085</span></span>
-<span><span class="co">## [2,] -0.9965304  0.08322911</span></span>
-<span><span class="co">## [3,] -0.9965719  0.08273170</span></span>
-<span><span class="co">## [4,] -0.9963600  0.08524555</span></span>
-<span><span class="co">## [5,] -0.9962109  0.08697090</span></span>
-<span><span class="co">## [6,] -0.9963443  0.08542828</span></span>
-<span><span class="co">## [7,] -0.9957803  0.09176909</span></span>
-<span><span class="co">## [8,]  0.9985392 -0.05403175</span></span></code></pre>
+<span><span class="co">## [1,]    1174.318            1    0.000000 29.94396 53.85131 7.254098 0.3229644</span></span>
+<span><span class="co">## [2,]    1174.403            0    6.634318 29.47977 47.65828 6.661796 0.3222862</span></span>
+<span><span class="co">## [3,]    1174.440            0    7.759930 29.39858 46.58588 6.535730 0.3207017</span></span>
+<span><span class="co">## [4,]    1174.443            1    4.791790 29.59701 49.29914 6.753602 0.3139233</span></span>
+<span><span class="co">## [5,]    1174.447            1    7.538554 29.39473 46.80321 6.566780 0.3215116</span></span>
+<span><span class="co">## [6,]    1174.483            1    9.261663 29.33182 45.19059 6.404816 0.3224701</span></span>
+<span><span class="co">## [7,]    1174.485            1    8.926674 29.28884 45.47378 6.400157 0.3251839</span></span>
+<span><span class="co">## [8,]    1174.493            1    8.936779 29.30083 45.47238 6.411428 0.3211931</span></span>
+<span><span class="co">##          sigrtil1  sigrtil2      ctil        pd     o_mat1    o_mat2     o_mat3</span></span>
+<span><span class="co">## [1,] 1.175588e+12 0.6317486 -14.79527 0.5402512 0.08385240 0.9964782 -0.9964782</span></span>
+<span><span class="co">## [2,] 1.702684e+02 0.6383495 -12.46191 0.5433223 0.08495379 0.9963849 -0.9963849</span></span>
+<span><span class="co">## [3,] 2.929599e+01 0.6401084 -12.12501 0.5434468 0.08511438 0.9963712 -0.9963712</span></span>
+<span><span class="co">## [4,] 1.035099e+02 0.6491168 -13.34314 0.5399802 0.08361673 0.9964980 -0.9964980</span></span>
+<span><span class="co">## [5,] 6.623826e+01 0.6407272 -12.17777 0.5430792 0.08438747 0.9964330 -0.9964330</span></span>
+<span><span class="co">## [6,] 1.885932e+02 0.6401751 -11.57117 0.5447481 0.08705572 0.9962034 -0.9962034</span></span>
+<span><span class="co">## [7,] 8.379447e+01 0.6338410 -11.78324 0.5428916 0.08517863 0.9963657 -0.9963657</span></span>
+<span><span class="co">## [8,] 9.438802e+01 0.6404986 -11.75474 0.5430017 0.08501808 0.9963794 -0.9963794</span></span>
+<span><span class="co">##          o_mat4</span></span>
+<span><span class="co">## [1,] 0.08385240</span></span>
+<span><span class="co">## [2,] 0.08495379</span></span>
+<span><span class="co">## [3,] 0.08511438</span></span>
+<span><span class="co">## [4,] 0.08361673</span></span>
+<span><span class="co">## [5,] 0.08438747</span></span>
+<span><span class="co">## [6,] 0.08705572</span></span>
+<span><span class="co">## [7,] 0.08517863</span></span>
+<span><span class="co">## [8,] 0.08501808</span></span></code></pre>
 <p>The very large values of <code>sigltil2</code> suggest the boundary
 model where this parameter is set to <code>Inf</code>, corresponding to
 a direction in environment space along which annual net growth is
@@ -375,32 +375,32 @@ insensitive to changes in the environment.</p>
 <code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu">examine_optim_results</span><span class="op">(</span><span class="va">bdry_optim_results</span>, mask <span class="op">=</span> <span class="va">mask</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">h</span><span class="op">[</span> ,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      bestlogliks convergences parms_dists      mu1      mu2  sigltil1 sigltil2</span></span>
-<span><span class="co">## [1,]    1174.383            0    0.000000 29.54018 49.36105 0.3210456      Inf</span></span>
-<span><span class="co">## [2,]    1174.428            0    2.270107 29.40971 47.22162 0.3260759      Inf</span></span>
-<span><span class="co">## [3,]    1174.429            0    1.605016 29.45947 47.78484 0.3213987      Inf</span></span>
-<span><span class="co">## [4,]    1174.459            0    3.552250 29.36449 46.03792 0.3221828      Inf</span></span>
-<span><span class="co">## [5,]    1174.460            0    3.721816 29.38319 45.86091 0.3189471      Inf</span></span>
-<span><span class="co">## [6,]    1174.461            0    3.348700 29.34209 46.19974 0.3227267      Inf</span></span>
-<span><span class="co">## [7,]    1174.467            0    3.816496 29.33221 45.75031 0.3249694      Inf</span></span>
-<span><span class="co">## [8,]    1174.514            0    4.440936 29.27391 45.10866 0.3203804      Inf</span></span>
-<span><span class="co">##       sigrtil1 sigrtil2      ctil        pd     o_mat1     o_mat2      o_mat3</span></span>
-<span><span class="co">## [1,] 0.6388589 6.828110 -13.08712 0.5419305 -0.9966100 0.08227152 -0.08227152</span></span>
-<span><span class="co">## [2,] 0.6323058 6.605075 -12.34106 0.5432132 -0.9964342 0.08437295 -0.08437295</span></span>
-<span><span class="co">## [3,] 0.6319924 6.600745 -12.79593 0.5395897 -0.9964516 0.08416780 -0.08416780</span></span>
-<span><span class="co">## [4,] 0.6413753 6.500209 -11.84444 0.5441682 -0.9963309 0.08558412 -0.08558412</span></span>
-<span><span class="co">## [5,] 0.6438809 6.470119 -11.83188 0.5438304 -0.9962602 0.08640397 -0.08640397</span></span>
-<span><span class="co">## [6,] 0.6387116 6.487872 -12.00068 0.5428971 -0.9964215 0.08452320 -0.08452320</span></span>
-<span><span class="co">## [7,] 0.6327994 6.436740 -11.86922 0.5432412 -0.9963061 0.08587280 -0.08587280</span></span>
-<span><span class="co">## [8,] 0.6352971 6.314430 -11.83495 0.5410060 -0.9963489 0.08537497 -0.08537497</span></span>
-<span><span class="co">##          o_mat4</span></span>
-<span><span class="co">## [1,] -0.9966100</span></span>
-<span><span class="co">## [2,] -0.9964342</span></span>
-<span><span class="co">## [3,] -0.9964516</span></span>
-<span><span class="co">## [4,] -0.9963309</span></span>
-<span><span class="co">## [5,] -0.9962602</span></span>
-<span><span class="co">## [6,] -0.9964215</span></span>
-<span><span class="co">## [7,] -0.9963061</span></span>
-<span><span class="co">## [8,] -0.9963489</span></span></code></pre>
+<span><span class="co">## [1,]    1174.443            0   0.0000000 29.39769 46.71887 0.3213298      Inf</span></span>
+<span><span class="co">## [2,]    1174.471            0   0.7637072 29.35938 45.95669 0.3188537      Inf</span></span>
+<span><span class="co">## [3,]    1174.510            0   1.7685957 29.25876 44.99372 0.3203260      Inf</span></span>
+<span><span class="co">## [4,]    1174.587            0   4.0255684 29.15446 42.89161 0.3182872      Inf</span></span>
+<span><span class="co">## [5,]    1174.669            0   5.5140390 28.99943 41.45830 0.3234842      Inf</span></span>
+<span><span class="co">## [6,]    1174.812            0   8.0057813 28.82822 39.13701 0.3221507      Inf</span></span>
+<span><span class="co">## [7,]    1198.768            0  26.8749638 24.98625 22.77155 0.1193033      Inf</span></span>
+<span><span class="co">## [8,]    1198.769            0  26.8701888 24.98671 22.77528 0.1193456      Inf</span></span>
+<span><span class="co">##         sigrtil1 sigrtil2       ctil        pd     o_mat1      o_mat2</span></span>
+<span><span class="co">## [1,]   0.6424894 6.572514 -12.077186 0.5439307 -0.9964114  0.08464179</span></span>
+<span><span class="co">## [2,]   0.6385956 6.427518 -12.064210 0.5413249 -0.9963339  0.08554991</span></span>
+<span><span class="co">## [3,]   0.6383937 6.320893 -11.713544 0.5417975 -0.9963769  0.08504799</span></span>
+<span><span class="co">## [4,]   0.6469665 6.117436 -10.853675 0.5447301 -0.9961787  0.08733883</span></span>
+<span><span class="co">## [5,]   0.6370810 5.914408 -10.473585 0.5437911 -0.9962009  0.08708522</span></span>
+<span><span class="co">## [6,]   0.6458965 5.653954  -9.570628 0.5463650 -0.9961308  0.08788350</span></span>
+<span><span class="co">## [7,] 236.4614500 2.796797  -2.325270 0.6155689  0.9992977 -0.03747134</span></span>
+<span><span class="co">## [8,] 589.1254234 2.797183  -2.327854 0.6153615  0.9992968 -0.03749587</span></span>
+<span><span class="co">##           o_mat3     o_mat4</span></span>
+<span><span class="co">## [1,] -0.08464179 -0.9964114</span></span>
+<span><span class="co">## [2,] -0.08554991 -0.9963339</span></span>
+<span><span class="co">## [3,] -0.08504799 -0.9963769</span></span>
+<span><span class="co">## [4,] -0.08733883 -0.9961787</span></span>
+<span><span class="co">## [5,] -0.08708522 -0.9962009</span></span>
+<span><span class="co">## [6,] -0.08788350 -0.9961308</span></span>
+<span><span class="co">## [7,] -0.03747134 -0.9992977</span></span>
+<span><span class="co">## [8,] -0.03749587 -0.9992968</span></span></code></pre>
 <p>The best likelihoods obtained for this boundary model are very
 similar to those obtained for the initial, non-boundary model, and the
 boundary model has one fewer parameter, so we tentatively adopt the
@@ -478,12 +478,12 @@ investigate further:</p>
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">all_profiles</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">parameters</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##        mu1      mu2  sigltil1   sigrtil1 sigrtil2      ctil        pd   o_par1</span></span>
-<span><span class="co">## 1 29.48830 46.86105 -1.125491 -0.4557567 1.884494 -12.18998 0.1752261 28.18643</span></span>
-<span><span class="co">## 2 29.49244 46.91105 -1.125463 -0.4558283 1.885342 -12.20692 0.1751763 28.18644</span></span>
-<span><span class="co">## 3 29.49657 46.96105 -1.125436 -0.4558988 1.886187 -12.22387 0.1751268 28.18645</span></span>
-<span><span class="co">## 4 29.50070 47.01105 -1.125408 -0.4559709 1.887032 -12.24082 0.1750787 28.18645</span></span>
-<span><span class="co">## 5 29.50483 47.06105 -1.125381 -0.4560410 1.887874 -12.25776 0.1750283 28.18646</span></span>
-<span><span class="co">## 6 29.50896 47.11105 -1.125354 -0.4561114 1.888716 -12.27471 0.1749793 28.18647</span></span>
+<span><span class="co">## 1 29.27045 44.21887 -1.127135 -0.4515529 1.837563 -11.29533 0.1781613 3.053299</span></span>
+<span><span class="co">## 2 29.27457 44.26887 -1.127101 -0.4516401 1.838493 -11.31225 0.1780996 3.053307</span></span>
+<span><span class="co">## 3 29.27869 44.31887 -1.127068 -0.4517272 1.839422 -11.32916 0.1780382 3.053315</span></span>
+<span><span class="co">## 4 29.28281 44.36887 -1.127034 -0.4518143 1.840349 -11.34607 0.1779772 3.053323</span></span>
+<span><span class="co">## 5 29.28692 44.41887 -1.127000 -0.4519010 1.841274 -11.36298 0.1779162 3.053331</span></span>
+<span><span class="co">## 6 29.29104 44.46887 -1.126966 -0.4519871 1.842197 -11.37990 0.1778556 3.053339</span></span>
 <span><span class="co">##   sigltil2</span></span>
 <span><span class="co">## 1      Inf</span></span>
 <span><span class="co">## 2      Inf</span></span>
@@ -516,7 +516,7 @@ into what is going wrong:</p>
 <p><img src="04-unuseable_models_files/figure-html/look_at_inferred_ge_func-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">param_list_bio</span><span class="op">$</span><span class="va">mu</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 29.54018 49.36105</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 29.39769 46.71887</span></span></code></pre>
 <p>Estimated values of <code>mu2</code> are outside the range of the
 environmental data. The actual distribution of the species is across
 Florida and along the coasts of the Southeastern United States, and the
@@ -541,23 +541,23 @@ environmental variable.</p>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu">examine_optim_results</span><span class="op">(</span><span class="va">model_5_optim_results</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">h</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      bestlogliks convergences  parms_dists       mu  sigltil      sigrtil</span></span>
-<span><span class="co">## [1,]    1255.413            0 0.0000000000 21.33107 2.399377 2.118516e+10</span></span>
-<span><span class="co">## [2,]    1255.413            0 0.0004197821 21.33126 2.399545 2.920212e+06</span></span>
-<span><span class="co">## [3,]    1255.413            0 0.0043099086 21.33486 2.400216 6.664093e+02</span></span>
-<span><span class="co">## [4,]    1255.413            0 0.0026177746 21.33112 2.399409 3.823882e+02</span></span>
-<span><span class="co">## [5,]    1255.413            0 0.0048557198 21.33091 2.399476 2.081599e+02</span></span>
-<span><span class="co">## [6,]    1255.413            0 0.0050103153 21.33193 2.399567 2.028698e+02</span></span>
-<span><span class="co">## [7,]    1255.413            0 0.0085735571 21.33750 2.400909 1.924419e+02</span></span>
-<span><span class="co">## [8,]    1255.413            0 0.0077033263 21.32708 2.398714 1.601479e+02</span></span>
+<span><span class="co">## [1,]    1255.413            0 0.0000000000 21.33103 2.399389 2.866696e+05</span></span>
+<span><span class="co">## [2,]    1255.413            0 0.0002897991 21.33103 2.399479 7.663422e+07</span></span>
+<span><span class="co">## [3,]    1255.413            0 0.0006045789 21.33145 2.399515 2.315692e+03</span></span>
+<span><span class="co">## [4,]    1255.413            0 0.0027395298 21.32836 2.398674 1.141085e+05</span></span>
+<span><span class="co">## [5,]    1255.413            0 0.0006674455 21.33139 2.399592 2.265492e+03</span></span>
+<span><span class="co">## [6,]    1255.413            0 0.0012886117 21.33210 2.399704 1.432889e+03</span></span>
+<span><span class="co">## [7,]    1255.413            0 0.0157284885 21.34585 2.402722 4.342884e+02</span></span>
+<span><span class="co">## [8,]    1255.413            0 0.0039797575 21.33150 2.399587 2.531599e+02</span></span>
 <span><span class="co">##           ctil        pd o_mat</span></span>
-<span><span class="co">## [1,] -1.806885 0.6389692     1</span></span>
-<span><span class="co">## [2,] -1.806516 0.6390226     1</span></span>
-<span><span class="co">## [3,] -1.808277 0.6388442     1</span></span>
-<span><span class="co">## [4,] -1.806788 0.6390008     1</span></span>
-<span><span class="co">## [5,] -1.806209 0.6390998     1</span></span>
-<span><span class="co">## [6,] -1.807133 0.6389728     1</span></span>
-<span><span class="co">## [7,] -1.809112 0.6387623     1</span></span>
-<span><span class="co">## [8,] -1.804798 0.6391885     1</span></span></code></pre>
+<span><span class="co">## [1,] -1.806775 0.6389829     1</span></span>
+<span><span class="co">## [2,] -1.806487 0.6390119     1</span></span>
+<span><span class="co">## [3,] -1.806843 0.6389766     1</span></span>
+<span><span class="co">## [4,] -1.806160 0.6390095     1</span></span>
+<span><span class="co">## [5,] -1.806428 0.6390204     1</span></span>
+<span><span class="co">## [6,] -1.806898 0.6389765     1</span></span>
+<span><span class="co">## [7,] -1.811445 0.6387384     1</span></span>
+<span><span class="co">## [8,] -1.806585 0.6390307     1</span></span></code></pre>
 <p>One can see the boundary model with <code>sigrtil</code> set to
 <code>Inf</code> should be considered:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
@@ -579,23 +579,23 @@ environmental variable.</p>
 <code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu">examine_optim_results</span><span class="op">(</span><span class="va">bdry_optim_results5</span>,mask<span class="op">=</span><span class="va">mask</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">h</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      bestlogliks convergences  parms_dists       mu  sigltil sigrtil      ctil</span></span>
-<span><span class="co">## [1,]    1255.413            0 0.000000e+00 21.33077 2.399367     Inf -1.806580</span></span>
-<span><span class="co">## [2,]    1255.413            0 5.541131e-06 21.33077 2.399364     Inf -1.806580</span></span>
-<span><span class="co">## [3,]    1255.413            0 1.106869e-04 21.33084 2.399365     Inf -1.806666</span></span>
-<span><span class="co">## [4,]    1255.413            0 8.056066e-05 21.33085 2.399382     Inf -1.806604</span></span>
-<span><span class="co">## [5,]    1255.413            0 8.187806e-05 21.33085 2.399383     Inf -1.806602</span></span>
-<span><span class="co">## [6,]    1255.413            0 9.230256e-05 21.33086 2.399392     Inf -1.806604</span></span>
-<span><span class="co">## [7,]    1255.413            0 6.184834e-05 21.33078 2.399388     Inf -1.806519</span></span>
-<span><span class="co">## [8,]    1255.413            0 1.275865e-04 21.33086 2.399361     Inf -1.806675</span></span>
+<span><span class="co">## [1,]    1255.413            0 0.000000e+00 21.33070 2.399347     Inf -1.806559</span></span>
+<span><span class="co">## [2,]    1255.413            0 5.017857e-05 21.33070 2.399333     Inf -1.806609</span></span>
+<span><span class="co">## [3,]    1255.413            0 4.299752e-05 21.33074 2.399363     Inf -1.806553</span></span>
+<span><span class="co">## [4,]    1255.413            0 1.526335e-04 21.33084 2.399381     Inf -1.806608</span></span>
+<span><span class="co">## [5,]    1255.413            0 1.445972e-04 21.33084 2.399383     Inf -1.806597</span></span>
+<span><span class="co">## [6,]    1255.413            0 1.434946e-04 21.33084 2.399385     Inf -1.806589</span></span>
+<span><span class="co">## [7,]    1255.413            0 1.568588e-04 21.33085 2.399386     Inf -1.806601</span></span>
+<span><span class="co">## [8,]    1255.413            0 1.517942e-04 21.33085 2.399387     Inf -1.806595</span></span>
 <span><span class="co">##             pd o_mat</span></span>
-<span><span class="co">## [1,] 0.6390007     1</span></span>
-<span><span class="co">## [2,] 0.6390003     1</span></span>
-<span><span class="co">## [3,] 0.6389913     1</span></span>
-<span><span class="co">## [4,] 0.6390001     1</span></span>
-<span><span class="co">## [5,] 0.6389986     1</span></span>
-<span><span class="co">## [6,] 0.6390002     1</span></span>
-<span><span class="co">## [7,] 0.6390074     1</span></span>
-<span><span class="co">## [8,] 0.6389931     1</span></span></code></pre>
+<span><span class="co">## [1,] 0.6390027     1</span></span>
+<span><span class="co">## [2,] 0.6389988     1</span></span>
+<span><span class="co">## [3,] 0.6390028     1</span></span>
+<span><span class="co">## [4,] 0.6389998     1</span></span>
+<span><span class="co">## [5,] 0.6390002     1</span></span>
+<span><span class="co">## [6,] 0.6390012     1</span></span>
+<span><span class="co">## [7,] 0.6390000     1</span></span>
+<span><span class="co">## [8,] 0.6390000     1</span></span></code></pre>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span>X<span class="op">=</span><span class="va">bdry_optim_results5</span>, FUN<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="va">x</span><span class="op">$</span><span class="va">value</span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span></span>
