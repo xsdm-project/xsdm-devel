@@ -2,4 +2,11 @@ url: https://xsdm-project.github.io/xsdm-devel/
 template:
   bootstrap: 5
   math-rendering: mathjax
+articles:
+  - title: Articles
+    contents:
+      - 01-how_to_fit
+      - 02-xsdm_model
+      - 03-boundary_models
+      - 04-unuseable_models
 

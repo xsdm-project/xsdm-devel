@@ -8,7 +8,7 @@ output:
     includes:
       in_header: mathjax-macros.html
 vignette: >
-  %\VignetteIndexEntry{The xsdm statistical model}
+  %\VignetteIndexEntry{02 - The xsdm statistical model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
