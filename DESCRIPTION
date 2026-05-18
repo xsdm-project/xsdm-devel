@@ -30,7 +30,7 @@ Imports:
     furrr,
     future,
     future.callr,
-    pomp,
+    sobol,
     purrr
 LinkingTo: Rcpp, RcppParallel, ucminfcpp
 SystemRequirements: GNU make, C++17

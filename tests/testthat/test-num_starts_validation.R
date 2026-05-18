@@ -5,7 +5,7 @@ library(xsdm)
 # Validates the num_starts >= 3 contract enforced by optimize_likelihood(),
 # start_parms(), and get_start_parms_().
 #
-# Below 3, pomp::sobol_design either segfaults (nseq = 0) or returns a bare
+# Below 3, sobol::sobol_design either segfaults (nseq = 0) or returns a bare
 # numeric vector (nseq = 1). Catching this at the public API boundary
 # produces an actionable checkmate error instead of a downstream crash.
 # ---------------------------------------------------------------------------

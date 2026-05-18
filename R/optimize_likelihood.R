@@ -67,7 +67,7 @@ optimize_likelihood <- function(
     checkmate::assert_character(names(mask), any.missing = FALSE, min.len = length(mask), unique = TRUE)
   }
   
-  # num_starts must be >= 3: pomp::sobol_design (called via start_parms ->
+  # num_starts must be >= 3: sobol::sobol_design (called via start_parms ->
   # get_start_parms_) requires at least 2 Sobol' rows, plus we always
   # append the data-driven center row, so the minimum usable design has
   # 3 starts. Lower values segfault (nseq = 0) or return a vector
