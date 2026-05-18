@@ -10,7 +10,7 @@ output:
     includes:
       in_header: mathjax-macros.html
 vignette: >
-  %\VignetteIndexEntry{Unusable models: when a model does not have a maximum likelihood}
+  %\VignetteIndexEntry{04 - Unusable models: when a model does not have a maximum likelihood}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

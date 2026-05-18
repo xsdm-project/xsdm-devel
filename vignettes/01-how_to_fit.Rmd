@@ -7,7 +7,7 @@ author:
     affiliation: "Department of Ecology and Evolutionary Biology and Center for Ecological Research, University of Kansas"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to fit xsdm models with species occurrence data using xsdm}
+  %\VignetteIndexEntry{01 - How to fit xsdm models with species occurrence data using xsdm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
