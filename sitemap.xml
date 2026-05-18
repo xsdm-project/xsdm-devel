@@ -1,11 +1,11 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/404.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/LICENSE.html</loc></url>
-<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/boundary_models.html</loc></url>
-<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/how_to_fit.html</loc></url>
+<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/01-how_to_fit.html</loc></url>
+<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/02-xsdm_model.html</loc></url>
+<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/03-boundary_models.html</loc></url>
+<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/04-unuseable_models.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/articles/index.html</loc></url>
-<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/unuseable_models.html</loc></url>
-<url><loc>https://xsdm-project.github.io/xsdm-devel/articles/xsdm_model.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/authors.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/index.html</loc></url>
 <url><loc>https://xsdm-project.github.io/xsdm-devel/news/index.html</loc></url>
