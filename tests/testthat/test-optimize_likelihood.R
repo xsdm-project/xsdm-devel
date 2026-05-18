@@ -14,7 +14,7 @@ test_that("optimize_likelihood() returns expected structure and sorting", {
 
   # Keep it fast: few starts and low maxeval. This test only validates the
   # output *structure*, not optimization quality. num_starts must be >= 3
-  # for pomp::sobol_design to return a matrix (rather than a vector) inside
+  # for sobol::sobol_design to return a matrix (rather than a vector) inside
   # start_parms() / get_start_parms_().
   set.seed(123)
   res <- optimize_likelihood(
@@ -262,7 +262,7 @@ test_that("parallel branch executes, forces single-thread, and prints messages",
   # heavy fixed cost; halving the call count + dropping num_starts from 4 to
   # 3 reduces wall time from ~4s to ~1.2s without losing coverage of either
   # the "forcing num_threads=1" branch or the "(parallel)" suffix.
-  # (num_starts must be >= 3 for pomp::sobol_design to return a matrix.)
+  # (num_starts must be >= 3 for sobol::sobol_design to return a matrix.)
   msgs <- capture_messages(
     optimize_likelihood(
       env_dat, occ,

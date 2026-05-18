@@ -55,11 +55,10 @@ First public release.
 
 * `optimize_likelihood()`, `start_parms()`, and `get_start_parms_()` now
   reject `num_starts < 3` early with an informative `checkmate` error,
-  rather than crashing inside `pomp::sobol_design()` (which segfaults at
+  rather than crashing inside `sobol::sobol_design()` (which segfaults at
   `nseq = 0` and returns a malformed vector at `nseq = 1`).
-* `start_parms()` runtime: `pomp::sobol_design` output is defensively
-  coerced to a `data.frame`, protecting against future `pomp` behaviour
-  changes.
+* `start_parms()` runtime: `sobol::sobol_design` output is defensively
+  coerced to a `data.frame`, protecting against future behaviour changes.
 
 ## Build & packaging
 
