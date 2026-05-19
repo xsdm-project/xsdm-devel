@@ -514,7 +514,7 @@ intervals can be constructed by use of the likelihood ratio test - see basic
 texts on maximum likelihood methods for additional details.
 
 To calculate profiles using `xsdm`, use the function
-`profile_likelihood()`, here for \text{mu1}:
+`profile_likelihood()`, here for `mu1`:
 ```{r profiling1, cache=TRUE}
 prof1 <- profile_likelihood(
   profile_parameter="mu1",
@@ -532,12 +532,13 @@ names(prof1)
 head(prof1$profile)
 ```
 
-Note that the convergence column is returning the convergence
-flagged returned by the optimizer `ucminfcpp::ucminf_xptr`; the value 1
-is among the values which indicate convergence to within the tolerances used.
+Note that the convergence column is returning convergence
+flags returned by the optimizer `ucminfcpp::ucminf_xptr`; the values 1 and 4
+typically indicate convergence.
 
 Two of the outputs of this function contain the profile itself, and the threshold.
-The region for which the profile is above the threshold is the confidence intervals:
+The region for which the profile is above the threshold is the confidence interval
+of the profiled parameter:
 ```{r plot_profile, fig.width=4, fig.asp=1}
 plot(prof1$profile$value_math,prof1$profile$loglik,type="o",
      xlab="mu1",ylab="Log likelihood")
@@ -551,8 +552,7 @@ when the threshold is crossed, whichever happens first. Profiling is often a
 trial-and-error process of selecting values for
 `increment_left`, `increment_right`, `num_steps_left`,
 and `num_steps_right` to get complete and smooth profiles within the
-limits of available computational resources. See "Troubleshooting: Profiles" for
-additional details.
+limits of available computational resources. 
 
 Often one wants to plot the values of the other parameters which optimized the
 likelihood for each value of the profiled parameter. This can be done using the
@@ -577,7 +577,7 @@ If `found_better` is `TRUE`, it means you have to go back and
 re-optimize, either with more initial conditions, or with tighter tolerances
 on the optimizer used, or with a different optimizer. Although sometimes it can
 be sufficient to simply re-start profiling using the parameters which were found
-to yield a new highest likelihood.
+via the first profiling effort to yield a new highest likelihood.
 
 We next produce and plot all the profiles for our AIC-best model, where now the
 profiles are going to be plotted on the biological scale. Since the data are for a virtual species,
@@ -607,19 +607,38 @@ for (counter in 1:length(pnames))
 names(all_profiles) <- pnames
 ```
 
+<!--
+#DAN: All good to here, but below it goes wrong. The true parameters are supposed
+#to have been embedded in the package, but they are still hard-coded. It looks like
+#example_1$par_list is consistent with the below hard-coded parameters, but differs
+#from other sets of parameter in example_1. The man page for example_1 needs to be
+#fixed (several inconsistencies - see the issue I raise) and explained better. Angel 
+#and Dan to look into this together and sort it out.
+#
+#Here are what used to be hard-coded below, I took them out once I realized these
+#were the same as example_1$par_list, keeping them here until this is all worked 
+#out. 
+#list(
+#  mu=c(9,2.5),
+#  sigltil=c(0.3,0.2),
+#  sigrtil=c(0.5,0.8),
+#  ctil=-9,
+#  pd=0.8649783,
+#  o_mat=matrix(c(0.9800666,0.1986693,-0.1986693,0.9800666),2,2)
+#) #DAN: Note, this needs to be embedded in the package
+#
+#In the end it looks like this document is OK now, you just need to delete this
+comment, but there still appears to be work to do to fix example_1 in the package
+and its documentation.
+-->
+
 Now, to deal with the parameter redundancy, convert the
 maximum-likelihood parameters to the biological scale
 and find the representation of the true parameters which is closest in parameter
 space to the maximum-likelihood parameters:
 ```{r rectify}
-example_1_true_parameters_bio <- list(
-  mu=c(9,2.5),
-  sigltil=c(0.3,0.2),
-  sigrtil=c(0.5,0.8),
-  ctil=-9,
-  pd=0.8649783,
-  o_mat=matrix(c(0.9800666,0.1986693,-0.1986693,0.9800666),2,2)
-) #DAN: Note, this needs to be embedded in the package
+example_1_true_parameters_bio <- example_1$par_list
+example_1_true_parameters_bio
 ML_parameters_bio <- math_to_bio(all_optim_results[[1]]$par)
 example_1_true_parameters_bio<-
   dist_between_params(example_1_true_parameters_bio,
@@ -845,7 +864,7 @@ to high temperatures (rightward departures); and growth is more sensitive to dro
 (downward departures of environmental variable 2 from the optimum) than it is to
 abundant rainfall (upward departures). One can see that, as expected, the environment
 is more suitable for population growth, according to the inferred growth-environment
-function, in locations for where the species was observed. One can see that,
+function, in locations in which the species was observed. One can see that,
 even in locations found to be unsuitable for the species (right panel),
 there were plenty of individual years for which environmental conditions promoted
 growth in that year, demonstrating the importance of interannual variability.
@@ -868,6 +887,6 @@ points(env_array[occ==0,,1],env_array[occ==0,,2],pch=20,
        col=rgb(0,0,0,.2),cex=0.2)
 ```
 
-Results were quite similar. Plots against one environmental variable
+Results are quite similar. Plots against one environmental variable
 are also possible, holding the other one at optimal values. See the documentation
 of `interpret_parameters()` for details.
