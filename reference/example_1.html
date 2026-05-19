@@ -87,18 +87,18 @@ documentation and examples.</p>
 
   <dt><code>env_array</code></dt>
 <dd><p>A 3‑D numeric array with dimensions
-    `2000 (locations) × 39 (time) × 2 (variables)`. Contains the
-    environmental data (bio1 and bio12) extracted from the rasters
-    for all locations.</p></dd>
+    `4000 (locations) × 39 (time) × 2 (variables)`. Contains the
+    environmental data (bio1 and bio12, both divided by 100) extracted
+    from the rasters at the `occ_df` locations.</p></dd>
 
   <dt><code>occ_df</code></dt>
-<dd><p>A data frame with 1000 rows and 4 columns:
-    `name` (character), `x` (longitude), `y` (latitude), `presence`
-    (0/1). Occurrence records for the virtual species *Mus virtualis*.</p></dd>
+<dd><p>A data frame with 4000 rows and 4 columns:
+    `name` (character), `lon` (longitude), `lat` (latitude), `presence`
+    (0/1). Occurrence records for a virtual species.</p></dd>
 
   <dt><code>occ_vec</code></dt>
-<dd><p>An integer vector of length 2000. Binary
-    presence/absence (0/1) for the same locations as `env_array`.</p></dd>
+<dd><p>An integer vector of length 4000. Binary
+    presence/absence (0/1) corresponding to `occ_df$presence`.</p></dd>
 
   <dt><code>optim_par_list</code></dt>
 <dd><p>A list of biological‑scale parameters

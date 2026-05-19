@@ -112,5 +112,5 @@ ll <- loglik_bio(
   pd = example_1$par_list$pd
 )
 ll
-#> [1] -15829.08
+#> [1] -1013.933
 ```
