@@ -372,7 +372,7 @@ plot_tool(all_bdry_profiles,8)
 ```
 
 These are sufficiently dome-shaped, suggesting the likelihood function is sufficiently well-behaved
-in the vacinity of the maximum we found, and inferences can be made. Note these
+in the vicinity of the maximum we found, and inferences can be made. Note these
 profiles look essentially the same as those obtained previously, except
 the $\sigma$ profiles have been switched around (which can happen, given
 redundancy in parameters explained in "How to fit xsdm models with species
