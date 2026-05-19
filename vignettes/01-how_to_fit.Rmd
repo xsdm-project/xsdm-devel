@@ -34,14 +34,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-**Abstract.** After reading the document entitled "The xsdm model", this document
+**Abstract.** This document
 introduces the statistically and computationally sophisticated user to the
-main functions of the `xsdm` package. The package implements a frequentist
+main functions of the `xsdm` package. Some users may choose to read the 
+the document entitled "The xsdm statistical model"
+prior to reading this document, but it should also be possible to start here.
+The `xsdm` package implements a frequentist
 analysis of the xsdm model. This document should get the user to the point
 of maximizing the likelihood of the model and profiling in "easy" cases,
 with callouts to
-several troubleshooting documents about what to do when the process does
-not go smoothly. Alternative fitted models can also be compared by AIC or another
+other documents which can help you decide what to do when when the process does
+not go so smoothly. Alternative fitted models can also be compared by AIC or another
 criterion. The example worked out here is for a virtual species (i.e., generated
 data), so we also demonstrate that fitting an xsdm model can recover the true
 parameters if model mis-specification is not an issue.
@@ -81,7 +84,7 @@ max(mm$max) #global max
 ```
 
 If the scales of your environmental variables are vastly different, it can cause problems
-with optimization (see the document "Troubleshooting: Optimization problems related to scaling").
+with optimization.
 So we change the units for precipitation to make the range of values similar to those for temperature.
 Now the units are going to be dg/m$^2$:
 ```{r rescale_precip}
@@ -157,8 +160,8 @@ Now we are ready to think about how the xsdm model applies to our data.
 
 ## Evaluating the likelihood
 
-The xsdm model's likelihood function is described in the document "The xsdm model",
-where model parameter are also described in detail. Parameters are:
+The xsdm model's likelihood function is described in the document "The xsdm statistical model",
+where model parameters are also described in detail. Parameters are:
 
 - $\vec{\mu}$, which encodes ideal values for population growth
 of the two environmental variables (a length-2 vector for the present
@@ -186,13 +189,13 @@ sigrtil <- c(2,3)
 ctil <- -10
 pd <- 0.8
 o_mat <- diag(2)
-loglik_bio(env_array,occ,mu,sigltil,sigrtil,o_mat=o_mat,ctil=ctil,pd=pd)
+loglik_bio(env_array,occ,mu,sigltil,sigrtil,o_mat,ctil,pd)
 ```
 
 By default, the function gives the log likelihood, but you can also get the linear-scale
 likelihood:
 ```{r loglik_bio_eval2}
-loglik_bio(env_array,occ,mu,sigltil,sigrtil,o_mat=o_mat,ctil=ctil,pd=pd,return_prob=TRUE)
+loglik_bio(env_array,occ,mu,sigltil,sigrtil,o_mat,ctil,pd,return_prob=TRUE)
 ```
 
 For these haphazardly chosen parameters, the (linear-scale) likelihood is zero to within
@@ -249,7 +252,7 @@ $O^{(m)}$.
 
 The transformation from math-scale to bio-scale parameters is implemented
 in `xsdm` using the function `math_to_bio()`, which takes an unconstrained
-numeric vector as its argument and returns a named list of of biological-scale
+numeric vector as its argument and returns a named list of biological-scale
 parameters. But it is not so common for the end-user to call `math_to_bio()`
 directly because we have written the likelihood directly in terms of the math-scale
 parameters in a function `loglik_math()`. We now demonstrate `math_to_bio()`
@@ -338,7 +341,7 @@ bestlogliks
 
 These results indicate that: 1) most of the 10 optimizations appear to have
 converged according to the diagnostics of `optim` (0 means convergence for
-`optim`); and 2) five of the 10 optimizations returned the same, highest
+`optim`); and 2) multiple of the 10 optimizations returned the same, highest
 log-likelihood to within 3 digits. This, already, is pretty good evidence that
 multiple optimizations arrived at the same place in parameter space, i.e., the same
 maximum-likelihood parameters - it would be unusual for two distinct local maxima of the
@@ -352,30 +355,29 @@ allpars <- sapply(X=all_optim_results,FUN=function(x){x$par})
 allpars
 ```
 
-These are in the same order as the maximized likelihood values above. Note that the first five
+These are in the same order as the maximized likelihood values above. Note that the first several
 sets of optimized parameters appear the same, to within a few digits, for the `mu1`,
 `mu2`, `ctil`, and `pd` parameters, but that they appear to differ from
 each other with respect to the `o_par1` parameter. And the `sigltil1`,
 `sigltil2`, `sigrtil1`, `sigrtil2` parameters for one optimization result
-appear to be the same, up to a few digits, as for another  optimization results *if permuted*. These
+appear to be the same, up to a few digits, as for another  optimization results **if permuted**. These
 complexities reflect the fact that the
 `math_to_bio()` mapping is many-to-one, and that there are also multiple ways to
-parameterize the identical xsdm model with distinct biological-scale parameters. These redundancies
+parameterize the identical `xsdm` model with distinct biological-scale parameters. These redundancies
 affect the `sigltil1`,
 `sigltil2`, `sigrtil1`, `sigrtil2`, and `o_par1` parameters.
 For models making use of more than two environmental variables, all the `o_par`
 parameters are affected.
-In essence, parameters can be the same, in the sense of giving the same xsdm model, even if they appear
+In essence, parameters can be the same, in the sense of giving the same `xsdm` model, even if they appear
 different; so we need to take this redundancy into account when judging whether
 different optimizations resulted in the same parameters.
 
-These issues are described further in the document "Troubleshooting: Dealing
-with parameter redundancy," but the function `dist_between_params()`
+The function `dist_between_params()`
 provides an easy way around these complexities. The function directly calculates for the user
 the distance between two sets
-of xsdm model parameters while taking into account the redundancy
+of `xsdm` model parameters while taking into account the redundancy
 described; i.e., if `dist_between_params()` indicates a very small
-difference between two sets of parameters, they give essentially the same xsdm model and can be considered
+difference between two sets of parameters, they give essentially the same `xsdm` model and can be considered
 to be close to each other in parameter space even if they appear different.
 So use the function as the test of parameter similarity, as follows:
 ```{r optimizing_many_check_3,}
@@ -391,7 +393,7 @@ for (counter in 1:num_starts)
 dists_to_first
 ```
 
-Note that the first five parameter optimization results  are all reported to be close in
+Note that the first several parameter optimization results  are all reported to be close in
 parameter space to the first parameter optimization result.
 
 If, as in this case, sufficiently many of the initial conditions optimized to give the same, highest
@@ -404,7 +406,7 @@ Profiling, which is covered below, provides additional checks.
 
 It is straightforward to compare multiple models making use of different combinations of
 environmental variables, using AIC (or another criterion). We demonstrate how to use
-xsdm to do that by comparing the previous, two-environmental-variable model with each
+`xsdm` to do that by comparing the previous, two-environmental-variable model with each
 of the two simpler models that make use of just one of the environmental variables.
 First, fit the two simpler models:
 ```{r fitting_simpler_models, cache=TRUE}
@@ -471,7 +473,7 @@ for (counter in 1:num_starts)
 dists_to_first_2
 ```
 
-The results suggest that the likelihood function of this model
+The results again suggest that the likelihood function of this model
 has been adequately maximized.
 
 Now compute the AIC of each model, bearing in mind that optimization results
@@ -492,8 +494,7 @@ AIC_2
 The best model (lowest AIC) is the two-environmental-variable model,
 by a considerable margin. This confirms expectation, since the data come from a
 virtual species, and we know they were generated using both of the two environmental
-variables (see "Virtual species and habitat suitability maps" for how the data
-were generated).
+variables.
 
 ## Profiling
 
@@ -809,7 +810,7 @@ for this virtual species.
 We would like to interpret the the parameters of the fitted model to say
 what we can about how the species responds to the environment. This is rendered a bit
 more challenging due to the parameter reduction step which was carried
-out for the model to eliminate structural non-identifiability (see "The xsdm model"
+out for the model to eliminate structural non-identifiability (see "The xsdm statistical model"
 for details). The function `interpret_parameters()` helps with this, displaying
 plots which describe the inferred growth-environment function (the relationship
 between the environment, $\vec{e}_t$, in a given year in a location and the
