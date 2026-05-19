@@ -8,27 +8,27 @@ test_that("like_neg_ltsgr_r test for correct format of output", {
   env_dat <- example_1$env_array
   M <- xsdm:::like_neg_ltsgr_r(env_dat, mu, sigltil, sigrtil, o_mat)
   testthat::expect_equal(class(M), "numeric")
-  testthat::expect_equal(length(M), 2000)
+  testthat::expect_equal(length(M), dim(env_dat)[1])
   testthat::expect_true(all(is.finite(M)))
 
   # some cases with Inf entries for sigltil or sigrtil
   sigltil[1] <- Inf
   M <- xsdm:::like_neg_ltsgr_r(env_dat, mu, sigltil, sigrtil, o_mat)
   testthat::expect_equal(class(M), "numeric")
-  testthat::expect_equal(length(M), 2000)
+  testthat::expect_equal(length(M), dim(env_dat)[1])
   testthat::expect_true(all(is.finite(M)))
 
   sigrtil[2] <- Inf
   M <- xsdm:::like_neg_ltsgr_r(env_dat, mu, sigltil, sigrtil, o_mat)
   testthat::expect_equal(class(M), "numeric")
-  testthat::expect_equal(length(M), 2000)
+  testthat::expect_equal(length(M), dim(env_dat)[1])
   testthat::expect_true(all(is.finite(M)))
 
   sigltil <- c(Inf, 1.556083)
   sigrtil <- c(Inf, 1.458738)
   M <- xsdm:::like_neg_ltsgr_r(env_dat, mu, sigltil, sigrtil, o_mat)
   testthat::expect_equal(class(M), "numeric")
-  testthat::expect_equal(length(M), 2000)
+  testthat::expect_equal(length(M), dim(env_dat)[1])
   testthat::expect_true(all(is.finite(M)))
 })
 

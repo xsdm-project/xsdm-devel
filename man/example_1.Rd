@@ -19,14 +19,14 @@ A list of 12 objects:
     with 128 × 123 cells and 39 layers. Annual precipitation (bio12)
     for the same region and time period.}
   \item{\code{env_array}}{A 3‑D numeric array with dimensions
-    `2000 (locations) × 39 (time) × 2 (variables)`. Contains the
-    environmental data (bio1 and bio12) extracted from the rasters
-    for all locations.}
-  \item{\code{occ_df}}{A data frame with 1000 rows and 4 columns:
-    `name` (character), `x` (longitude), `y` (latitude), `presence`
-    (0/1). Occurrence records for the virtual species *Mus virtualis*.}
-  \item{\code{occ_vec}}{An integer vector of length 2000. Binary
-    presence/absence (0/1) for the same locations as `env_array`.}
+    `4000 (locations) × 39 (time) × 2 (variables)`. Contains the
+    environmental data (bio1 and bio12, both divided by 100) extracted
+    from the rasters at the `occ_df` locations.}
+  \item{\code{occ_df}}{A data frame with 4000 rows and 4 columns:
+    `name` (character), `lon` (longitude), `lat` (latitude), `presence`
+    (0/1). Occurrence records for a virtual species.}
+  \item{\code{occ_vec}}{An integer vector of length 4000. Binary
+    presence/absence (0/1) corresponding to `occ_df$presence`.}
   \item{\code{optim_par_list}}{A list of biological‑scale parameters
     (the MLE fit for the example). Contains `mu`, `sigltil`, `sigrtil`,
     `ctil`, `pd`, `o_mat`.}
