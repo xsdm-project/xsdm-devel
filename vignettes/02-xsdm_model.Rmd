@@ -36,7 +36,7 @@ knitr::opts_chunk$set(
 ```
 
 **Abstract.** This document
-one point of entry
+is one point of entry
 for the statistically and computationally sophisticated researcher to begin using the
 xsdm package.
 We state the scientific purpose of the xsdm approach. We then introduce
