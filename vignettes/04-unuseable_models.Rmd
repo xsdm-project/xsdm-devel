@@ -41,9 +41,10 @@ knitr::opts_chunk$set(
 This document shows an example of how that can occur, and how to diagnose it.
 Along the way, another type of boundary model (in addition to the $p_d=1$ case
 described elsewhere) is
-illustrated, where sigma parameters are set to infinity, corresponding to
+illustrated. In the new boundary model, sigma parameters are set to infinity, corresponding to
 insensitivity of annual net growth to environmental changes in a certain direction
-in environment space.
+in environment space. This example is based on occurrence data from GBIF for
+*Ophisaurus ventralis*, the Eastern glass lizard.
 
 The Eastern glass lizard, *Ophisaurus ventralis*, is a legless lizard
 found in the southeastern United States. It is the longest and heaviest species
@@ -70,7 +71,7 @@ BIO11 is mean temperature of the coldest quarter, BIO12 is annual precipitation,
 precipitation of the wettest quarter, and BIO17 is precipitation of the driest quarter.
 
 Now look at the distributions of values of environmental variables to make sure they
-are not on very different scales, which would cause problems for optimization:
+are not on very different scales, which could cause problems for optimization:
 ```{r look at distributions}
 apply(FUN=quantile, X=env_array, MARGIN=3,prob=c(.025,.25,.5,.75,.975))
 ```
@@ -97,14 +98,13 @@ models <- matrix(c(1,0,0,0,0,0,
 all_model_results <- list()
 for (i in 1:nrow(models))
 {
-  print(i)
   env_dat <-  env_array[ , , models[i,]==1, drop = FALSE]
-  starts <-  xsdm::start_parms(env_dat,num_starts=25)
+  starts <-  start_parms(env_dat[occ==1,,,drop=FALSE],num_starts=25)
   all_optim_results <-  list()
   for (j in 1:nrow(starts))
   {
     all_optim_results[[j]] <-  optim(par = starts[j,],
-                                   fn = xsdm::loglik_math,
+                                   fn = loglik_math,
                                    method = "BFGS",
                                    env_dat = env_dat,
                                    occ = occ,
@@ -179,11 +179,11 @@ do any better.
 ```{r check_model_11,cache=TRUE}
 i <- 11
 env_dat <- env_array[,,models[i,]==1,drop=FALSE]
-starts <- xsdm::start_parms(env_dat, num_starts = 100)
+starts <- start_parms(env_dat[occ==1,,,drop=FALSE], num_starts = 100)
 model_11_results <- list()
 for (j in 1:nrow(starts))
 {
-  model_11_results[[j]] <- optim(par=starts[j,],fn=xsdm::loglik_math,
+  model_11_results[[j]] <- optim(par=starts[j,],fn=loglik_math,
                                 method="BFGS",
                                 env_dat = env_dat,
                                 occ = occ,negative=TRUE,
@@ -193,7 +193,7 @@ all_model_results[[11]][[1]]$value
 min(sapply(X=model_11_results, FUN=function(y){y$value}))
 ```
 
-We did slightly better.
+About the same.
 
 Now move forward by looking at the results for this model, starting by
 writing a convenience function for examine optimization results:
@@ -214,7 +214,7 @@ examine_optim_results <- function(optim_results,mask=NULL)
   parms_dists_to_best <- lapply(
     X=optim_results,
     FUN=function(x){
-      xsdm::dist_between_params(
+      dist_between_params(
         x$par,
         best_parms_math,
         mask=mask,
@@ -232,7 +232,7 @@ h <- examine_optim_results(all_model_results[[11]])
 t(h[ ,1:8])
 ```
 
-The very large values of `sigltil2` suggest the boundary
+The very large values of `sigrtil1` suggest the boundary
 model where this parameter is set to `Inf`, corresponding to a direction
 in environment space along which annual net growth is insensitive to changes in
 the environment.
@@ -241,8 +241,8 @@ So we consider the corresponding boundary model:
 ```{r fit_boundary_model,cache=TRUE}
 i <- 11
 env_dat <- env_array[ , , models[i,] == 1, drop=FALSE]
-mask <- c(sigltil2 = Inf)
-new_starts <- xsdm::start_parms(env_dat[occ == 1, , , drop=FALSE],
+mask <- c(sigrtil1 = Inf)
+new_starts <- start_parms(env_dat[occ == 1, , , drop=FALSE],
                                mask = mask,
                                num_starts = 100)
 
@@ -250,7 +250,7 @@ bdry_optim_results <- list()
 for (j in 1:nrow(new_starts))
 {
   bdry_optim_results[[j]] <- optim(par = new_starts[j,],
-                                  fn = xsdm::loglik_math,
+                                  fn = loglik_math,
                                   method = "BFGS",
                                   env_dat = env_dat,
                                   occ = occ,
@@ -279,7 +279,7 @@ top-likelihood result).
 
 To investigate the model further, we profile:
 ```{r profile, cache=TRUE}
-pnames <-  names(xsdm::make_mask_names(2))
+pnames <-  names(make_mask_names(2))
 pnames <-  pnames[!(pnames %in% names(mask))]
 
 values <-  sapply(X=bdry_optim_results, FUN=function(x){x$value})
@@ -293,7 +293,7 @@ linc[8] <-  0.001
 rinc[8] <-  0.001
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] <-  xsdm::profile_likelihood(
+  all_profiles[[counter]] <-  profile_likelihood(
                               profile_parameter = pnames[counter],
                               increment_left =linc[counter],
                               increment_right = rinc[counter],
@@ -338,21 +338,9 @@ plot_tool(all_profiles, 8)
 
 These profiles are not dome-shaped, and have other idiosyncratic features,
 confirming that we had not effectively optimized the likelihood.
-The `mu2`, `mu2`, and `ctil` profile, in particular, show problems.
-
-We do a pairs plot based on the `mu2` profile to investigate further:
-```{r make_pairs_plot_again, fig.width=9, fig.height=9}
-p <- all_profiles[[2]]$parameters
-head(p)
-p <- p[,1:8]
-pairs(p)
-```
-
-This pairs plot helps us see the tradeoff going on
-between parameters.
-As `mu2` is increased, other parameters, especially `ctil`,
-change monotonically. These results suggest a ridge in the
-likelihood surface that appears to rise asymptotically along some path
+The `mu1`, `mu2`, and `ctil` profiles, in particular, show problems.
+These results suggest a ridge in the
+likelihood surface that may rise asymptotically along some path
 in parameter space for which `mu2` is increasing. We have not identified
 a maximum of the likelihood function, and it looks as though there may not
 be one if the increase is indeed asymptotic.
@@ -363,9 +351,9 @@ is going wrong:
 ```{r look_at_inferred_ge_func, fig.width=7, fig.height=4}
 param_list <- bdry_optim_results[[1]]$par
 param_list["sigltil2"] <- Inf
-param_list <- param_list[names(xsdm::make_mask_names(2))]
-param_list_bio <- xsdm::math_to_bio(param_list)
-xsdm::interpret_parameters(param_list = param_list_bio,
+param_list <- param_list[names(make_mask_names(2))]
+param_list_bio <- math_to_bio(param_list)
+interpret_parameters(param_list = param_list_bio,
                           plot_indices = c(1,2), env_dat=env_dat, occ = occ)
 param_list_bio$mu
 ```
@@ -401,13 +389,13 @@ should be considered:
 ```{r fit_boundary_model_5,cache=TRUE}
 env_dat <- env_array[,,models[i,]==1,drop=FALSE]
 mask <- c(sigrtil1 = Inf)
-new_starts <- xsdm::start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,
+new_starts <- start_parms(env_dat[occ==1,,,drop=FALSE],mask=mask,
                                num_starts=100)
 
 bdry_optim_results5 <- list()
 for (j in 1:nrow(new_starts))
 {
-  bdry_optim_results5[[j]] <- optim(par=new_starts[j,],fn=xsdm::loglik_math,
+  bdry_optim_results5[[j]] <- optim(par=new_starts[j,],fn=loglik_math,
                                 method="BFGS",
                                 env_dat=env_dat,occ=occ,mask=mask,negative=TRUE,
                                 control=list(trace=0,maxit=500))
@@ -428,13 +416,13 @@ This model looks like it probably optimized well.
 Next do profiles:
 ```{r profile_model_5, cache=TRUE, fig.width=9, fig.height=6}
 all_profiles <- list()
-pnames <- names(xsdm::make_mask_names(1))
+pnames <- names(make_mask_names(1))
 pnames <- pnames[pnames!="sigrtil1"]
 linc <- c(0.05,0.025,0.05,0.05)
 rinc <- c(0.15,0.025,0.05,0.05)
 for (counter in 1:length(pnames))
 {
-  all_profiles[[counter]] <-  xsdm::profile_likelihood(
+  all_profiles[[counter]] <-  profile_likelihood(
                               profile_parameter = pnames[counter],
                               increment_left  = linc[counter],
                               increment_right = rinc[counter],
