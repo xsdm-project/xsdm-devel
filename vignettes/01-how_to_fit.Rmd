@@ -43,7 +43,7 @@ The `xsdm` package implements a frequentist
 analysis of the xsdm model. This document should get the user to the point
 of maximizing the likelihood of the model and profiling in "easy" cases,
 with callouts to
-other documents which can help you decide what to do when when the process does
+other documents which can help you decide what to do when the process does
 not go so smoothly. Alternative fitted models can also be compared by AIC or another
 criterion. The example worked out here is for a virtual species (i.e., generated
 data), so we also demonstrate that fitting an xsdm model can recover the true
