@@ -612,25 +612,6 @@ names(all_profiles) <- pnames
 #to have been embedded in the package, but they are still hard-coded. It looks like
 #example_1$par_list is consistent with the below hard-coded parameters, but differs
 #from other sets of parameter in example_1. The man page for example_1 needs to be
-#fixed (several inconsistencies - see the issue I raise) and explained better. Angel 
-#and Dan to look into this together and sort it out.
-#
-#Here are what used to be hard-coded below, I took them out once I realized these
-#were the same as example_1$par_list, keeping them here until this is all worked 
-#out. 
-#list(
-#  mu=c(9,2.5),
-#  sigltil=c(0.3,0.2),
-#  sigrtil=c(0.5,0.8),
-#  ctil=-9,
-#  pd=0.8649783,
-#  o_mat=matrix(c(0.9800666,0.1986693,-0.1986693,0.9800666),2,2)
-#) #DAN: Note, this needs to be embedded in the package
-#
-#In the end it looks like this document is OK now, you just need to delete this
-comment, but there still appears to be work to do to fix example_1 in the package
-and its documentation.
--->
 
 Now, to deal with the parameter redundancy, convert the
 maximum-likelihood parameters to the biological scale
