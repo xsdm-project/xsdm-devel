@@ -36,8 +36,7 @@ knitr::opts_chunk$set(
 
 **Abstract.** This document
 introduces the statistically and computationally sophisticated user to the
-main functions of the `xsdm` package. Some users may choose to read the 
-the document entitled "The xsdm statistical model"
+main functions of the `xsdm` package. Some users may choose to read the document entitled "The xsdm statistical model"
 prior to reading this document, but it should also be possible to start here.
 The `xsdm` package implements a frequentist
 analysis of the xsdm model. This document should get the user to the point
