@@ -350,7 +350,7 @@ for the best parameters we have found so far, maybe that will give some insight 
 is going wrong:
 ```{r look_at_inferred_ge_func, fig.width=7, fig.height=4}
 param_list <- bdry_optim_results[[1]]$par
-param_list["sigltil2"] <- Inf
+param_list["sigrtil1"] <- Inf
 param_list <- param_list[names(make_mask_names(2))]
 param_list_bio <- math_to_bio(param_list)
 interpret_parameters(param_list = param_list_bio,
