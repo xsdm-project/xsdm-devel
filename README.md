@@ -27,10 +27,10 @@ The statistical underpinning is described in:
 
 ## Installation
 
-### CRAN (coming soon)
+### CRAN
 
 ``` r
-install.packages("xsdm")   # not yet on CRAN — see development install below
+install.packages("xsdm")
 ```
 
 ### Development version
@@ -248,4 +248,4 @@ BibTeX:
 ## License
 
 xsdm is released under the [GNU Affero General Public License v3 or
-later](LICENSE.md).
+later](https://www.gnu.org/licenses/agpl-3.0.html).
