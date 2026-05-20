@@ -98,7 +98,7 @@ no units of their own.
     example_1$par_list,
     plot_indices = c(1, 2),
     env_dat      = example_1$env_array,
-    occ          = example_1$occ_vec
+    occ          = example_1$occ_df$presence
   )
 
   # Narrower auto-derived window
@@ -106,7 +106,7 @@ no units of their own.
     example_1$par_list,
     plot_indices = c(1, 2),
     env_dat      = example_1$env_array,
-    occ          = example_1$occ_vec,
+    occ          = example_1$occ_df$presence,
     breadth      = 0.7
   )
 
