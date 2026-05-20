@@ -610,7 +610,7 @@ maximum-likelihood parameters to the biological scale
 and find the representation of the true parameters which is closest in parameter
 space to the maximum-likelihood parameters:
 ```{r rectify}
-example_1_true_parameters_bio <- example_1$true_par_list
+example_1_true_parameters_bio <- example_1$par_list
 example_1_true_parameters_bio
 ML_parameters_bio <- math_to_bio(all_optim_results[[1]]$par)
 example_1_true_parameters_bio<-
