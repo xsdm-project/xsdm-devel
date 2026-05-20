@@ -125,7 +125,7 @@ res <- profile_likelihood(
  alpha = 0.95,
  optim_param_vector = example_1$optim_par_vec,
  env_dat = example_1$env_array,
- occ = example_1$occ_vec,
+ occ = example_1$occ_df$presence,
  num_threads = 1L, # keep it fast and deterministic
  control = list(maxeval = 20),
  verbose = FALSE

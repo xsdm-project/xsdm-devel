@@ -202,7 +202,7 @@ used only by the parity tests in
 <span class="r-in"><span><span class="fu">loglik_math</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  param_vector <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">par_vec</span>,</span></span>
 <span class="r-in"><span>  env_dat <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">env_array</span>,</span></span>
-<span class="r-in"><span>  occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_vec</span></span></span>
+<span class="r-in"><span>  occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_df</span><span class="op">$</span><span class="va">presence</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6821.99</span>
 <span class="r-in"><span><span class="co"># Mute one parameter to use the mask</span></span></span>
@@ -211,7 +211,7 @@ used only by the parity tests in
 <span class="r-in"><span><span class="fu">loglik_math</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  param_vector <span class="op">=</span> <span class="va">par_vec</span>,</span></span>
 <span class="r-in"><span>  env_dat <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">env_array</span>,</span></span>
-<span class="r-in"><span>  occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_vec</span>,</span></span>
+<span class="r-in"><span>  occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_df</span><span class="op">$</span><span class="va">presence</span>,</span></span>
 <span class="r-in"><span>  mask <span class="op">=</span> <span class="va">mask_parameters_a</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6284.778</span>
@@ -219,7 +219,7 @@ used only by the parity tests in
 <span class="r-in"><span><span class="fu">loglik_math</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  param_vector <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">par_vec</span>,</span></span>
 <span class="r-in"><span>  env_dat <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">env_array</span>,</span></span>
-<span class="r-in"><span>  occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_vec</span>,</span></span>
+<span class="r-in"><span>  occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_df</span><span class="op">$</span><span class="va">presence</span>,</span></span>
 <span class="r-in"><span>  negative <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6821.99</span>

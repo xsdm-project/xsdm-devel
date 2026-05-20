@@ -6,11 +6,11 @@
 \newcommand{\ltsgr}{\text{ltsgr}} \newcommand{\expit}{\text{expit}}
 \newcommand{\logit}{\text{logit}} \\
 
-**Abstract.** This document is the intended point of entry for the
-statistically and computationally sophisticated researcher to begin
-using the xsdm package. We state the scientific purpose of the xsdm
-approach. We then introduce the main statistical models that xsdm is
-built on. And we derive the likelihood functions for those models.
+**Abstract.** This document is one point of entry for the statistically
+and computationally sophisticated researcher to begin using the xsdm
+package. We state the scientific purpose of the xsdm approach. We then
+introduce the main statistical models that xsdm is built on. And we
+derive the likelihood functions for those models.
 
 ## Scientific purpose of xsdm
 
@@ -20,50 +20,52 @@ of a species, and are widely used to estimate the current and future
 geographic distributions of species (Peterson and Soberón 2012).
 However, most classic SDM methods examine spatial relationships between
 temporally averaged climate variables and species occurrences. An
-important limitation of current SDMs is they do not account for
+important limitation of typical current SDMs is they do not account for
 inter-annual climate variability, even though variability is known by
-ecological demographers to play a crucial role in population dynamics
-and therefore probably also in species geographic distributions (Gardner
-et al. 2021; Perez-Navarro et al. 2021; Stewart et al. 2021; Ingenloff
-and Peterson 2021; Barve et al. 2014); and theory is well developed
-indicating ways in which variability should influence species ranges
-(Holt et al. 2022). Additionally, global change is altering patterns of
-climate variability, e.g. by modifying the intensity, frequency, and
-duration of extreme events such as heat waves and floods (Hirabayashi et
-al. 2013; Meehl and Tebaldi 2004), which contribute to variability.
-Thus, addressing the shortcomings of current SDMs with respect to
-climate variability seems important for better understanding the impacts
-of climate change on biodiversity, and is the first main purpose of the
-xsdm model. The xsdm package, to which this document is a partial
-introduction, is a frequentist implementation of the xsdm modelling
-approach.
+demographers to play a crucial role in population dynamics and therefore
+probably also in species geographic distributions (Gardner et al. 2021;
+Perez-Navarro et al. 2021; Stewart et al. 2021; Ingenloff and Peterson
+2021; Barve et al. 2014); and theory is well developed indicating ways
+in which variability should influence species ranges (Holt et al. 2022).
+Additionally, global change is altering patterns of climate variability,
+e.g. by modifying the intensity, frequency, and duration of extreme
+events such as heat waves and floods (Hirabayashi et al. 2013; Meehl and
+Tebaldi 2004), which contribute to variability. Thus, addressing the
+shortcomings of current SDMs with respect to climate variability seems
+important for better understanding the impacts of climate change on
+biodiversity, and is the first main purpose of the xsdm model. The xsdm
+package, to which this document is a partial introduction, is a
+frequentist implementation of the xsdm modelling approach.
 
 To give a sense of how variability must influence species distributions,
-we give an idealized but conceptually accurate example. Polar bears’
+we give an idealized but conceptually on-target example. Polar bears’
 diets consist largely of ringed and bearded seals, which they attack
-from a platform of sea ice. Polar bear populations are thus heavily
-dependent on sea ice, especially in spring when mother bears and their
-new cubs emerge from hibernation. Because of this dependence, it is easy
-to imagine that a polar bear population in a location for which spring
-temperatures are -5°C every year may be much more likely to persist than
-a population in a location for which spring temperatures are -15°C in
-half the years and 5°C in the other half of the years, even though both
-locations have the same average spring temperature. Reference (Berti et
-al. 2025) makes this intuition somewhat more formal with a modelling
-example (their Fig. 1) prior to formally developing the statistics
-behind (an earlier version of) the xsdm model.
+from a platform of sea ice. Polar bear populations are thus often
+considered to be heavily dependent on sea ice, especially in spring when
+mother bears and their new cubs emerge from hibernation. Because of this
+dependence, it is easy to imagine that a polar bear population in a
+location for which spring temperatures are -5°C every year may be much
+more likely to persist than a population in a location for which spring
+temperatures are -15°C in half the years and 5°C in the other half of
+the years, even though both locations have the same average spring
+temperature; the latter location will presumably have limited sea ice in
+alternate years, making it hard for populations to persist over the long
+term. Reference (Berti et al. 2025) makes this intuition somewhat more
+formal with a modelling example (their Fig. 1) prior to formally
+developing the statistics behind (an earlier version of) the xsdm model.
 
 The second main goal of the xsdm approach is to help incorporate
 population dynamic processes into SDMs. Although it is population
 dynamics that mediates the relationship between environmental
 fluctuations and whether a population of a given species can persist in
-a location, traditional SDMs mostly ignore populations dynamics. Several
+a location, traditional SDMs mostly ignore population dynamics. Several
 important studies have advocated for population-process-explicit SDMs,
 and have helped inspire our work (Nadeau et al. 2017; Holt 2009; Evans
 et al. 2016; Normand et al. 2014; Pagel and Schurr 2012; Ehrlén and
 Morris 2015; Briscoe et al. 2019). The xsdm approach builds on those
 earlier efforts, in part by emphasizing a computationally tractable
-approach that can be practically applied to commonly available data.
+approach that can be practically applied to make inferences based on
+commonly available data.
 
 ## The xsdm model
 
@@ -94,7 +96,7 @@ confrontation with species occurrence data and (pseudo-)absences,
 habitat suitability is assumed to represent a probability of
 occurrence/detection in a location to which the species could have
 access (i.e., it is geographically accessible). Details of the model are
-presented below. See also (Berti et al. 2025) for additional details
+presented below. See also Berti et al. (2025) for additional details
 (though that publication uses a different growth-environment function
 and a Bayesian approach). We recognize that the xsdm model is an
 idealization, and many complexities can be added in future work which
@@ -107,8 +109,8 @@ Let \\n\\ be a positive integer representing the number of environmental
 variables which will influence population growth in our model, i.e.,
 \\n\\ is the dimension of \\\vec{e}\_t\\. Let
 \\\vec{\mu}=(\mu_1,\ldots,\mu_n)\\ be an \\n\\-vector of unconstrained
-real values representing the optimal values for growth of each
-environmental variable. Let
+real values representing the optimal values for population growth of
+each environmental variable. Let
 \\\vec{\sigma}\_L=(\sigma\_{L,1},\ldots,\sigma\_{L,n})\\ and
 \\\vec{\sigma}\_R=(\sigma\_{R,1},\ldots,\sigma\_{R,n})\\ be
 \\n\\-vectors of strictly positive real values representing widths of
@@ -192,16 +194,16 @@ axes into the orthonormal basis.
 
 ![](02-xsdm_model_files/figure-html/growht-env-funct-1.png)
 
-**Figure:** Example of growth environment functions, relating
-environmental conditions at year \\t\\ and the annual growth rate in
-that year, \\\lambda_t\\. **A**) Three uni-dimensional growth
+**Figure:** Examples of growth-environment functions relating
+environmental conditions at year \\t\\ to the modelled net annual growth
+rate in that year, \\\lambda_t\\. **A**) Three uni-dimensional growth
 environment functions: symmetric (black), asymmetric (blue), and
-saturating (red). **B**) A two-dimensional growth environment function
-symmetric with respect to each axis and with zero rotation. **C**) A
-two-dimensional growth environment function asymmetric with respect to
-each axis and with zero rotation. **D**) A two-dimensional growth
-environment function asymmetric with respect to each axis and with
-rotation = \\\pi/4\\.
+saturating (red), which can be parameterized by our model. **B**) A
+two-dimensional growth environment function symmetric with respect to
+each axis and with zero rotation. **C**) A two-dimensional growth
+environment function asymmetric with respect to each axis and with zero
+rotation. **D**) A two-dimensional growth environment function
+asymmetric with respect to each axis and with rotation = \\\pi/4\\.
 
 ### The detection link
 
@@ -243,8 +245,8 @@ where \\\tilde{c} = b(c-\log(\lambda\_{\text{max}}))\\ and
 \sigma\_{L,i}/\sqrt{b}\\ for \\u\_{t,i} \leq 0\\ and
 \\\tilde{\sigma}\_i(u\_{t,i}) = \tilde{\sigma}\_{R,i} \equiv
 \sigma\_{R,i}/\sqrt{b}\\ for \\u\_{t,i} \> 0\\. This parameter reduction
-is to eliminate the structural non-identifiability in the model, visible
-in \\\eqref{eq:structnonident}\\.
+is to eliminate the structural non-identifiabilities in the model,
+visible in \\\eqref{eq:structnonident}\\.
 
 As a result of the parameter reduction, the probability of detection
 (and, subsequently, the likelihood, defined below) is a function of
@@ -298,7 +300,7 @@ Defining
 the function \\f\\ is determined by inference, and the
 growth-environment function is \\g = af+b\\ for some unknown scalars
 \\a\\ and \\b\\ with \\a\>0\\. We plot evenly spaced contours of \\f\\
-as a means displaying what can be inferred using the xsdm model about
+as a means of displaying what can be inferred using the xsdm model about
 the nature of the dependence of growth rate on the environment. The
 contours of the true growth environment function will be the same as
 those of \\f\\, though the levels/labels of those contours will differ
@@ -306,18 +308,21 @@ according to the values of \\a\\ and \\b\\. In any case, much of the
 interpretive value of the growth-environment function is available
 through these contours, since they specify the inferred optimal
 environmental conditions for growth, and the relative sensitivities of
-growth to various changes in the environment. The indeterminancy of the
+growth to various changes in the environment. The indeterminacy of the
 growth-environment function essentially springs from the fact that it is
-not possible to distinguish a species which is capable of thriving in a
-location but is difficult to detect, from a species which is less
-capable of thriving but easier to detect.
+not possible with presence/absence data to distinguish a species which
+is capable of thriving in a location but is difficult to detect, from a
+species which is less capable of thriving there, but is easier to
+detect.
 
 ## What to read next
 
 Next steps may include the “quickstart” in the package readme at
 <https://github.com/xsdm-project/xsdm>, or the document “How to fit xsdm
-with species occurrence data using xsdml”, which is more thorough and
+with species occurrence data using xsdm”, which is more thorough and
 aimed more at statistically and computationally sophisticated users.
+
+## References
 
 Barve, Narayani, Craig Martin, Nathaniel A Brunsell, and A Townsend
 Peterson. 2014. “The Role of Physiological Optima in Shaping the

@@ -103,7 +103,7 @@ parity tests in `tests/testthat/test-loglik_bio_r_vs_cpp.R`.
 ``` r
 ll <- loglik_bio(
   env_dat = example_1$env_array,
-  occ = example_1$occ_vec,
+  occ = example_1$occ_df$presence,
   mu = example_1$par_list$mu,
   sigltil = example_1$par_list$sigltil,
   sigrtil = example_1$par_list$sigrtil,

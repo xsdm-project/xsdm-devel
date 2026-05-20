@@ -58,7 +58,7 @@ start parameters.
 ## Examples
 
 ``` r
-env_dat <- example_1$env_array[example_1$occ_vec == 1, , ]
+env_dat <- example_1$env_array[example_1$occ_df$presence == 1, , ]
 start_parms(env_dat)
 #> # A tibble: 100 × 9
 #>      mu1   mu2 sigltil1 sigltil2 sigrtil1 sigrtil2   ctil     pd o_par1

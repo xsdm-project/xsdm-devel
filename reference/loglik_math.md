@@ -153,7 +153,7 @@ only by the parity tests in
 loglik_math(
   param_vector = example_1$par_vec,
   env_dat = example_1$env_array,
-  occ = example_1$occ_vec
+  occ = example_1$occ_df$presence
 )
 #> [1] 6821.99
 # Mute one parameter to use the mask
@@ -162,7 +162,7 @@ mask_parameters_a <- c(mu2 = 6.5)
 loglik_math(
   param_vector = par_vec,
   env_dat = example_1$env_array,
-  occ = example_1$occ_vec,
+  occ = example_1$occ_df$presence,
   mask = mask_parameters_a
 )
 #> [1] 6284.778
@@ -170,7 +170,7 @@ loglik_math(
 loglik_math(
   param_vector = example_1$par_vec,
   env_dat = example_1$env_array,
-  occ = example_1$occ_vec,
+  occ = example_1$occ_df$presence,
   negative = TRUE
 )
 #> [1] 6821.99

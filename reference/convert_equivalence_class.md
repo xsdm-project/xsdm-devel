@@ -35,7 +35,7 @@ List with entries o_mat, sigltil, and sigrtil
 
 ``` r
 convert_equivalence_class(
-  p = example_1$optim_par_list,
+  p = math_to_bio(example_1$optim_par_vec),
   flip = c(1, 0),
   perm = c(1, 2)
 )

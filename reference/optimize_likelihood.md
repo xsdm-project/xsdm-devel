@@ -83,7 +83,7 @@ A list with:
 ``` r
 optimize_likelihood(
   env_dat = example_1$env_array[1:4, , ],
-  occ = example_1$occ_vec[1:4],
+  occ = example_1$occ_df$presence[1:4],
   num_starts = 4L
 )
 #> $solutions

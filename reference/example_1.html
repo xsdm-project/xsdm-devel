@@ -68,66 +68,57 @@ documentation and examples.</p>
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A list of 12 objects:</p><dl><dt><code>par_vec</code></dt>
+    <p>A list of 9 objects:</p><dl><dt><code>par_vec</code></dt>
 <dd><p>Named numeric vector of length 9. Math-scale
-    parameters for a 2‑variable model (p = 2). Canonical names:
-    `mu1`, `mu2`, `sigltil1`, `sigltil2`, `sigrtil1`, `sigrtil2`,
-    `ctil`, `pd`, `o_par1`.</p></dd>
+    parameters for a 2-variable model (p = 2). Canonical names:
+    <code>mu1</code>, <code>mu2</code>, <code>sigltil1</code>, <code>sigltil2</code>,
+    <code>sigrtil1</code>, <code>sigrtil2</code>, <code>ctil</code>, <code>pd</code>,
+    <code>o_par1</code>.</p></dd>
 
   <dt><code>bio01</code></dt>
-<dd><p>A packed `SpatRaster` (use `terra::unwrap()`)
-    with 128 × 123 cells and 39 layers. Annual average temperature
-    (bio1) for 1980–2018, CHELSA 2.1 data, centred on southern New
-    Mexico, USA.</p></dd>
+<dd><p>A packed <code>SpatRaster</code> (use
+    <code><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">terra::unwrap()</a></code>) with 128 x 123 cells and 39 layers.
+    Annual average temperature (bio1) for 1980-2018, CHELSA 2.1 data,
+    centred on southern New Mexico, USA.</p></dd>
 
   <dt><code>bio12</code></dt>
-<dd><p>A packed `SpatRaster` (use `terra::unwrap()`)
-    with 128 × 123 cells and 39 layers. Annual precipitation (bio12)
-    for the same region and time period.</p></dd>
+<dd><p>A packed <code>SpatRaster</code> (use
+    <code><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">terra::unwrap()</a></code>) with 128 x 123 cells and 39 layers.
+    Annual precipitation (bio12) for the same region and time period.</p></dd>
 
   <dt><code>env_array</code></dt>
-<dd><p>A 3‑D numeric array with dimensions
-    `4000 (locations) × 39 (time) × 2 (variables)`. Contains the
+<dd><p>A 3-D numeric array with dimensions
+    4000 (locations) x 39 (time) x 2 (variables). Contains the
     environmental data (bio1 and bio12, both divided by 100) extracted
-    from the rasters at the `occ_df` locations.</p></dd>
+    from the rasters at the <code>occ_df</code> locations.</p></dd>
 
   <dt><code>occ_df</code></dt>
 <dd><p>A data frame with 4000 rows and 4 columns:
-    `name` (character), `lon` (longitude), `lat` (latitude), `presence`
-    (0/1). Occurrence records for a virtual species.</p></dd>
+    <code>name</code> (character), <code>lon</code> (longitude), <code>lat</code>
+    (latitude), <code>presence</code> (0/1). Occurrence records for a
+    virtual species.  Use <code>occ_df$presence</code> wherever a binary
+    occurrence vector is needed.</p></dd>
 
-  <dt><code>occ_vec</code></dt>
-<dd><p>An integer vector of length 4000. Binary
-    presence/absence (0/1) corresponding to `occ_df$presence`.</p></dd>
-
-  <dt><code>optim_par_list</code></dt>
-<dd><p>A list of biological‑scale parameters
-    (the MLE fit for the example). Contains `mu`, `sigltil`, `sigrtil`,
-    `ctil`, `pd`, `o_mat`.</p></dd>
+  <dt><code>par_list</code></dt>
+<dd><p>A list of biological-scale parameters
+    (the "true" parameter set used to generate the virtual species).
+    Contains <code>mu</code>, <code>sigltil</code>, <code>sigrtil</code>, <code>ctil</code>,
+    <code>pd</code>, <code>o_mat</code>.</p></dd>
 
   <dt><code>optim_par_vec</code></dt>
 <dd><p>A named numeric vector of length 9.
-    Math‑scale parameters corresponding to `optim_par_list`.</p></dd>
+    Math-scale MLE estimates.  Convert to the biological scale with
+    <code>math_to_bio(example_1$optim_par_vec)</code>.</p></dd>
 
   <dt><code>optim_par_vec_equivalent</code></dt>
 <dd><p>A named numeric vector of
-    length 9. A different math‑scale representation that belongs to
-    the same equivalence class as `optim_par_vec`. Used to test
-    `dist_between_params()`.</p></dd>
-
-  <dt><code>par_list</code></dt>
-<dd><p>A list of biological‑scale parameters
-    (a “true” parameter set, not necessarily the MLE). Used in
-    examples of `interpret_parameters()`, `vsp()`, etc.</p></dd>
-
-  <dt><code>par_vec_vsp</code></dt>
-<dd><p>A named numeric vector of length 9,
-    math‑scale parameters. Currently an alias for `par_vec` (retained
-    for backward compatibility).</p></dd>
+    length 9. A different math-scale representation that belongs to
+    the same equivalence class as <code>optim_par_vec</code>. Used to test
+    <code><a href="dist_between_params.html">dist_between_params()</a></code>.</p></dd>
 
   <dt><code>par_table</code></dt>
-<dd><p>A data.frame with 9 columns corresponding to
-  a parameter in math scale and 100 rows corresponding to 100 combinations.</p></dd>
+<dd><p>A data.frame with 9 columns (one per
+    math-scale parameter) and 100 rows of parameter combinations.</p></dd>
 
 
 </dl></div>
@@ -138,25 +129,29 @@ documentation and examples.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>All rasters (`bio01`, `bio12`) are stored as packed `SpatRaster`
-objects to reduce package size. Before using them, unpack with
-`terra::unwrap()`, e.g.:
+    <p>All rasters (<code>bio01</code>, <code>bio12</code>) are stored as packed
+<code>SpatRaster</code> objects to reduce package size. Before using them,
+unpack with <code><a href="https://rspatial.github.io/terra/reference/wrap.html" class="external-link">terra::unwrap()</a></code>, e.g.:
 <code>bio1 &lt;- terra::unwrap(example_1$bio01)</code>.</p>
 <p>The environmental data are originally from CHELSA v2.1
-(&lt;https://www.chelsa-climate.org/&gt;). The virtual species was
-generated from the parameters in `par_list`.</p>
-    </div>
+(<a href="https://www.chelsa-climate.org/" class="external-link">https://www.chelsa-climate.org/</a>). The virtual species was
+generated from the parameters in <code>par_list</code>.</p>
+<p>Three former convenience slots can be derived from the remaining
+objects and were removed to keep the dataset minimal:</p><ul><li><p><code>occ_vec</code>: use <code>example_1$occ_df$presence</code></p></li>
+<li><p><code>optim_par_list</code>: use
+    <code>math_to_bio(example_1$optim_par_vec)</code></p></li>
+<li><p><code>par_vec_vsp</code>: was identical to <code>par_vec</code></p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Access the list</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">example_1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "par_vec"                  "bio01"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "bio12"                    "env_array"               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "occ_df"                   "occ_vec"                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "optim_par_list"           "optim_par_vec_equivalent"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "optim_par_vec"            "par_list"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "par_vec_vsp"              "par_table"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "par_vec"                  "bio01"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "bio12"                    "env_array"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "occ_df"                   "optim_par_vec_equivalent"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "optim_par_vec"            "par_list"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [9] "par_table"               </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Unpack a raster</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>

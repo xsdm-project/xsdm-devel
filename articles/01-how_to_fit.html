@@ -100,18 +100,20 @@ Ecological Research, University of Kansas<br><small class="dont-index">Source: <
 \newcommand{\expit}{\text{expit}}
 \newcommand{\logit}{\text{logit}}
 \]</span></p>
-<p><strong>Abstract.</strong> After reading the document entitled “The
-xsdm model”, this document introduces the statistically and
-computationally sophisticated user to the main functions of the
-<code>xsdm</code> package. The package implements a frequentist analysis
-of the xsdm model. This document should get the user to the point of
-maximizing the likelihood of the model and profiling in “easy” cases,
-with callouts to several troubleshooting documents about what to do when
-the process does not go smoothly. Alternative fitted models can also be
-compared by AIC or another criterion. The example worked out here is for
-a virtual species (i.e., generated data), so we also demonstrate that
-fitting an xsdm model can recover the true parameters if model
-mis-specification is not an issue.</p>
+<p><strong>Abstract.</strong> This document introduces the statistically
+and computationally sophisticated user to the main functions of the
+<code>xsdm</code> package. Some users may choose to read the document
+entitled “The xsdm statistical model” prior to reading this document,
+but it should also be possible to start here. The <code>xsdm</code>
+package implements a frequentist analysis of the xsdm model. This
+document should get the user to the point of maximizing the likelihood
+of the model and profiling in “easy” cases, with callouts to other
+documents which can help you decide what to do when the process does not
+go so smoothly. Alternative fitted models can also be compared by AIC or
+another criterion. The example worked out here is for a virtual species
+(i.e., generated data), so we also demonstrate that fitting an xsdm
+model can recover the true parameters if model mis-specification is not
+an issue.</p>
 <div class="section level2">
 <h2 id="introduction-to-the-running-example-used-throughout-this-document">Introduction to the running example used throughout this
 document<a class="anchor" aria-label="anchor" href="#introduction-to-the-running-example-used-throughout-this-document"></a>
@@ -165,10 +167,9 @@ for the same 39 years and the same region of interest:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">mm</span><span class="op">$</span><span class="va">max</span><span class="op">)</span> <span class="co">#global max</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 1761</span></span></code></pre>
 <p>If the scales of your environmental variables are vastly different,
-it can cause problems with optimization (see the document
-“Troubleshooting: Optimization problems related to scaling”). So we
-change the units for precipitation to make the range of values similar
-to those for temperature. Now the units are going to be dg/m<span class="math inline">\(^2\)</span>:</p>
+it can cause problems with optimization. So we change the units for
+precipitation to make the range of values similar to those for
+temperature. Now the units are going to be dg/m<span class="math inline">\(^2\)</span>:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bio_12</span> <span class="op">&lt;-</span> <span class="va">bio_12</span><span class="op">/</span><span class="fl">100</span></span>
 <span><span class="va">mm</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/global.html" class="external-link">global</a></span><span class="op">(</span><span class="va">bio_1</span>,fun<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"min"</span>,<span class="st">"max"</span><span class="op">)</span><span class="op">)</span></span>
@@ -261,8 +262,8 @@ data.</p>
 <h2 id="evaluating-the-likelihood">Evaluating the likelihood<a class="anchor" aria-label="anchor" href="#evaluating-the-likelihood"></a>
 </h2>
 <p>The xsdm model’s likelihood function is described in the document
-“The xsdm model”, where model parameter are also described in detail.
-Parameters are:</p>
+“The xsdm statistical model”, where model parameters are also described
+in detail. Parameters are:</p>
 <ul>
 <li>
 <span class="math inline">\(\vec{\mu}\)</span>, which encodes ideal
@@ -302,12 +303,12 @@ set of parameters:</p>
 <span><span class="va">ctil</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">10</span></span>
 <span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
 <span><span class="va">o_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/loglik_bio.html">loglik_bio</a></span><span class="op">(</span><span class="va">env_array</span>,<span class="va">occ</span>,<span class="va">mu</span>,<span class="va">sigltil</span>,<span class="va">sigrtil</span>,o_mat<span class="op">=</span><span class="va">o_mat</span>,ctil<span class="op">=</span><span class="va">ctil</span>,pd<span class="op">=</span><span class="va">pd</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/loglik_bio.html">loglik_bio</a></span><span class="op">(</span><span class="va">env_array</span>,<span class="va">occ</span>,<span class="va">mu</span>,<span class="va">sigltil</span>,<span class="va">sigrtil</span>,<span class="va">o_mat</span>,<span class="va">ctil</span>,<span class="va">pd</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] -2110.297</span></span></code></pre>
 <p>By default, the function gives the log likelihood, but you can also
 get the linear-scale likelihood:</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/loglik_bio.html">loglik_bio</a></span><span class="op">(</span><span class="va">env_array</span>,<span class="va">occ</span>,<span class="va">mu</span>,<span class="va">sigltil</span>,<span class="va">sigrtil</span>,o_mat<span class="op">=</span><span class="va">o_mat</span>,ctil<span class="op">=</span><span class="va">ctil</span>,pd<span class="op">=</span><span class="va">pd</span>,return_prob<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/loglik_bio.html">loglik_bio</a></span><span class="op">(</span><span class="va">env_array</span>,<span class="va">occ</span>,<span class="va">mu</span>,<span class="va">sigltil</span>,<span class="va">sigrtil</span>,<span class="va">o_mat</span>,<span class="va">ctil</span>,<span class="va">pd</span>,return_prob<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0</span></span></code></pre>
 <p>For these haphazardly chosen parameters, the (linear-scale)
 likelihood is zero to within numeric precision - this is typical. We
@@ -368,8 +369,8 @@ from <span class="math inline">\(O^{(m)}\)</span>.</p>
 <p>The transformation from math-scale to bio-scale parameters is
 implemented in <code>xsdm</code> using the function
 <code><a href="../reference/math_to_bio.html">math_to_bio()</a></code>, which takes an unconstrained numeric vector
-as its argument and returns a named list of of biological-scale
-parameters. But it is not so common for the end-user to call
+as its argument and returns a named list of biological-scale parameters.
+But it is not so common for the end-user to call
 <code><a href="../reference/math_to_bio.html">math_to_bio()</a></code> directly because we have written the
 likelihood directly in terms of the math-scale parameters in a function
 <code><a href="../reference/loglik_math.html">loglik_math()</a></code>. We now demonstrate
@@ -516,7 +517,7 @@ this based on the optimization results we achieved.</p>
 <span><span class="co">##  [9] 1034.673 1173.988</span></span></code></pre>
 <p>These results indicate that: 1) most of the 10 optimizations appear
 to have converged according to the diagnostics of <code>optim</code> (0
-means convergence for <code>optim</code>); and 2) five of the 10
+means convergence for <code>optim</code>); and 2) multiple of the 10
 optimizations returned the same, highest log-likelihood to within 3
 digits. This, already, is pretty good evidence that multiple
 optimizations arrived at the same place in parameter space, i.e., the
@@ -550,35 +551,35 @@ next.</p>
 <span><span class="co">## pd        2.0470708  2.0463183  2.0501338   1.4496168</span></span>
 <span><span class="co">## o_par1    0.2201439 -7.6346260  6.2841522  -2.7956450</span></span></code></pre>
 <p>These are in the same order as the maximized likelihood values above.
-Note that the first five sets of optimized parameters appear the same,
-to within a few digits, for the <code>mu1</code>, <code>mu2</code>,
-<code>ctil</code>, and <code>pd</code> parameters, but that they appear
-to differ from each other with respect to the <code>o_par1</code>
-parameter. And the <code>sigltil1</code>, <code>sigltil2</code>,
-<code>sigrtil1</code>, <code>sigrtil2</code> parameters for one
-optimization result appear to be the same, up to a few digits, as for
-another optimization results <em>if permuted</em>. These complexities
-reflect the fact that the <code><a href="../reference/math_to_bio.html">math_to_bio()</a></code> mapping is
-many-to-one, and that there are also multiple ways to parameterize the
-identical xsdm model with distinct biological-scale parameters. These
-redundancies affect the <code>sigltil1</code>, <code>sigltil2</code>,
-<code>sigrtil1</code>, <code>sigrtil2</code>, and <code>o_par1</code>
-parameters. For models making use of more than two environmental
-variables, all the <code>o_par</code> parameters are affected. In
-essence, parameters can be the same, in the sense of giving the same
-xsdm model, even if they appear different; so we need to take this
-redundancy into account when judging whether different optimizations
-resulted in the same parameters.</p>
-<p>These issues are described further in the document “Troubleshooting:
-Dealing with parameter redundancy,” but the function
-<code><a href="../reference/dist_between_params.html">dist_between_params()</a></code> provides an easy way around these
-complexities. The function directly calculates for the user the distance
-between two sets of xsdm model parameters while taking into account the
-redundancy described; i.e., if <code><a href="../reference/dist_between_params.html">dist_between_params()</a></code>
-indicates a very small difference between two sets of parameters, they
-give essentially the same xsdm model and can be considered to be close
-to each other in parameter space even if they appear different. So use
-the function as the test of parameter similarity, as follows:</p>
+Note that the first several sets of optimized parameters appear the
+same, to within a few digits, for the <code>mu1</code>,
+<code>mu2</code>, <code>ctil</code>, and <code>pd</code> parameters, but
+that they appear to differ from each other with respect to the
+<code>o_par1</code> parameter. And the <code>sigltil1</code>,
+<code>sigltil2</code>, <code>sigrtil1</code>, <code>sigrtil2</code>
+parameters for one optimization result appear to be the same, up to a
+few digits, as for another optimization results <strong>if
+permuted</strong>. These complexities reflect the fact that the
+<code><a href="../reference/math_to_bio.html">math_to_bio()</a></code> mapping is many-to-one, and that there are
+also multiple ways to parameterize the identical <code>xsdm</code> model
+with distinct biological-scale parameters. These redundancies affect the
+<code>sigltil1</code>, <code>sigltil2</code>, <code>sigrtil1</code>,
+<code>sigrtil2</code>, and <code>o_par1</code> parameters. For models
+making use of more than two environmental variables, all the
+<code>o_par</code> parameters are affected. In essence, parameters can
+be the same, in the sense of giving the same <code>xsdm</code> model,
+even if they appear different; so we need to take this redundancy into
+account when judging whether different optimizations resulted in the
+same parameters.</p>
+<p>The function <code><a href="../reference/dist_between_params.html">dist_between_params()</a></code> provides an easy way
+around these complexities. The function directly calculates for the user
+the distance between two sets of <code>xsdm</code> model parameters
+while taking into account the redundancy described; i.e., if
+<code><a href="../reference/dist_between_params.html">dist_between_params()</a></code> indicates a very small difference
+between two sets of parameters, they give essentially the same
+<code>xsdm</code> model and can be considered to be close to each other
+in parameter space even if they appear different. So use the function as
+the test of parameter similarity, as follows:</p>
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dists_to_first</span> <span class="op">&lt;-</span> <span class="cn">NA</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_starts</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">counter</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">num_starts</span><span class="op">)</span></span>
@@ -592,7 +593,7 @@ the function as the test of parameter similarity, as follows:</p>
 <span><span class="va">dists_to_first</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] 0.000000e+00 1.151929e-03 8.879859e-04 1.153805e-03 1.259329e-03</span></span>
 <span><span class="co">##  [6] 2.982532e-03 1.242756e-03 1.554827e-02 4.549946e+00 4.027941e+03</span></span></code></pre>
-<p>Note that the first five parameter optimization results are all
+<p>Note that the first several parameter optimization results are all
 reported to be close in parameter space to the first parameter
 optimization result.</p>
 <p>If, as in this case, sufficiently many of the initial conditions
@@ -608,10 +609,10 @@ below, provides additional checks.</p>
 </h2>
 <p>It is straightforward to compare multiple models making use of
 different combinations of environmental variables, using AIC (or another
-criterion). We demonstrate how to use xsdm to do that by comparing the
-previous, two-environmental-variable model with each of the two simpler
-models that make use of just one of the environmental variables. First,
-fit the two simpler models:</p>
+criterion). We demonstrate how to use <code>xsdm</code> to do that by
+comparing the previous, two-environmental-variable model with each of
+the two simpler models that make use of just one of the environmental
+variables. First, fit the two simpler models:</p>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Fit the two simpler models</span></span>
 <span><span class="va">starts_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/start_parms.html">start_parms</a></span><span class="op">(</span><span class="va">env_array</span><span class="op">[</span><span class="va">occ</span><span class="op">==</span><span class="fl">1</span>,,<span class="fl">1</span>,drop<span class="op">=</span><span class="cn">FALSE</span><span class="op">]</span>,num_starts<span class="op">=</span><span class="va">num_starts</span><span class="op">)</span></span>
@@ -685,8 +686,8 @@ been adequately maximized.</p>
 <span><span class="va">dists_to_first_2</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] 0.000000e+00 4.230865e-04 3.096401e-04 9.193694e-04 7.104392e-04</span></span>
 <span><span class="co">##  [6] 2.998391e-04 3.610567e-04 9.275856e-04 1.640863e-03 5.184486e+01</span></span></code></pre>
-<p>The results suggest that the likelihood function of this model has
-been adequately maximized.</p>
+<p>The results again suggest that the likelihood function of this model
+has been adequately maximized.</p>
 <p>Now compute the AIC of each model, bearing in mind that optimization
 results are already negative log-likelihoods:</p>
 <div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
@@ -707,8 +708,7 @@ results are already negative log-likelihoods:</p>
 <p>The best model (lowest AIC) is the two-environmental-variable model,
 by a considerable margin. This confirms expectation, since the data come
 from a virtual species, and we know they were generated using both of
-the two environmental variables (see “Virtual species and habitat
-suitability maps” for how the data were generated).</p>
+the two environmental variables.</p>
 </div>
 <div class="section level2">
 <h2 id="profiling">Profiling<a class="anchor" aria-label="anchor" href="#profiling"></a>
@@ -732,7 +732,7 @@ confidence intervals can be constructed by use of the likelihood ratio
 test - see basic texts on maximum likelihood methods for additional
 details.</p>
 <p>To calculate profiles using <code>xsdm</code>, use the function
-<code><a href="../reference/profile_likelihood.html">profile_likelihood()</a></code>, here for :</p>
+<code><a href="../reference/profile_likelihood.html">profile_likelihood()</a></code>, here for <code>mu1</code>:</p>
 <div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prof1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/profile_likelihood.html">profile_likelihood</a></span><span class="op">(</span></span>
 <span>  profile_parameter<span class="op">=</span><span class="st">"mu1"</span>,</span>
@@ -757,13 +757,12 @@ details.</p>
 <span><span class="co">## 3   mu1   8.730785 -1009.705           4</span></span>
 <span><span class="co">## 2   mu1   8.830785 -1009.509           1</span></span>
 <span><span class="co">## 1   mu1   8.930785 -1009.447          NA</span></span></code></pre>
-<p>Note that the convergence column is returning the convergence flagged
-returned by the optimizer <code><a href="https://alrobles.github.io/ucminfcpp/reference/ucminf_xptr.html" class="external-link">ucminfcpp::ucminf_xptr</a></code>; the value
-1 is among the values which indicate convergence to within the
-tolerances used.</p>
+<p>Note that the convergence column is returning convergence flags
+returned by the optimizer <code><a href="https://alrobles.github.io/ucminfcpp/reference/ucminf_xptr.html" class="external-link">ucminfcpp::ucminf_xptr</a></code>; the
+values 1 and 4 typically indicate convergence.</p>
 <p>Two of the outputs of this function contain the profile itself, and
 the threshold. The region for which the profile is above the threshold
-is the confidence intervals:</p>
+is the confidence interval of the profiled parameter:</p>
 <div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">prof1</span><span class="op">$</span><span class="va">profile</span><span class="op">$</span><span class="va">value_math</span>,<span class="va">prof1</span><span class="op">$</span><span class="va">profile</span><span class="op">$</span><span class="va">loglik</span>,type<span class="op">=</span><span class="st">"o"</span>,</span>
 <span>     xlab<span class="op">=</span><span class="st">"mu1"</span>,ylab<span class="op">=</span><span class="st">"Log likelihood"</span><span class="op">)</span></span>
@@ -777,8 +776,7 @@ crossed, whichever happens first. Profiling is often a trial-and-error
 process of selecting values for <code>increment_left</code>,
 <code>increment_right</code>, <code>num_steps_left</code>, and
 <code>num_steps_right</code> to get complete and smooth profiles within
-the limits of available computational resources. See “Troubleshooting:
-Profiles” for additional details.</p>
+the limits of available computational resources.</p>
 <p>Often one wants to plot the values of the other parameters which
 optimized the likelihood for each value of the profiled parameter. This
 can be done using the <code>parameters</code> output of
@@ -817,7 +815,8 @@ maximizing the likelihood. If <code>found_better</code> is
 with more initial conditions, or with tighter tolerances on the
 optimizer used, or with a different optimizer. Although sometimes it can
 be sufficient to simply re-start profiling using the parameters which
-were found to yield a new highest likelihood.</p>
+were found via the first profiling effort to yield a new highest
+likelihood.</p>
 <p>We next produce and plot all the profiles for our AIC-best model,
 where now the profiles are going to be plotted on the biological scale.
 Since the data are for a virtual species, they were generated with known
@@ -850,15 +849,29 @@ maximum-likelihood parameters to the biological scale and find the
 representation of the true parameters which is closest in parameter
 space to the maximum-likelihood parameters:</p>
 <div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_1_true_parameters_bio</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9</span>,<span class="fl">2.5</span><span class="op">)</span>,</span>
-<span>  sigltil<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>,<span class="fl">0.2</span><span class="op">)</span>,</span>
-<span>  sigrtil<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>,<span class="fl">0.8</span><span class="op">)</span>,</span>
-<span>  ctil<span class="op">=</span><span class="op">-</span><span class="fl">9</span>,</span>
-<span>  pd<span class="op">=</span><span class="fl">0.8649783</span>,</span>
-<span>  o_mat<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9800666</span>,<span class="fl">0.1986693</span>,<span class="op">-</span><span class="fl">0.1986693</span>,<span class="fl">0.9800666</span><span class="op">)</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="co">#DAN: Note, this needs to be embedded in the package</span></span>
-<span><span class="va">ML_parameters_bio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/math_to_bio.html">math_to_bio</a></span><span class="op">(</span><span class="va">all_optim_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">example_1_true_parameters_bio</span> <span class="op">&lt;-</span> <span class="va">example_1</span><span class="op">$</span><span class="va">par_list</span></span>
+<span><span class="va">example_1_true_parameters_bio</span></span></code></pre></div>
+<pre><code><span><span class="co">## $mu</span></span>
+<span><span class="co">## [1] 9.0 2.5</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $sigltil</span></span>
+<span><span class="co">## [1] 0.3 0.2</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $sigrtil</span></span>
+<span><span class="co">## [1] 0.5 0.8</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $ctil</span></span>
+<span><span class="co">## [1] -9</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $pd</span></span>
+<span><span class="co">## [1] 0.8649783</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $o_mat</span></span>
+<span><span class="co">##           [,1]       [,2]</span></span>
+<span><span class="co">## [1,] 0.9800666 -0.1986693</span></span>
+<span><span class="co">## [2,] 0.1986693  0.9800666</span></span></code></pre>
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ML_parameters_bio</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/math_to_bio.html">math_to_bio</a></span><span class="op">(</span><span class="va">all_optim_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">par</span><span class="op">)</span></span>
 <span><span class="va">example_1_true_parameters_bio</span><span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/dist_between_params.html">dist_between_params</a></span><span class="op">(</span><span class="va">example_1_true_parameters_bio</span>,</span>
 <span>                                    <span class="va">ML_parameters_bio</span>,</span>
@@ -885,7 +898,7 @@ space to the maximum-likelihood parameters:</p>
 <span><span class="co">## [2,] -0.9800666 0.1986693</span></span></code></pre>
 <p>Now plot profiles. Recall we are plotting on the biological scale, so
 each parameter is transformed before the profile is plotted:</p>
-<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot_tool</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span>,<span class="va">thresh</span>,<span class="va">xlab</span>,<span class="va">true_param</span><span class="op">)</span></span>
@@ -977,7 +990,7 @@ advantages.</p>
 the profiles look good, and shown that fitting captures the true model
 parameters. Habitat suitability maps are done with the
 <code><a href="../reference/habitat_suitability.html">habitat_suitability()</a></code> function.</p>
-<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#plot the habitat suitability map</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">hab_suit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/habitat_suitability.html">habitat_suitability</a></span><span class="op">(</span>param_list<span class="op">=</span><span class="va">ML_parameters_bio</span>, env_list<span class="op">=</span><span class="va">env_data</span><span class="op">)</span></span>
@@ -1003,17 +1016,17 @@ parameters. Habitat suitability maps are done with the
 <span>            main<span class="op">=</span><span class="st">"Difference"</span>,</span>
 <span>            xlab<span class="op">=</span><span class="st">"x"</span>,ylab<span class="op">=</span><span class="st">"y"</span>,legend<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="01-how_to_fit_files/figure-html/habitat_suitability-1.png" class="r-plt" alt="" width="864"></p>
-<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb105"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#compute percent error in range</span></span>
 <span><span class="va">area</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">(</span><span class="va">hab_suit_true</span><span class="op">&gt;</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">area_setdiff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">(</span><span class="va">hab_suit</span><span class="op">&gt;</span><span class="fl">.5</span><span class="op">)</span><span class="op">-</span><span class="op">(</span><span class="va">hab_suit_true</span><span class="op">&gt;</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">-</span><span class="fl">0</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">1e-1</span><span class="op">)</span></span>
 <span><span class="va">delta</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">area_setdiff</span><span class="op">)</span><span class="op">/</span><span class="va">area</span></span>
 <span><span class="va">area</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2058</span></span></code></pre>
-<div class="sourceCode" id="cb105"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">area_setdiff</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 69</span></span></code></pre>
-<div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.0335277</span></span></code></pre>
 <p>As you can see, both the inferred habitat suitability map and the
@@ -1024,7 +1037,7 @@ so we also display what the habitat suitability map would look like if
 the value of each environmental variable in each location were always
 equal to the temporal mean for that variable and location. We use
 inferred parameters.</p>
-<div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#plot the habitat suitability map again, to ease comparisons</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">hab_suit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/habitat_suitability.html">habitat_suitability</a></span><span class="op">(</span>param_list<span class="op">=</span><span class="va">ML_parameters_bio</span>, env_list<span class="op">=</span><span class="va">env_data</span><span class="op">)</span></span>
@@ -1053,17 +1066,17 @@ inferred parameters.</p>
 <span>            main<span class="op">=</span><span class="st">"Difference"</span>,</span>
 <span>            xlab<span class="op">=</span><span class="st">"x"</span>,ylab<span class="op">=</span><span class="st">"y"</span>,legend<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="01-how_to_fit_files/figure-html/habitat_suitability_novar-1.png" class="r-plt" alt="" width="864"></p>
-<div class="sourceCode" id="cb110"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#compute change in area due to variability</span></span>
 <span><span class="va">area</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">(</span><span class="va">hab_suit</span><span class="op">&gt;</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">area_novar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">(</span><span class="va">m_hab_suit</span><span class="op">&gt;</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">delta_area</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">area_novar</span><span class="op">-</span><span class="va">area</span><span class="op">)</span><span class="op">/</span><span class="va">area_novar</span></span>
 <span><span class="va">area</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2003</span></span></code></pre>
-<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">area_novar</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 2716</span></span></code></pre>
-<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta_area</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 0.2625184</span></span></code></pre>
 <p>So we see variability reduces area by a certain percentage for this
@@ -1076,9 +1089,9 @@ virtual species.</p>
 say what we can about how the species responds to the environment. This
 is rendered a bit more challenging due to the parameter reduction step
 which was carried out for the model to eliminate structural
-non-identifiability (see “The xsdm model” for details). The function
-<code><a href="../reference/interpret_parameters.html">interpret_parameters()</a></code> helps with this, displaying plots
-which describe the inferred growth-environment function (the
+non-identifiability (see “The xsdm statistical model” for details). The
+function <code><a href="../reference/interpret_parameters.html">interpret_parameters()</a></code> helps with this, displaying
+plots which describe the inferred growth-environment function (the
 relationship between the environment, <span class="math inline">\(\vec{e}_t\)</span>, in a given year in a location
 and the annual net growth rate, <span class="math inline">\(\lambda_t\)</span>). For instance, for our
 example, the contours of that function are determined, though their
@@ -1087,7 +1100,7 @@ what the optimal environment is for the species, and how sensitive
 annual net growth is to departures from this optimum for each
 environmental variable, relative to the other environmental
 variables:</p>
-<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb118"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/interpret_parameters.html">interpret_parameters</a></span><span class="op">(</span>param_list<span class="op">=</span><span class="va">ML_parameters_bio</span>,</span>
 <span>                     plot_indices<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,</span>
@@ -1113,13 +1126,13 @@ drought (downward departures of environmental variable 2 from the
 optimum) than it is to abundant rainfall (upward departures). One can
 see that, as expected, the environment is more suitable for population
 growth, according to the inferred growth-environment function, in
-locations for where the species was observed. One can see that, even in
+locations in which the species was observed. One can see that, even in
 locations found to be unsuitable for the species (right panel), there
 were plenty of individual years for which environmental conditions
 promoted growth in that year, demonstrating the importance of
 interannual variability.</p>
 <p>Now we plot the same thing for the true parameters:</p>
-<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/interpret_parameters.html">interpret_parameters</a></span><span class="op">(</span>param_list<span class="op">=</span><span class="va">example_1_true_parameters_bio</span>,</span>
 <span>                     plot_indices<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,</span>
@@ -1135,7 +1148,7 @@ interannual variability.</p>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">env_array</span><span class="op">[</span><span class="va">occ</span><span class="op">==</span><span class="fl">0</span>,,<span class="fl">1</span><span class="op">]</span>,<span class="va">env_array</span><span class="op">[</span><span class="va">occ</span><span class="op">==</span><span class="fl">0</span>,,<span class="fl">2</span><span class="op">]</span>,pch<span class="op">=</span><span class="fl">20</span>,</span>
 <span>       col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">.2</span><span class="op">)</span>,cex<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="01-how_to_fit_files/figure-html/interpret_parameters_true-1.png" class="r-plt" alt="" width="672"></p>
-<p>Results were quite similar. Plots against one environmental variable
+<p>Results are quite similar. Plots against one environmental variable
 are also possible, holding the other one at optimal values. See the
 documentation of <code><a href="../reference/interpret_parameters.html">interpret_parameters()</a></code> for details.</p>
 </div>
