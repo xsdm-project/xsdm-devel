@@ -605,13 +605,6 @@ for (counter in 1:length(pnames))
 }
 names(all_profiles) <- pnames
 ```
-
-<!--
-#DAN: All good to here, but below it goes wrong. The true parameters are supposed
-#to have been embedded in the package, but they are still hard-coded. It looks like
-#example_1$par_list is consistent with the below hard-coded parameters, but differs
-#from other sets of parameter in example_1. The man page for example_1 needs to be
-
 Now, to deal with the parameter redundancy, convert the
 maximum-likelihood parameters to the biological scale
 and find the representation of the true parameters which is closest in parameter

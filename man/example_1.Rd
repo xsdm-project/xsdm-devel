@@ -19,13 +19,13 @@ A list of 12 objects:
     with 128 × 123 cells and 39 layers. Annual precipitation (bio12)
     for the same region and time period.}
   \item{\code{env_array}}{A 3‑D numeric array with dimensions
-    `2000 (locations) × 39 (time) × 2 (variables)`. Contains the
+    `4000 (locations) × 39 (time) × 2 (variables)`. Contains the
     environmental data (bio1 and bio12) extracted from the rasters
     for all locations.}
-  \item{\code{occ_df}}{A data frame with 1000 rows and 4 columns:
+  \item{\code{occ_df}}{A data frame with 4000 rows and 4 columns:
     `name` (character), `x` (longitude), `y` (latitude), `presence`
     (0/1). Occurrence records for the virtual species *Mus virtualis*.}
-  \item{\code{occ_vec}}{An integer vector of length 2000. Binary
+  \item{\code{occ_vec}}{An integer vector of length 4000. Binary
     presence/absence (0/1) for the same locations as `env_array`.}
   \item{\code{optim_par_list}}{A list of biological‑scale parameters
     (the MLE fit for the example). Contains `mu`, `sigltil`, `sigrtil`,
@@ -36,12 +36,6 @@ A list of 12 objects:
     length 9. A different math‑scale representation that belongs to
     the same equivalence class as `optim_par_vec`. Used to test
     `dist_between_params()`.}
-  \item{\code{par_list}}{A list of biological‑scale parameters
-    (a “true” parameter set, not necessarily the MLE). Used in
-    examples of `interpret_parameters()`, `vsp()`, etc.}
-  \item{\code{par_vec_vsp}}{A named numeric vector of length 9,
-    math‑scale parameters. Currently an alias for `par_vec` (retained
-    for backward compatibility).}
   \item{\code{par_table}}{A data.frame with 9 columns corresponding to
   a parameter in math scale and 100 rows corresponding to 100 combinations.}
 }
