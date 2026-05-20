@@ -44,8 +44,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-VignetteBuilder: knitr
 URL: https://xsdm-project.github.io/xsdm/, https://xsdm-project.github.io/xsdm-devel/
 BugReports: https://github.com/xsdm-project/xsdm-devel/issues
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3

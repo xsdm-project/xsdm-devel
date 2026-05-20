@@ -26,3 +26,4 @@
 ^vignettes/articles
 ^vignettes/howToFit\.pdf$
 ^cran-comments\.md$
+^vignettes$
