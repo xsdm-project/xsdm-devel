@@ -69,7 +69,7 @@
 #' bio12 <- terra::unwrap(example_1$bio12) / 100
 #' env_list <- list(bio01 = bio01, bio12 = bio12)
 #' suit <- habitat_suitability(
-#'   param_list  = example_1$par_list,
+#'   param_list  = example_1$true_par_list,
 #'   env_list    = env_list,
 #'   return_prob = TRUE
 #' )

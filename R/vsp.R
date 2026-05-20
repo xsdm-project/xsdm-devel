@@ -45,7 +45,7 @@
 #' env_data <- list(bio1 = bio1_ts, bio12 = bio12_ts)
 #'
 #' vsp(
-#'   param_list    = example_1$par_list,
+#'   param_list    = example_1$true_par_list,
 #'   env_data      = env_data,
 #'   size_presence = 100,
 #'   size_absence  = 100,

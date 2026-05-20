@@ -21,21 +21,21 @@ draw_bio <- function(p, seed) {
 test_that("log_prob_detect vs log_prob_detect_r: example_1 fixture", {
   v_cpp <- log_prob_detect(
     env_dat = example_1$env_array,
-    mu      = example_1$par_list$mu,
-    sigltil = example_1$par_list$sigltil,
-    sigrtil = example_1$par_list$sigrtil,
-    o_mat   = example_1$par_list$o_mat,
-    ctil    = example_1$par_list$ctil,
-    pd      = example_1$par_list$pd
+    mu      = example_1$true_par_list$mu,
+    sigltil = example_1$true_par_list$sigltil,
+    sigrtil = example_1$true_par_list$sigrtil,
+    o_mat   = example_1$true_par_list$o_mat,
+    ctil    = example_1$true_par_list$ctil,
+    pd      = example_1$true_par_list$pd
   )
   v_r <- xsdm:::log_prob_detect_r(
     env_dat = example_1$env_array,
-    mu      = example_1$par_list$mu,
-    sigltil = example_1$par_list$sigltil,
-    sigrtil = example_1$par_list$sigrtil,
-    o_mat   = example_1$par_list$o_mat,
-    ctil    = example_1$par_list$ctil,
-    pd      = example_1$par_list$pd
+    mu      = example_1$true_par_list$mu,
+    sigltil = example_1$true_par_list$sigltil,
+    sigrtil = example_1$true_par_list$sigrtil,
+    o_mat   = example_1$true_par_list$o_mat,
+    ctil    = example_1$true_par_list$ctil,
+    pd      = example_1$true_par_list$pd
   )
   expect_equal(v_cpp, v_r, tolerance = TOL)
 })

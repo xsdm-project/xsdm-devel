@@ -14,25 +14,25 @@ test_that("loglik_bio_cpp: matches loglik_bio on example_1 fixture", {
   env <- env_flat(example_1$env_array)
   ref <- loglik_bio(
     env_dat = example_1$env_array,
-    occ     = example_1$occ_df$presence,
-    mu      = example_1$par_list$mu,
-    sigltil = example_1$par_list$sigltil,
-    sigrtil = example_1$par_list$sigrtil,
-    o_mat   = example_1$par_list$o_mat,
-    ctil    = example_1$par_list$ctil,
-    pd      = example_1$par_list$pd
+    occ     = example_1$occ_vec,
+    mu      = example_1$true_par_list$mu,
+    sigltil = example_1$true_par_list$sigltil,
+    sigrtil = example_1$true_par_list$sigrtil,
+    o_mat   = example_1$true_par_list$o_mat,
+    ctil    = example_1$true_par_list$ctil,
+    pd      = example_1$true_par_list$pd
   )
 
   got <- xsdm:::loglik_bio_cpp(
     env_dat_vec  = env$vec,
     env_dat_dims = env$dims,
-    occ          = as.integer(example_1$occ_df$presence),
-    mu           = example_1$par_list$mu,
-    sigltil      = example_1$par_list$sigltil,
-    sigrtil      = example_1$par_list$sigrtil,
-    o_mat        = example_1$par_list$o_mat,
-    ctil         = example_1$par_list$ctil,
-    pd           = example_1$par_list$pd
+    occ          = as.integer(example_1$occ_vec),
+    mu           = example_1$true_par_list$mu,
+    sigltil      = example_1$true_par_list$sigltil,
+    sigrtil      = example_1$true_par_list$sigrtil,
+    o_mat        = example_1$true_par_list$o_mat,
+    ctil         = example_1$true_par_list$ctil,
+    pd           = example_1$true_par_list$pd
   )
 
   expect_equal(got, ref, tolerance = 1e-10)

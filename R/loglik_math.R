@@ -109,7 +109,7 @@
 #' loglik_math(
 #'   param_vector = example_1$par_vec,
 #'   env_dat = example_1$env_array,
-#'   occ = example_1$occ_df$presence
+#'   occ = example_1$occ_vec
 #' )
 #' # Mute one parameter to use the mask
 #' par_vec <- example_1$par_vec[-2]
@@ -117,14 +117,14 @@
 #' loglik_math(
 #'   param_vector = par_vec,
 #'   env_dat = example_1$env_array,
-#'   occ = example_1$occ_df$presence,
+#'   occ = example_1$occ_vec,
 #'   mask = mask_parameters_a
 #' )
 #' # Return the negative
 #' loglik_math(
 #'   param_vector = example_1$par_vec,
 #'   env_dat = example_1$env_array,
-#'   occ = example_1$occ_df$presence,
+#'   occ = example_1$occ_vec,
 #'   negative = TRUE
 #' )
 

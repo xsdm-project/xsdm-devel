@@ -17,7 +17,7 @@ test_that("vsp returns a tibble with correct structure, respects threshold, and 
   size_abs  <- 50
   
   result <- vsp(
-    param_list    = example_1$par_list,
+    param_list    = example_1$true_par_list,
     env_data      = env_data,
     size_presence = size_pres,
     size_absence  = size_abs,
@@ -35,7 +35,7 @@ test_that("vsp returns a tibble with correct structure, respects threshold, and 
   
   # Verify threshold split
   suit <- habitat_suitability(
-    param_list  = example_1$par_list,
+    param_list  = example_1$true_par_list,
     env_list    = env_data,
     return_prob = TRUE
   )
@@ -51,7 +51,7 @@ test_that("vsp returns a tibble with correct structure, respects threshold, and 
   # ---- 2. Edge case: threshold = 1.0 (no presence cells) ----
   expect_warning(
     result2 <- vsp(
-      param_list    = example_1$par_list,
+      param_list    = example_1$true_par_list,
       env_data      = env_data,
       size_presence = size_pres,
       size_absence  = size_abs,
@@ -72,7 +72,7 @@ test_that("vsp returns a tibble with correct structure, respects threshold, and 
   # number of rows equals size_pres (the presence sample size).
   expect_warning(
     result3 <- vsp(
-      param_list    = example_1$par_list,
+      param_list    = example_1$true_par_list,
       env_data      = env_data,
       size_presence = size_pres,
       size_absence  = size_abs,
@@ -90,7 +90,7 @@ test_that("vsp returns a tibble with correct structure, respects threshold, and 
   n_pres_cells <- sum(prob_vals > 0.5, na.rm = TRUE)
   expect_warning(
     result4 <- vsp(
-      param_list    = example_1$par_list,
+      param_list    = example_1$true_par_list,
       env_data      = env_data,
       size_presence = n_pres_cells + 10000,
       size_absence  = size_abs,
@@ -102,15 +102,15 @@ test_that("vsp returns a tibble with correct structure, respects threshold, and 
   
   # ---- 5. Invalid inputs ----
   expect_error(
-    vsp(example_1$par_list, env_data, 10, 10, threshold = 1.5),
+    vsp(example_1$true_par_list, env_data, 10, 10, threshold = 1.5),
     "Element 1 is not <= 1"
   )
   expect_error(
-    vsp(example_1$par_list, env_data, 0, 10),
+    vsp(example_1$true_par_list, env_data, 0, 10),
     "size_presence"
   )
   expect_error(
-    vsp(example_1$par_list, env_data, 10, 0),
+    vsp(example_1$true_par_list, env_data, 10, 0),
     "size_absence"
   )
 })
