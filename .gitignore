@@ -9,3 +9,7 @@ vignettes/*_cache/
 vignettes/*_files/
 docs/
 docs
+cache/
+figure/
+howToFit-knitr.*
+vignettes/howToFit.pdf

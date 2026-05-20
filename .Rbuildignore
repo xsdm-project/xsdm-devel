@@ -26,4 +26,6 @@
 ^vignettes/articles
 ^vignettes/howToFit\.pdf$
 ^cran-comments\.md$
-^vignettes$
+^cache$
+^figure$
+^howToFit-knitr
