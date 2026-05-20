@@ -133,11 +133,11 @@ res <- profile_likelihood(
 # Check the structure of the output:
 res$profile
 #>   param value_math    loglik convergence
-#> 2   mu1   13.91051 -629.4634           3
-#> 1   mu1   14.11051 -629.9349          NA
-#> 3   mu1   14.31051 -629.3107           3
+#> 2   mu1   13.91051 -1390.223           3
+#> 1   mu1   14.11051 -7294.848          NA
+#> 3   mu1   14.31051 -1328.485           3
 res$threshold
-#> [1] -631.8557
+#> [1] -7296.769
 res$found_better
 #> [1] TRUE
 ## Full math-scale parameter vectors used at each evaluated point:
