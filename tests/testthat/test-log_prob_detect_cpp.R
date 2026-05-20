@@ -3,7 +3,7 @@ library(testthat)
 # Test 1: log_prob_detect_cpp matches R log_prob_detect() on example env_array
 test_that("log_prob_detect_cpp matches R log_prob_detect() on example data", {
   env <- example_1$env_array
-  pl  <- example_1$par_list
+  pl  <- example_1$true_par_list
 
   r_result <- log_prob_detect(
     env_dat = env,
@@ -29,7 +29,7 @@ test_that("log_prob_detect_cpp matches R log_prob_detect() on example data", {
 # Test 2: return_prob = TRUE matches exp() of log result
 test_that("log_prob_detect_cpp return_prob=TRUE matches exp(log result)", {
   env <- example_1$env_array
-  pl  <- example_1$par_list
+  pl  <- example_1$true_par_list
 
   log_result  <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                       pl$mu, pl$sigltil, pl$sigrtil,
@@ -46,7 +46,7 @@ test_that("log_prob_detect_cpp return_prob=TRUE matches exp(log result)", {
 # Test 3: output length equals number of locations
 test_that("log_prob_detect_cpp returns vector of length n_loc", {
   env <- example_1$env_array
-  pl  <- example_1$par_list
+  pl  <- example_1$true_par_list
   n_loc <- dim(env)[1]
 
   result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
@@ -58,7 +58,7 @@ test_that("log_prob_detect_cpp returns vector of length n_loc", {
 # Test 4: output values are in valid range for log-probabilities
 test_that("log_prob_detect_cpp output is <= 0 (log probabilities)", {
   env <- example_1$env_array
-  pl  <- example_1$par_list
+  pl  <- example_1$true_par_list
   result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd,
@@ -69,7 +69,7 @@ test_that("log_prob_detect_cpp output is <= 0 (log probabilities)", {
 # Test 5: probabilities are in [0, 1]
 test_that("log_prob_detect_cpp probabilities are in [0,1]", {
   env <- example_1$env_array
-  pl  <- example_1$par_list
+  pl  <- example_1$true_par_list
   result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd,
@@ -80,7 +80,7 @@ test_that("log_prob_detect_cpp probabilities are in [0,1]", {
 # Test 6: single location works (edge case n_loc = 1)
 test_that("log_prob_detect_cpp works for single location", {
   env <- example_1$env_array[1, , , drop = FALSE]
-  pl  <- example_1$par_list
+  pl  <- example_1$true_par_list
   result <- xsdm:::log_prob_detect_cpp(as.vector(env), as.integer(dim(env)),
                                  pl$mu, pl$sigltil, pl$sigrtil,
                                  pl$o_mat, pl$ctil, pl$pd)

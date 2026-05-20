@@ -2,7 +2,7 @@
 library(testthat)
 test_that("start_parms() returns expected shape and names with no mask", {
   # Subset environmental array to presences, as in the examples
-  env_dat_pres <- example_1$env_array[example_1$occ_df$presence == 1, , ]
+  env_dat_pres <- example_1$env_array[example_1$occ_vec == 1, , ]
 
   # Small number of starts for speed/determinism
   set.seed(123)
@@ -34,7 +34,7 @@ test_that("start_parms() returns expected shape and names with no mask", {
 })
 
 test_that("start_parms() respects mask by excluding masked parameters", {
-  env_dat_pres <- example_1$env_array[example_1$occ_df$presence == 1, , ]
+  env_dat_pres <- example_1$env_array[example_1$occ_vec == 1, , ]
 
   # For p = 2, typical canonical names include:
   # mu1, mu2, sigltil1, sigltil2, sigrtil1, sigrtil2, ctil, pd, o_par1
@@ -58,7 +58,7 @@ test_that("start_parms() respects mask by excluding masked parameters", {
 })
 
 test_that("start_parms() is (roughly) deterministic with a fixed seed", {
-  env_dat_pres <- example_1$env_array[example_1$occ_df$presence == 1, , ]
+  env_dat_pres <- example_1$env_array[example_1$occ_vec == 1, , ]
 
   set.seed(42)
   a <- start_parms(env_dat_pres, num_starts = 5)
@@ -80,7 +80,7 @@ test_that("start_parms() input validation errors", {
   )
 
   # wrong quant_vec length
-  env_dat_pres <- example_1$env_array[example_1$occ_df$presence == 1, , ]
+  env_dat_pres <- example_1$env_array[example_1$occ_vec == 1, , ]
   expect_error(
     start_parms(env_dat_pres, breadth  = c(0.1, 0.9)),
     regexp = "Must have length 1", # from checkmate::assert_numeric(len = 3)

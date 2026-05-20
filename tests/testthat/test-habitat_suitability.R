@@ -12,7 +12,7 @@ test_that("habitat_suitability returns SpatRaster with 1 layer", {
   bio12 <- terra::unwrap(example_1$bio12) / 100
 
   out <- habitat_suitability(
-    example_1$par_list,
+    example_1$true_par_list,
     list(bio1, bio12),
     return_prob = TRUE
   )
@@ -29,7 +29,7 @@ test_that("habitat_suitability log-prob output is <= 0", {
   bio12 <- terra::unwrap(example_1$bio12) / 100
 
   out <- habitat_suitability(
-    example_1$par_list,
+    example_1$true_par_list,
     list(bio1, bio12),
     return_prob = FALSE
   )
@@ -46,7 +46,7 @@ test_that("habitat_suitability probabilities are in [0, 1]", {
   bio12 <- terra::unwrap(example_1$bio12) / 100
 
   out <- habitat_suitability(
-    example_1$par_list,
+    example_1$true_par_list,
     list(bio1, bio12),
     return_prob = TRUE
   )
@@ -63,7 +63,7 @@ test_that("habitat_suitability writes to file", {
 
   tmp <- tempfile(fileext = ".tif")
   habitat_suitability(
-    example_1$par_list,
+    example_1$true_par_list,
     list(bio1, bio12),
     output    = tmp,
     overwrite = TRUE
@@ -84,7 +84,7 @@ test_that("habitat_suitability errors on geometry mismatch", {
   bio12_crop <- terra::crop(bio12, terra::ext(bio12) * 0.5)
 
   expect_error(
-    habitat_suitability(example_1$par_list, list(bio1, bio12_crop)),
+    habitat_suitability(example_1$true_par_list, list(bio1, bio12_crop)),
     regexp = "geometry"
   )
 })
@@ -95,9 +95,9 @@ test_that("habitat_suitability return_prob=FALSE is log of return_prob=TRUE", {
   bio1  <- terra::unwrap(example_1$bio01) / 100
   bio12 <- terra::unwrap(example_1$bio12) / 100
 
-  hs_log  <- habitat_suitability(example_1$par_list, list(bio1, bio12),
+  hs_log  <- habitat_suitability(example_1$true_par_list, list(bio1, bio12),
                                  return_prob = FALSE)
-  hs_prob <- habitat_suitability(example_1$par_list, list(bio1, bio12),
+  hs_prob <- habitat_suitability(example_1$true_par_list, list(bio1, bio12),
                                  return_prob = TRUE)
 
   v_log  <- as.vector(terra::values(hs_log))
@@ -112,9 +112,9 @@ test_that("habitat_suitability layer name reflects return_prob", {
   bio1  <- terra::unwrap(example_1$bio01) / 100
   bio12 <- terra::unwrap(example_1$bio12) / 100
 
-  r_prob <- habitat_suitability(example_1$par_list, list(bio1, bio12),
+  r_prob <- habitat_suitability(example_1$true_par_list, list(bio1, bio12),
                                 return_prob = TRUE)
-  r_log  <- habitat_suitability(example_1$par_list, list(bio1, bio12),
+  r_log  <- habitat_suitability(example_1$true_par_list, list(bio1, bio12),
                                 return_prob = FALSE)
 
   expect_equal(terra::names(r_prob), "habitat_suitability")
@@ -128,7 +128,7 @@ test_that("habitat_suitability output geometry matches input", {
   bio12 <- terra::unwrap(example_1$bio12) / 100
   env_list <- list(bio1, bio12)
 
-  result <- habitat_suitability(example_1$par_list, env_list)
+  result <- habitat_suitability(example_1$true_par_list, env_list)
   ref    <- env_list[[1]]
 
   expect_equal(terra::nrow(result), terra::nrow(ref))

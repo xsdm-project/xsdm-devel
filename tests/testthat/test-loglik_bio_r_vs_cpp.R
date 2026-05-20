@@ -22,23 +22,23 @@ draw_bio <- function(p, seed) {
 test_that("loglik_bio vs loglik_bio_r: example_1 fixture, default flags", {
   ll_cpp <- loglik_bio(
     env_dat = example_1$env_array,
-    occ     = example_1$occ_df$presence,
-    mu      = example_1$par_list$mu,
-    sigltil = example_1$par_list$sigltil,
-    sigrtil = example_1$par_list$sigrtil,
-    o_mat   = example_1$par_list$o_mat,
-    ctil    = example_1$par_list$ctil,
-    pd      = example_1$par_list$pd
+    occ     = example_1$occ_vec,
+    mu      = example_1$true_par_list$mu,
+    sigltil = example_1$true_par_list$sigltil,
+    sigrtil = example_1$true_par_list$sigrtil,
+    o_mat   = example_1$true_par_list$o_mat,
+    ctil    = example_1$true_par_list$ctil,
+    pd      = example_1$true_par_list$pd
   )
   ll_r <- xsdm:::loglik_bio_r(
     env_dat = example_1$env_array,
-    occ     = example_1$occ_df$presence,
-    mu      = example_1$par_list$mu,
-    sigltil = example_1$par_list$sigltil,
-    sigrtil = example_1$par_list$sigrtil,
-    o_mat   = example_1$par_list$o_mat,
-    ctil    = example_1$par_list$ctil,
-    pd      = example_1$par_list$pd
+    occ     = example_1$occ_vec,
+    mu      = example_1$true_par_list$mu,
+    sigltil = example_1$true_par_list$sigltil,
+    sigrtil = example_1$true_par_list$sigrtil,
+    o_mat   = example_1$true_par_list$o_mat,
+    ctil    = example_1$true_par_list$ctil,
+    pd      = example_1$true_par_list$pd
   )
   expect_equal(ll_cpp, ll_r, tolerance = TOL)
 })
