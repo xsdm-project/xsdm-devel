@@ -136,12 +136,12 @@ make sure they are not on wildly different scales, which could cause
 problems for optimization:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span>FUN<span class="op">=</span><span class="va">quantile</span>, X<span class="op">=</span><span class="va">env_array</span>, MARGIN<span class="op">=</span><span class="fl">3</span>, prob<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.025</span>,<span class="fl">.25</span>,<span class="fl">.5</span>,<span class="fl">.75</span>,<span class="fl">.975</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##          BIO01    BIO10     BIO11     BIO12    BIO16     BIO17</span></span>
-<span><span class="co">## 2.5%  11.61870 21.70901  1.477658  76.36044  9.12790  2.133369</span></span>
-<span><span class="co">## 25%   15.31648 25.24791  6.289062 108.62843 13.18716  4.505094</span></span>
-<span><span class="co">## 50%   17.16010 26.45451  9.055910 126.29746 15.76004  5.947245</span></span>
-<span><span class="co">## 75%   19.20414 27.43751 11.991494 146.79118 18.83666  7.377723</span></span>
-<span><span class="co">## 97.5% 22.55861 29.21995 17.613174 190.28207 27.04961 10.422263</span></span></code></pre>
+<pre><code><span><span class="co">##          BIO01 BIO10 BIO11     BIO12 BIO16   BIO17</span></span>
+<span><span class="co">## 2.5%  11.62000 21.71  1.48  76.36075  9.13  2.1300</span></span>
+<span><span class="co">## 25%   15.32000 25.25  6.29 108.63000 13.19  4.5075</span></span>
+<span><span class="co">## 50%   17.16000 26.45  9.06 126.30000 15.76  5.9500</span></span>
+<span><span class="co">## 75%   19.20000 27.44 11.99 146.79000 18.84  7.3800</span></span>
+<span><span class="co">## 97.5% 22.55925 29.22 17.61 190.28000 27.05 10.4200</span></span></code></pre>
 <p>These distributions look basically OK.</p>
 <p>Now fit 15 models, each from 25 starting conditions:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -200,11 +200,11 @@ the negative of the likelihood:</p>
 <span><span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">model_BICs</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">model_BICs</span><span class="op">[</span><span class="va">inds</span><span class="op">]</span>,<span class="va">model_AICs</span><span class="op">[</span><span class="va">inds</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]     [,8]</span></span>
-<span><span class="co">## [1,] 1165.031 1172.509 1175.884 1190.924 1193.879 1194.610 1196.464 1201.064</span></span>
-<span><span class="co">## [2,] 1119.557 1127.035 1150.620 1145.450 1148.404 1149.136 1171.200 1155.590</span></span>
+<span><span class="co">## [1,] 1165.087 1172.644 1175.913 1190.903 1193.872 1194.662 1196.464 1201.075</span></span>
+<span><span class="co">## [2,] 1119.613 1127.170 1150.649 1145.429 1148.398 1149.187 1171.201 1155.600</span></span>
 <span><span class="co">##          [,9]    [,10]    [,11]    [,12]    [,13]    [,14]    [,15]</span></span>
-<span><span class="co">## [1,] 1201.256 1202.077 1210.059 1216.145 1288.876 1292.384 1310.530</span></span>
-<span><span class="co">## [2,] 1155.781 1156.602 1164.584 1190.881 1263.613 1267.121 1285.266</span></span></code></pre>
+<span><span class="co">## [1,] 1201.277 1202.069 1210.063 1216.147 1288.862 1292.384 1310.536</span></span>
+<span><span class="co">## [2,] 1155.803 1156.595 1164.588 1190.883 1263.598 1267.121 1285.273</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_BICs</span>,<span class="va">model_AICs</span>,type<span class="op">=</span><span class="st">"p"</span>,xlab<span class="op">=</span><span class="st">"BIC"</span>,ylab<span class="op">=</span><span class="st">"AIC"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="03-boundary_models_files/figure-html/rank_by_AIC-1.png" class="r-plt" alt="" width="576"></p>
@@ -239,10 +239,10 @@ with each other. Look at the best two models:</p>
 <span><span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span></span>
 <span><span class="va">best_model_results</span> <span class="op">&lt;-</span> <span class="va">best_model_results</span><span class="op">[</span><span class="va">inds</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span>X<span class="op">=</span><span class="va">all_model_results</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, FUN<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">{</span><span class="va">y</span><span class="op">$</span><span class="va">value</span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 550.7784</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 550.8064</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">best_model_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 550.7784</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 550.8064</span></span></code></pre>
 <p>Pretty similar, so we HAD pretty much fully optimized before.</p>
 <p>Now have a look at the result for this model.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
@@ -280,33 +280,33 @@ with each other. Look at the best two models:</p>
 <span></span>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu">examine_optim_results</span><span class="op">(</span><span class="va">best_model_results</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">h</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##      bestlogliks convergences  parms_dists      mu1      mu2  sigltil1</span></span>
-<span><span class="co">## [1,]    550.7784            0 0.0000000000 14.26891 3.549614 0.4576326</span></span>
-<span><span class="co">## [2,]    550.7784            0 0.0001105175 14.26894 3.549601 0.4576453</span></span>
-<span><span class="co">## [3,]    550.7784            0 0.0002127497 14.26889 3.549585 0.4576303</span></span>
-<span><span class="co">## [4,]    550.7784            0 0.0001552695 14.26887 3.549602 0.4576217</span></span>
-<span><span class="co">## [5,]    550.7784            0 0.0001600068 14.26892 3.549588 0.4576400</span></span>
-<span><span class="co">## [6,]    550.7784            0 0.0001473951 14.26896 3.549614 0.4576482</span></span>
-<span><span class="co">## [7,]    550.7784            0 0.0001287526 14.26894 3.549578 0.4576435</span></span>
-<span><span class="co">## [8,]    550.7784            0 0.0002180582 14.26896 3.549564 0.4576563</span></span>
-<span><span class="co">##       sigltil2 sigrtil1 sigrtil2       ctil        pd    o_mat1     o_mat2</span></span>
-<span><span class="co">## [1,] 0.1481606 4.891978 4.602757 -0.1921649 0.9999959 0.9700422 -0.2429363</span></span>
-<span><span class="co">## [2,] 0.1481589 4.892003 4.602559 -0.1921996 0.9999953 0.9700424 -0.2429356</span></span>
-<span><span class="co">## [3,] 0.1481560 4.892077 4.602709 -0.1921684 0.9999950 0.9700439 -0.2429296</span></span>
-<span><span class="co">## [4,] 0.1481575 4.892052 4.602718 -0.1921667 0.9999926 0.9700423 -0.2429360</span></span>
-<span><span class="co">## [5,] 0.1481573 4.892028 4.602664 -0.1921785 0.9999904 0.9700426 -0.2429350</span></span>
-<span><span class="co">## [6,] 0.1481631 4.891955 4.602518 -0.1921786 0.9999881 0.9700427 -0.2429343</span></span>
-<span><span class="co">## [7,] 0.1481583 4.892035 4.602685 -0.1921474 0.9999878 0.9700427 -0.2429343</span></span>
-<span><span class="co">## [8,] 0.1481569 4.892021 4.602692 -0.1921702 0.9999839 0.9700430 -0.2429331</span></span>
-<span><span class="co">##         o_mat3    o_mat4</span></span>
-<span><span class="co">## [1,] 0.2429363 0.9700422</span></span>
-<span><span class="co">## [2,] 0.2429356 0.9700424</span></span>
-<span><span class="co">## [3,] 0.2429296 0.9700439</span></span>
-<span><span class="co">## [4,] 0.2429360 0.9700423</span></span>
-<span><span class="co">## [5,] 0.2429350 0.9700426</span></span>
-<span><span class="co">## [6,] 0.2429343 0.9700427</span></span>
-<span><span class="co">## [7,] 0.2429343 0.9700427</span></span>
-<span><span class="co">## [8,] 0.2429331 0.9700430</span></span></code></pre>
+<pre><code><span><span class="co">##      bestlogliks convergences  parms_dists      mu1      mu2 sigltil1  sigltil2</span></span>
+<span><span class="co">## [1,]    550.8064            0 0.0000000000 14.26739 3.550976 4.605441 0.4572114</span></span>
+<span><span class="co">## [2,]    550.8064            0 0.0006586953 14.26706 3.551155 4.605143 0.4571020</span></span>
+<span><span class="co">## [3,]    550.8064            0 0.0003171643 14.26754 3.550946 4.605450 0.4572566</span></span>
+<span><span class="co">## [4,]    550.8064            0 0.0006132105 14.26707 3.551124 4.605419 0.4571075</span></span>
+<span><span class="co">## [5,]    550.8064            0 0.0008011962 14.26777 3.550840 4.605461 0.4573422</span></span>
+<span><span class="co">## [6,]    550.8064            0 0.0000799259 14.26737 3.550959 4.605582 0.4572064</span></span>
+<span><span class="co">## [7,]    550.8064            0 0.0003904173 14.26754 3.550937 4.605617 0.4572566</span></span>
+<span><span class="co">## [8,]    550.8064            0 0.0016968145 14.26737 3.551223 4.604871 0.4572748</span></span>
+<span><span class="co">##       sigrtil1 sigrtil2       ctil        pd     o_mat1     o_mat2    o_mat3</span></span>
+<span><span class="co">## [1,] 0.1482753 4.892247 -0.1916786 0.9999978 -0.2430936 -0.9700028 0.9700028</span></span>
+<span><span class="co">## [2,] 0.1482779 4.892511 -0.1917463 0.9999901 -0.2431073 -0.9699994 0.9699994</span></span>
+<span><span class="co">## [3,] 0.1482788 4.892006 -0.1917135 0.9999874 -0.2430854 -0.9700049 0.9700049</span></span>
+<span><span class="co">## [4,] 0.1482767 4.892354 -0.1917055 0.9999872 -0.2431085 -0.9699991 0.9699991</span></span>
+<span><span class="co">## [5,] 0.1482815 4.892294 -0.1916588 0.9999870 -0.2430725 -0.9700081 0.9700081</span></span>
+<span><span class="co">## [6,] 0.1482744 4.892272 -0.1916193 0.9999868 -0.2430970 -0.9700020 0.9700020</span></span>
+<span><span class="co">## [7,] 0.1482813 4.892361 -0.1916116 0.9999795 -0.2430852 -0.9700049 0.9700049</span></span>
+<span><span class="co">## [8,] 0.1483115 4.893160 -0.1916173 0.9999781 -0.2430938 -0.9700028 0.9700028</span></span>
+<span><span class="co">##          o_mat4</span></span>
+<span><span class="co">## [1,] -0.2430936</span></span>
+<span><span class="co">## [2,] -0.2431073</span></span>
+<span><span class="co">## [3,] -0.2430854</span></span>
+<span><span class="co">## [4,] -0.2431085</span></span>
+<span><span class="co">## [5,] -0.2430725</span></span>
+<span><span class="co">## [6,] -0.2430970</span></span>
+<span><span class="co">## [7,] -0.2430852</span></span>
+<span><span class="co">## [8,] -0.2430938</span></span></code></pre>
 <p>This looks good, in the sense that it looks like multiple
 optimizations arrived at the same place in parameter space, which is
 some evidence that we may have found the global maximum of the
@@ -382,12 +382,12 @@ here.</p>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
 <span><span class="co">##     mu1   mu2 sigltil1 sigltil2 sigrtil1 sigrtil2   ctil o_par1</span></span>
 <span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>  15.6  7.89   0.297   1.05       1.19     0.702 -<span style="color: #BB0000;">1.32</span>   -<span style="color: #BB0000;">3.39</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>  18.1  5.25   0.990   0.354      0.497    1.40  -<span style="color: #BB0000;">0.744</span>   6.04</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>  19.3  6.57  -<span style="color: #BB0000;">0.049</span><span style="color: #BB0000; text-decoration: underline;">6</span>  0.700      1.54     0.356 -<span style="color: #BB0000;">1.61</span>   -<span style="color: #BB0000;">8.10</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>  16.9  3.92   0.644   0.007<span style="text-decoration: underline;">11</span>    0.843    1.05  -<span style="color: #BB0000;">1.03</span>    1.33</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>  17.5  5.91   0.124   0.874      1.36     0.182 -<span style="color: #BB0000;">1.46</span>   -<span style="color: #BB0000;">5.74</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">6</span>  19.9  8.55   0.817   0.180      0.670    0.875 -<span style="color: #BB0000;">0.887</span>   3.68</span></span></code></pre>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>  15.6  7.89   0.299   1.05       1.19     0.702 -<span style="color: #BB0000;">1.32</span>   -<span style="color: #BB0000;">3.39</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>  18.1  5.24   0.992   0.355      0.498    1.40  -<span style="color: #BB0000;">0.743</span>   6.04</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>  19.3  6.57  -<span style="color: #BB0000;">0.047</span><span style="color: #BB0000; text-decoration: underline;">3</span>  0.702      1.54     0.356 -<span style="color: #BB0000;">1.60</span>   -<span style="color: #BB0000;">8.10</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>  16.9  3.92   0.646   0.008<span style="text-decoration: underline;">81</span>    0.844    1.05  -<span style="color: #BB0000;">1.03</span>    1.33</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>  17.5  5.91   0.126   0.875      1.36     0.183 -<span style="color: #BB0000;">1.46</span>   -<span style="color: #BB0000;">5.74</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">6</span>  19.9  8.55   0.819   0.182      0.671    0.876 -<span style="color: #BB0000;">0.886</span>   3.68</span></span></code></pre>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bdry_optim_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">new_starts</span><span class="op">)</span><span class="op">)</span></span>
@@ -402,23 +402,23 @@ here.</p>
 <code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu">examine_optim_results</span><span class="op">(</span><span class="va">bdry_optim_results</span>,mask<span class="op">=</span><span class="va">mask</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/transpose.html" class="external-link">t</a></span><span class="op">(</span><span class="va">h</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      bestlogliks convergences  parms_dists      mu1      mu2  sigltil1 sigltil2</span></span>
-<span><span class="co">## [1,]    550.7784            0 0.000000e+00 14.26898 3.549565 0.1481579 4.892005</span></span>
-<span><span class="co">## [2,]    550.7784            0 4.800380e-05 14.26896 3.549569 0.1481577 4.892013</span></span>
-<span><span class="co">## [3,]    550.7784            0 2.621185e-05 14.26898 3.549556 0.1481583 4.892046</span></span>
-<span><span class="co">## [4,]    550.7784            0 1.251270e-04 14.26895 3.549562 0.1481553 4.892064</span></span>
-<span><span class="co">## [5,]    550.7784            0 1.242072e-04 14.26905 3.549547 0.1481583 4.891977</span></span>
-<span><span class="co">## [6,]    550.7784            0 6.697159e-05 14.26896 3.549563 0.1481568 4.892015</span></span>
-<span><span class="co">## [7,]    550.7784            0 1.334626e-04 14.26898 3.549544 0.1481556 4.892069</span></span>
-<span><span class="co">## [8,]    550.7784            0 1.228045e-04 14.26892 3.549584 0.1481572 4.892030</span></span>
+<span><span class="co">## [1,]    550.8063            0 0.000000e+00 14.26741 3.550951 0.1482747 4.892239</span></span>
+<span><span class="co">## [2,]    550.8063            0 4.374443e-05 14.26740 3.550958 0.1482741 4.892262</span></span>
+<span><span class="co">## [3,]    550.8063            0 5.187592e-05 14.26744 3.550951 0.1482751 4.892222</span></span>
+<span><span class="co">## [4,]    550.8063            0 2.199448e-05 14.26741 3.550962 0.1482748 4.892246</span></span>
+<span><span class="co">## [5,]    550.8063            0 3.983488e-05 14.26740 3.550954 0.1482753 4.892266</span></span>
+<span><span class="co">## [6,]    550.8063            0 9.529778e-05 14.26745 3.550929 0.1482731 4.892174</span></span>
+<span><span class="co">## [7,]    550.8063            0 6.799521e-05 14.26739 3.550974 0.1482754 4.892249</span></span>
+<span><span class="co">## [8,]    550.8063            0 6.067718e-05 14.26740 3.550968 0.1482757 4.892246</span></span>
 <span><span class="co">##      sigrtil1  sigrtil2       ctil pd    o_mat1    o_mat2     o_mat3    o_mat4</span></span>
-<span><span class="co">## [1,] 4.602648 0.4576596 -0.1921786  1 0.2429296 0.9700439 -0.9700439 0.2429296</span></span>
-<span><span class="co">## [2,] 4.602687 0.4576510 -0.1921726  1 0.2429303 0.9700437 -0.9700437 0.2429303</span></span>
-<span><span class="co">## [3,] 4.602512 0.4576606 -0.1921872  1 0.2429291 0.9700440 -0.9700440 0.2429291</span></span>
-<span><span class="co">## [4,] 4.602624 0.4576539 -0.1921786  1 0.2429291 0.9700440 -0.9700440 0.2429291</span></span>
-<span><span class="co">## [5,] 4.602488 0.4576790 -0.1922139  1 0.2429287 0.9700441 -0.9700441 0.2429287</span></span>
-<span><span class="co">## [6,] 4.602650 0.4576518 -0.1921791  1 0.2429327 0.9700431 -0.9700431 0.2429327</span></span>
-<span><span class="co">## [7,] 4.602353 0.4576443 -0.1922112  1 0.2429266 0.9700447 -0.9700447 0.2429266</span></span>
-<span><span class="co">## [8,] 4.602648 0.4576392 -0.1921772  1 0.2429327 0.9700431 -0.9700431 0.2429327</span></span></code></pre>
+<span><span class="co">## [1,] 4.605536 0.4572214 -0.1916681  1 0.2430902 0.9700037 -0.9700037 0.2430902</span></span>
+<span><span class="co">## [2,] 4.605472 0.4572158 -0.1916731  1 0.2430897 0.9700038 -0.9700038 0.2430897</span></span>
+<span><span class="co">## [3,] 4.605392 0.4572290 -0.1916862  1 0.2430872 0.9700044 -0.9700044 0.2430872</span></span>
+<span><span class="co">## [4,] 4.605468 0.4572182 -0.1916753  1 0.2430905 0.9700036 -0.9700036 0.2430905</span></span>
+<span><span class="co">## [5,] 4.605618 0.4572173 -0.1916540  1 0.2430890 0.9700040 -0.9700040 0.2430890</span></span>
+<span><span class="co">## [6,] 4.605459 0.4572284 -0.1916864  1 0.2430900 0.9700037 -0.9700037 0.2430900</span></span>
+<span><span class="co">## [7,] 4.605460 0.4572110 -0.1916809  1 0.2430915 0.9700034 -0.9700034 0.2430915</span></span>
+<span><span class="co">## [8,] 4.605406 0.4572140 -0.1916786  1 0.2430895 0.9700039 -0.9700039 0.2430895</span></span></code></pre>
 <p>This looks like enough of them converged to the same thing to say
 that it looks like I successfully optimized. Get the likelihood:</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
@@ -426,10 +426,10 @@ that it looks like I successfully optimized. Get the likelihood:</p>
 <span><span class="va">inds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span></span>
 <span><span class="va">bdry_optim_results</span> <span class="op">&lt;-</span> <span class="va">bdry_optim_results</span><span class="op">[</span><span class="va">inds</span><span class="op">]</span></span>
 <span><span class="va">best_model_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 550.7784</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 550.8064</span></span></code></pre>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bdry_optim_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 550.7784</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 550.8063</span></span></code></pre>
 <p>So the likelihood is the same as for the previous (non-boundary)
 model. But we have one less parameter that has been fitted. Get the AIC
 and BIC to see the effects:</p>
@@ -439,26 +439,26 @@ and BIC to see the effects:</p>
 <span><span class="va">AIC_old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">best_model_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span><span class="op">+</span></span>
 <span>                   <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">best_model_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">par</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">AIC</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1117.557</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1117.613</span></span></code></pre>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">AIC_old</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1119.557</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1119.613</span></span></code></pre>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">AIC</span><span class="op">-</span><span class="va">AIC_old</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] -2.000035</span></span></code></pre>
+<pre><code><span><span class="co">## [1] -2.000019</span></span></code></pre>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BIC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">bdry_optim_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span><span class="op">+</span></span>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">occ</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">bdry_optim_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">par</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">BIC_old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">best_model_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">value</span><span class="op">+</span></span>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">occ</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">best_model_results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">par</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">BIC</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1157.979</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1158.034</span></span></code></pre>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BIC_old</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1165.031</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 1165.087</span></span></code></pre>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BIC</span><span class="op">-</span><span class="va">BIC_old</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] -7.052756</span></span></code></pre>
+<pre><code><span><span class="co">## [1] -7.05274</span></span></code></pre>
 <div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">occ</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 7.052721</span></span></code></pre>
