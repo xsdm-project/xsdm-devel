@@ -183,19 +183,19 @@ no units of their own.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span>  <span class="co"># Two-panel (presence vs non-detection) plot with auto-derived limits</span></span></span>
 <span class="r-in"><span>  <span class="fu">interpret_parameters</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">example_1</span><span class="op">$</span><span class="va">par_list</span>,</span></span>
+<span class="r-in"><span>    <span class="va">example_1</span><span class="op">$</span><span class="va">true_par_list</span>,</span></span>
 <span class="r-in"><span>    plot_indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    env_dat      <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">env_array</span>,</span></span>
-<span class="r-in"><span>    occ          <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_df</span><span class="op">$</span><span class="va">presence</span></span></span>
+<span class="r-in"><span>    occ          <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_vec</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="interpret_parameters-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Narrower auto-derived window</span></span></span>
 <span class="r-in"><span>  <span class="fu">interpret_parameters</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">example_1</span><span class="op">$</span><span class="va">par_list</span>,</span></span>
+<span class="r-in"><span>    <span class="va">example_1</span><span class="op">$</span><span class="va">true_par_list</span>,</span></span>
 <span class="r-in"><span>    plot_indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    env_dat      <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">env_array</span>,</span></span>
-<span class="r-in"><span>    occ          <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_df</span><span class="op">$</span><span class="va">presence</span>,</span></span>
+<span class="r-in"><span>    occ          <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_vec</span>,</span></span>
 <span class="r-in"><span>    breadth      <span class="op">=</span> <span class="fl">0.7</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="interpret_parameters-2.png" alt="" width="700" height="433"></span>

@@ -35,19 +35,19 @@ List with entries o_mat, sigltil, and sigrtil
 
 ``` r
 convert_equivalence_class(
-  p = math_to_bio(example_1$optim_par_vec),
+  p = example_1$optim_par_list,
   flip = c(1, 0),
   perm = c(1, 2)
 )
 #> $o_mat
 #>            [,1]       [,2]
-#> [1,] -0.9758770 -0.2183212
-#> [2,] -0.2183212  0.9758770
+#> [1,]  0.1801624 -0.9836369
+#> [2,] -0.9836369 -0.1801624
 #> 
 #> $sigltil
-#> [1] 0.5354781 0.1498244
+#> [1] 0.1051458 1.0819189
 #> 
 #> $sigrtil
-#> [1] 0.2624513 0.8570480
+#> [1] 0.4627375 1.3447374
 #> 
 ```

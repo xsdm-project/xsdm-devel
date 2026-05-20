@@ -168,7 +168,7 @@ likelihood ratio (LR) threshold: threshold = MLE_loglik - qchisq(alpha, 1)/2.</p
 <span class="r-in"><span> alpha <span class="op">=</span> <span class="fl">0.95</span>,</span></span>
 <span class="r-in"><span> optim_param_vector <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">optim_par_vec</span>,</span></span>
 <span class="r-in"><span> env_dat <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">env_array</span>,</span></span>
-<span class="r-in"><span> occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_df</span><span class="op">$</span><span class="va">presence</span>,</span></span>
+<span class="r-in"><span> occ <span class="op">=</span> <span class="va">example_1</span><span class="op">$</span><span class="va">occ_vec</span>,</span></span>
 <span class="r-in"><span> num_threads <span class="op">=</span> <span class="fl">1L</span>, <span class="co"># keep it fast and deterministic</span></span></span>
 <span class="r-in"><span> control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxeval <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span> verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
@@ -176,13 +176,13 @@ likelihood ratio (LR) threshold: threshold = MLE_loglik - qchisq(alpha, 1)/2.</p
 <span class="r-in"><span><span class="co"># Check the structure of the output:</span></span></span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">profile</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   param value_math    loglik convergence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   mu1   8.730929 -1018.311           3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   mu1   8.930929 -1009.447          NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   mu1   9.130929 -1010.026           3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   mu1   13.91051 -629.4634           3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   mu1   14.11051 -629.9349          NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   mu1   14.31051 -629.3107           3</span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">threshold</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1011.367</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -631.8557</span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">found_better</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="co">## Full math-scale parameter vectors used at each evaluated point:</span></span></span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">parameter_df</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>

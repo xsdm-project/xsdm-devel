@@ -83,12 +83,12 @@ dist_between_params(
   p1 = par_list,
   p2 = par_list_equivalent
 )
-#> [1] 1.085665e-14
+#> [1] 5.150436e-15
 
 # Using vectors on the math scale
 dist_between_params(
   p1 = example_1$optim_par_vec,
   p2 = example_1$optim_par_vec_equivalent
 )
-#> [1] 1.085665e-14
+#> [1] 5.150436e-15
 ```

@@ -68,7 +68,7 @@ documentation and examples.</p>
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A list of 9 objects:</p><dl><dt><code>par_vec</code></dt>
+    <p>A list of 11 objects:</p><dl><dt><code>par_vec</code></dt>
 <dd><p>Named numeric vector of length 9. Math-scale
     parameters for a 2-variable model (p = 2). Canonical names:
     <code>mu1</code>, <code>mu2</code>, <code>sigltil1</code>, <code>sigltil2</code>,
@@ -96,19 +96,26 @@ documentation and examples.</p>
 <dd><p>A data frame with 4000 rows and 4 columns:
     <code>name</code> (character), <code>lon</code> (longitude), <code>lat</code>
     (latitude), <code>presence</code> (0/1). Occurrence records for a
-    virtual species.  Use <code>occ_df$presence</code> wherever a binary
-    occurrence vector is needed.</p></dd>
+    virtual species.</p></dd>
 
-  <dt><code>par_list</code></dt>
+  <dt><code>occ_vec</code></dt>
+<dd><p>An integer vector of length 4000. Binary
+    presence/absence (0/1) corresponding to <code>occ_df$presence</code>.</p></dd>
+
+  <dt><code>true_par_list</code></dt>
 <dd><p>A list of biological-scale parameters
     (the "true" parameter set used to generate the virtual species).
     Contains <code>mu</code>, <code>sigltil</code>, <code>sigrtil</code>, <code>ctil</code>,
     <code>pd</code>, <code>o_mat</code>.</p></dd>
 
+  <dt><code>optim_par_list</code></dt>
+<dd><p>A list of biological-scale parameters
+    (the MLE fit for the example). Contains <code>mu</code>, <code>sigltil</code>,
+    <code>sigrtil</code>, <code>ctil</code>, <code>pd</code>, <code>o_mat</code>.</p></dd>
+
   <dt><code>optim_par_vec</code></dt>
 <dd><p>A named numeric vector of length 9.
-    Math-scale MLE estimates.  Convert to the biological scale with
-    <code>math_to_bio(example_1$optim_par_vec)</code>.</p></dd>
+    Math-scale parameters corresponding to <code>optim_par_list</code>.</p></dd>
 
   <dt><code>optim_par_vec_equivalent</code></dt>
 <dd><p>A named numeric vector of
@@ -135,23 +142,19 @@ unpack with <code><a href="https://rspatial.github.io/terra/reference/wrap.html"
 <code>bio1 &lt;- terra::unwrap(example_1$bio01)</code>.</p>
 <p>The environmental data are originally from CHELSA v2.1
 (<a href="https://www.chelsa-climate.org/" class="external-link">https://www.chelsa-climate.org/</a>). The virtual species was
-generated from the parameters in <code>par_list</code>.</p>
-<p>Three former convenience slots can be derived from the remaining
-objects and were removed to keep the dataset minimal:</p><ul><li><p><code>occ_vec</code>: use <code>example_1$occ_df$presence</code></p></li>
-<li><p><code>optim_par_list</code>: use
-    <code>math_to_bio(example_1$optim_par_vec)</code></p></li>
-<li><p><code>par_vec_vsp</code>: was identical to <code>par_vec</code></p></li>
-</ul></div>
+generated from the parameters in <code>true_par_list</code>.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Access the list</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">example_1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "par_vec"                  "bio01"                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "bio12"                    "env_array"               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "occ_df"                   "optim_par_vec_equivalent"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "optim_par_vec"            "par_list"                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [9] "par_table"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "par_vec"                  "bio01"                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "bio12"                    "env_array"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "occ_df"                   "occ_vec"                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "optim_par_list"           "optim_par_vec_equivalent"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "optim_par_vec"            "par_table"               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "true_par_list"           </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Unpack a raster</span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>

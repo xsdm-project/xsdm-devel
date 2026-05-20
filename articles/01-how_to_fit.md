@@ -996,7 +996,7 @@ space to the maximum-likelihood parameters:
 
 ``` r
 
-example_1_true_parameters_bio <- example_1$par_list
+example_1_true_parameters_bio <- example_1$true_par_list
 example_1_true_parameters_bio
 ```
 
