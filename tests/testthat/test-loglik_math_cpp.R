@@ -6,7 +6,7 @@
 test_that("loglik_math_cpp: matches loglik_math on example_1 fixture", {
   pv <- example_1$par_vec
   env_dat <- example_1$env_array
-  occ <- as.integer(example_1$occ_vec)
+  occ <- as.integer(example_1$occ_df$presence)
 
   for (neg in c(TRUE, FALSE)) {
     ref <- loglik_math(pv, env_dat, occ, negative = neg)
@@ -71,7 +71,7 @@ test_that("loglik_math_cpp: random p = 2 parity", {
 test_that("loglik_math_cpp: num_threads determinism", {
   pv <- example_1$par_vec
   env_dat <- example_1$env_array
-  occ <- as.integer(example_1$occ_vec)
+  occ <- as.integer(example_1$occ_df$presence)
   r1 <- xsdm:::loglik_math_cpp(pv, env_dat, occ, num_threads = 1L)
   r2 <- xsdm:::loglik_math_cpp(pv, env_dat, occ, num_threads = 2L)
   expect_equal(r1, r2, tolerance = 1e-12)

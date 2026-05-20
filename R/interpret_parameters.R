@@ -154,7 +154,7 @@ auto_plot_lims_ <- function(env_dat,
 #'     example_1$par_list,
 #'     plot_indices = c(1, 2),
 #'     env_dat      = example_1$env_array,
-#'     occ          = example_1$occ_vec
+#'     occ          = example_1$occ_df$presence
 #'   )
 #'
 #'   # Narrower auto-derived window
@@ -162,7 +162,7 @@ auto_plot_lims_ <- function(env_dat,
 #'     example_1$par_list,
 #'     plot_indices = c(1, 2),
 #'     env_dat      = example_1$env_array,
-#'     occ          = example_1$occ_vec,
+#'     occ          = example_1$occ_df$presence,
 #'     breadth      = 0.7
 #'   )
 #'
