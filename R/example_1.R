@@ -18,13 +18,13 @@
 #'     for the same region and time period.}
 #'   \item{\code{env_array}}{A 3‑D numeric array with dimensions
 #'     `4000 (locations) × 39 (time) × 2 (variables)`. Contains the
-#'     environmental data (bio1 and bio12) extracted from the rasters
-#'     for all locations.}
+#'     environmental data (bio1 and bio12, both divided by 100) extracted
+#'     from the rasters at the `occ_df` locations.}
 #'   \item{\code{occ_df}}{A data frame with 4000 rows and 4 columns:
-#'     `name` (character), `x` (longitude), `y` (latitude), `presence`
-#'     (0/1). Occurrence records for the virtual species *Mus virtualis*.}
+#'     `name` (character), `lon` (longitude), `lat` (latitude), `presence`
+#'     (0/1). Occurrence records for a virtual species.}
 #'   \item{\code{occ_vec}}{An integer vector of length 4000. Binary
-#'     presence/absence (0/1) for the same locations as `env_array`.}
+#'     presence/absence (0/1) corresponding to `occ_df$presence`.}
 #'   \item{\code{optim_par_list}}{A list of biological‑scale parameters
 #'     (the MLE fit for the example). Contains `mu`, `sigltil`, `sigrtil`,
 #'     `ctil`, `pd`, `o_mat`.}
@@ -34,6 +34,12 @@
 #'     length 9. A different math‑scale representation that belongs to
 #'     the same equivalence class as `optim_par_vec`. Used to test
 #'     `dist_between_params()`.}
+#'   \item{\code{par_list}}{A list of biological‑scale parameters
+#'     (a “true” parameter set, not necessarily the MLE). Used in
+#'     examples of `interpret_parameters()`, `vsp()`, etc.}
+#'   \item{\code{par_vec_vsp}}{A named numeric vector of length 9,
+#'     math‑scale parameters. Currently an alias for `par_vec` (retained
+#'     for backward compatibility).}
 #'   \item{\code{par_table}}{A data.frame with 9 columns corresponding to
 #'   a parameter in math scale and 100 rows corresponding to 100 combinations.}
 #' }
