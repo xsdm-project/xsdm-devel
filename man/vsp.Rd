@@ -40,7 +40,7 @@ Internally the function:
 \enumerate{
   \item Computes a habitat suitability raster using `habitat_suitability()`.
   \item Splits the raster into two layers based on `threshold`:
-        cells with prob > threshold (presence pool) and ≤ threshold (absence pool).
+        cells with prob > threshold (presence pool) and \eqn{\le} threshold (absence pool).
   \item Samples `size_presence` and `size_absence` points from each pool
         (without replacement), with probabilities proportional to the suitability value.
   \item Generates a binomial outcome for each sampled point using its suitability

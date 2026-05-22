@@ -13,7 +13,7 @@
 #'   \eqn{\log(1 + \exp(x))}.
 #'
 #' @references Mächler, M. (2012). *Accurately Computing
-#'   log(1 − exp(− |a|)).* CRAN package `copula` vignette.
+#'   log(1 - exp(- |a|)).* CRAN package `copula` vignette.
 #' @seealso \code{\link{log1mexp}}, \code{\link{log1p}},  \code{\link{expm1}} 
 #' @examples
 #' x <- seq(-40, 40, by = 10)
