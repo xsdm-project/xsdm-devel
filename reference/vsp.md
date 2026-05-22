@@ -56,7 +56,8 @@ Internally the function:
     \`habitat_suitability()\`.
 
 2.  Splits the raster into two layers based on \`threshold\`: cells with
-    prob \> threshold (presence pool) and ≤ threshold (absence pool).
+    prob \> threshold (presence pool) and \\\le\\ threshold (absence
+    pool).
 
 3.  Samples \`size_presence\` and \`size_absence\` points from each pool
     (without replacement), with probabilities proportional to the

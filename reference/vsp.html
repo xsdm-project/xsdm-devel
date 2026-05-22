@@ -111,7 +111,7 @@ presence vs. absence sampling areas. Default `0.5`.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Internally the function:</p><ol><li><p>Computes a habitat suitability raster using `habitat_suitability()`.</p></li>
 <li><p>Splits the raster into two layers based on `threshold`:
-        cells with prob &gt; threshold (presence pool) and ≤ threshold (absence pool).</p></li>
+        cells with prob &gt; threshold (presence pool) and \(\le\) threshold (absence pool).</p></li>
 <li><p>Samples `size_presence` and `size_absence` points from each pool
         (without replacement), with probabilities proportional to the suitability value.</p></li>
 <li><p>Generates a binomial outcome for each sampled point using its suitability

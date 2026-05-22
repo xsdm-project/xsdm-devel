@@ -28,7 +28,7 @@ A numeric vector the same length as \`a\` with \\\log(1 - \exp(-a))\\.
 
 ## References
 
-Mächler, M. (2012). \*Accurately Computing log(1 − exp(− \|a\|)).\* CRAN
+Mächler, M. (2012). \*Accurately Computing log(1 - exp(- \|a\|)).\* CRAN
 package \`copula\` vignette.
 
 ## See also
