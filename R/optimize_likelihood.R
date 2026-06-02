@@ -17,6 +17,8 @@
 #'   \code{quant_vec = c(0.5 - 1e-6, 0.5, 0.5 + 1e-6)}. Values in between
 #'   interpolate linearly.
 #' @param parallel Logical. If TRUE, distribute starts via \pkg{future}/\pkg{furrr}.
+#' @param num_cores Integer >=1. Cores used if \code{parallel=TRUE}. 
+#'   Default is the number of cores available - 1.
 #' @param num_threads Integer >=1. Threads used inside \code{loglik_math}.
 #'   If \code{parallel=TRUE}, consider \code{num_threads=1}.
 #' @param control Named list merged into ucminfcpp control. User wins over defaults.
@@ -44,6 +46,7 @@ optimize_likelihood <- function(
     num_starts = 100L,
     breadth = 1,
     parallel = FALSE,
+    num_cores = future::availableCores() - 1,
     num_threads = RcppParallel::defaultNumThreads(),
     control = list(),
     verbose = FALSE
@@ -190,7 +193,7 @@ optimize_likelihood <- function(
     old_plan <- future::plan()
     on.exit(future::plan(old_plan), add = TRUE)
     
-    future::plan(future.callr::callr, workers = future::availableCores())
+    future::plan(future.callr::callr, workers = num_cores)
     
     res_list <- furrr::future_map(
       list_of_pars, runner,
