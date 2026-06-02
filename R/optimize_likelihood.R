@@ -46,7 +46,7 @@ optimize_likelihood <- function(
     num_starts = 100L,
     breadth = 1,
     parallel = FALSE,
-    num_cores = future::availableCores() - 1,
+    num_cores = max(1L, future::availableCores() - 1L),
     num_threads = RcppParallel::defaultNumThreads(),
     control = list(),
     verbose = FALSE
