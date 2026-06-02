@@ -78,6 +78,7 @@ optimize_likelihood <- function(
   # rectangular design.
   checkmate::assert_integerish(num_starts, lower = 3, any.missing = FALSE, len = 1)
   checkmate::assert_flag(parallel)
+  checkmate::assert_integerish(num_cores, lower = 1, any.missing = FALSE, len = 1)
   checkmate::assert_integerish(num_threads, lower = 1, any.missing = FALSE, len = 1)
   checkmate::assert_list(control, any.missing = FALSE, null.ok = TRUE)
   

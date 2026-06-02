@@ -335,6 +335,43 @@ test_that("optimize_likelihood() completes and excludes failed starts when runne
   )
 })
 
+test_that("optimize_likelihood() rejects num_cores < 1", {
+  set.seed(5)
+  n <- 6; Tt <- 4; p <- 2
+  env_dat <- array(runif(n * Tt * p, -1, 1), dim = c(n, Tt, p))
+  occ <- rep(c(1L, 0L), length.out = n)
+
+  expect_error(
+    optimize_likelihood(env_dat, occ, num_starts = 3L, num_cores = 0L, parallel = TRUE),
+    regexp = "num_cores",
+    fixed = FALSE
+  )
+})
+
+test_that("optimize_likelihood() parallel=TRUE, num_cores=1L passes validation and runs", {
+  skip_if_not_installed("furrr")
+  skip_if_not_installed("future.callr")
+  skip_on_cran()
+
+  set.seed(6)
+  n <- 6; Tt <- 4; p <- 2
+  env_dat <- array(runif(n * Tt * p, -1, 1), dim = c(n, Tt, p))
+  occ <- rep(c(1L, 0L), length.out = n)
+
+  expect_no_error(
+    optimize_likelihood(
+      env_dat     = env_dat,
+      occ         = occ,
+      num_starts  = 3L,
+      parallel    = TRUE,
+      num_cores   = 1L,
+      num_threads = 1L,
+      control     = list(maxeval = 5),
+      verbose     = FALSE
+    )
+  )
+})
+
 test_that("optimize_likelihood() reports failed-start count with verbose=TRUE", {
   set.seed(77)
   n <- 8; Tt <- 4; p <- 2
