@@ -11,6 +11,7 @@ optimize_likelihood(
   num_starts = 100L,
   breadth = 1,
   parallel = FALSE,
+  num_cores = max(1L, future::availableCores() - 1L),
   num_threads = RcppParallel::defaultNumThreads(),
   control = list(),
   verbose = FALSE
@@ -34,6 +35,9 @@ every range to essentially a single point, equivalent to
 interpolate linearly.}
 
 \item{parallel}{Logical. If TRUE, distribute starts via \pkg{future}/\pkg{furrr}.}
+
+\item{num_cores}{Integer >=1. Cores used if \code{parallel=TRUE}. 
+Default is the number of cores available - 1.}
 
 \item{num_threads}{Integer >=1. Threads used inside \code{loglik_math}.
 If \code{parallel=TRUE}, consider \code{num_threads=1}.}

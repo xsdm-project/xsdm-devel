@@ -78,14 +78,14 @@ vsp <- function(param_list, env_data, size_presence, size_absence, threshold = 0
     return_prob = TRUE
   )
   
-  # Split raster based on threshold -----------------------------------------
-  r_presence <- terra::app(r, function(x) ifelse(x > threshold, x, NA))
-  r_absence  <- terra::app(r, function(x) ifelse(x <= threshold, x, NA))
+  # Split cells by threshold using cell indices ------------------------------
+  vals <- terra::values(r)
   
   # Helper to sample safely and generate presence/absence
-  sample_group <- function(raster_layer, sample_size, prob_type) {
+  sample_group <- function(cell_indices, sample_size, prob_type) {
+    # cell_indices: indices of cells in the target group (presence or absence)
     # prob_type: "presence" or "absence" – only used for warning messages
-    n_cells <- terra::global(raster_layer, "notNA")[[1]]
+    n_cells <- length(cell_indices)
     if (n_cells == 0) {
       if (sample_size > 0) {
         warning(sprintf("No cells available for %s sampling (threshold = %f). Returning empty data frame.",
@@ -98,15 +98,15 @@ vsp <- function(param_list, env_data, size_presence, size_absence, threshold = 0
                       sample_size, prob_type, n_cells))
       sample_size <- n_cells
     }
-    pts <- terra::spatSample(raster_layer, size = sample_size, na.rm = TRUE, xy = TRUE, values = TRUE)
-    # pts has columns: x, y, layer (the probability)
-    names(pts) <- c("x", "y", "prob")
-    return(pts)
+    # Sample cell indices with probability weights
+    chosen <- sample(cell_indices, size = sample_size, replace = FALSE, prob = vals[cell_indices])
+    coords <- terra::xyFromCell(r, chosen)
+    data.frame(x = coords[, "x"], y = coords[, "y"], prob = vals[chosen])
   }
   
   # Sample presence and absence groups
-  presence_pts <- sample_group(r_presence, size_presence, "presence")
-  absence_pts  <- sample_group(r_absence,  size_absence,  "absence")
+  presence_pts <- sample_group(which(vals > threshold),  size_presence, "presence")
+  absence_pts  <- sample_group(which(vals <= threshold), size_absence,  "absence")
   
   # Generate binomial outcomes
   generate_binom <- function(pts) {
