@@ -426,10 +426,11 @@ dist_between_params_r <- function(p1, p2, mask = NULL, give_closest_rep = FALSE)
     p <- round((-5 + sqrt(9 + 8 * (length(p1) + length(mask)))) / 2)
     checkmate::assert_true(setequal(c(names(mask), names(p1)),
                                     names(make_mask_names(p))))
-    checkmate::assert_numeric(p1, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(p1, any.missing = FALSE)
     allnames <- names(make_mask_names(p))
-    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
-      c(allnames[grepl("^sig", allnames)], "pd")))
+    inf_ok <- c(allnames[grepl("^sig", allnames)], "pd")
+    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in% inf_ok))
+    checkmate::assert_true(all(names(p1[is.infinite(p1)]) %in% inf_ok))
     p1 <- math_to_bio(create_param_vector_masked(p1, mask, p))
   }
   if (is.numeric(p2)) {
@@ -437,10 +438,11 @@ dist_between_params_r <- function(p1, p2, mask = NULL, give_closest_rep = FALSE)
     p <- round((-5 + sqrt(9 + 8 * (length(p2) + length(mask)))) / 2)
     checkmate::assert_true(setequal(c(names(mask), names(p2)),
                                     names(make_mask_names(p))))
-    checkmate::assert_numeric(p2, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(p2, any.missing = FALSE)
     allnames <- names(make_mask_names(p))
-    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
-      c(allnames[grepl("^sig", allnames)], "pd")))
+    inf_ok <- c(allnames[grepl("^sig", allnames)], "pd")
+    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in% inf_ok))
+    checkmate::assert_true(all(names(p2[is.infinite(p2)]) %in% inf_ok))
     p2 <- math_to_bio(create_param_vector_masked(p2, mask, p))
   }
 

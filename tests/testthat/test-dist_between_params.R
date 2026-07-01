@@ -275,6 +275,41 @@ test_that("dist_between_params: math-scale inputs + mask complementarity
 })
 
 
+test_that("dist_between_params: Inf in the free math-scale vector is allowed
+          for sig*/pd (saturated boundary models)", {
+  # A boundary model saturates a shape parameter (sigrtil -> Inf on the bio
+  # scale). When the full math-scale vector is passed with mask = NULL, that
+  # coordinate is +Inf; the distance is still well-defined because sig* are
+  # compared on the inverse scale (1/Inf = 0).
+  base <- example_1$optim_par_vec
+
+  bnd <- base
+  bnd["sigrtil1"] <- Inf
+  # distance of a saturated model to itself is 0 (not NA / not an error)
+  expect_equal(dist_between_params(bnd, bnd), 0)
+
+  # distance between two saturated restarts remains finite
+  bnd2 <- bnd
+  bnd2["mu1"] <- bnd2["mu1"] + 0.01
+  expect_true(is.finite(dist_between_params(bnd, bnd2)))
+
+  # pd is likewise allowed to be infinite
+  bnd_pd <- base
+  bnd_pd["pd"] <- Inf
+  expect_true(is.finite(dist_between_params(bnd_pd, bnd_pd)))
+
+  # but Inf in a non-sig/non-pd coordinate (e.g. mu) is still rejected
+  bad <- base
+  bad["mu1"] <- Inf
+  expect_error(dist_between_params(bad, bad), regexp = "Must be TRUE")
+
+  # NA anywhere is still rejected
+  na_v <- base
+  na_v["sigrtil1"] <- NA_real_
+  expect_error(dist_between_params(na_v, na_v))
+})
+
+
 test_that("dist_between_params:
           mismatched lengths/names on math-scale raise errors", {
   # --- 1) Wrong length: assert_integerish() ---

@@ -59,6 +59,16 @@ First public release.
   `nseq = 0` and returns a malformed vector at `nseq = 1`).
 * `start_parms()` runtime: `sobol::sobol_design` output is defensively
   coerced to a `data.frame`, protecting against future behaviour changes.
+* `dist_between_params()` (and the `xsdm:::dist_between_params_r` reference)
+  now accept a `+/-Inf` value in a `sig*` or `pd` coordinate of a *free*
+  math-scale parameter vector, matching the rule already applied to the
+  `mask` argument. This is the boundary-model case where a shape parameter
+  saturates (e.g. `sigrtil -> Inf`): the distance is still well defined
+  because `sig*` are compared on the inverse scale (`1 / Inf = 0`).
+  Previously such a vector was rejected with `"Must be finite"`, which
+  forced callers to catch the error and record a missing (`NA`) distance.
+  `NA` anywhere, and `Inf` in any non-`sig*`/non-`pd` coordinate, are still
+  rejected.
 
 ## Build & packaging
 

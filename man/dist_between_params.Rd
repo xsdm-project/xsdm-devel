@@ -10,7 +10,11 @@ dist_between_params(p1, p2, mask = NULL, give_closest_rep = FALSE)
 \item{p1}{First set of parameters. May be math-scale (a named numeric
 vector whose names complement \code{mask}) or biological-scale (a named
 list with entries \code{mu}, \code{sigltil}, \code{sigrtil}, \code{ctil},
-\code{pd}, \code{o_mat}).}
+\code{pd}, \code{o_mat}). On the math scale a coordinate may be
+\code{+/-Inf} only if it is a \code{sig*} or \code{pd} entry (the
+boundary-model case where a shape parameter saturates); \code{sig*} are
+compared on the inverse scale, so an infinite width contributes a finite
+distance. \code{NA} is never allowed.}
 
 \item{p2}{Second set of parameters; same format options as \code{p1}.}
 
