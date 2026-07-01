@@ -1,5 +1,19 @@
 # Changelog
 
+## xsdm 1.0.1
+
+### Bug fixes
+
+- [`vsp()`](https://xsdm-project.github.io/xsdm-devel/reference/vsp.md)
+  now selects presence/absence cells by cell index with uniform sampling
+  (via [`sample.int()`](https://rdrr.io/r/base/sample.html)) instead of
+  `sample(cell_indices, prob = ...)`. This fixes the base-R
+  [`sample()`](https://rdrr.io/r/base/sample.html) footgun when a pool
+  has a single eligible cell, and removes suitability weighting from the
+  spatial draw (suitability already enters the presence/absence outcome
+  via [`rbinom()`](https://rdrr.io/r/stats/Binomial.html)), which also
+  avoids an error when an absence pool’s weights are all zero.
+
 ## xsdm 1.0.0
 
 First public release.

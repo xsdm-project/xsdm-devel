@@ -54,6 +54,14 @@ window.MathJax = {
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="xsdm-101">xsdm 1.0.1<a class="anchor" aria-label="anchor" href="#xsdm-101"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-1-0-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-1"></a></h3>
+<ul><li>
+<code><a href="../reference/vsp.html">vsp()</a></code> now selects presence/absence cells by cell index with uniform sampling (via <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample.int()</a></code>) instead of <code>sample(cell_indices, prob = ...)</code>. This fixes the base-R <code><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample()</a></code> footgun when a pool has a single eligible cell, and removes suitability weighting from the spatial draw (suitability already enters the presence/absence outcome via <code><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom()</a></code>), which also avoids an error when an absence pool’s weights are all zero.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="xsdm-100">xsdm 1.0.0<a class="anchor" aria-label="anchor" href="#xsdm-100"></a></h2>
 <p>First public release.</p>
 <div class="section level3">
