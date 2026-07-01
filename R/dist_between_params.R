@@ -20,7 +20,11 @@
 #' @param p1 First set of parameters. May be math-scale (a named numeric
 #'   vector whose names complement \code{mask}) or biological-scale (a named
 #'   list with entries \code{mu}, \code{sigltil}, \code{sigrtil}, \code{ctil},
-#'   \code{pd}, \code{o_mat}).
+#'   \code{pd}, \code{o_mat}). On the math scale a coordinate may be
+#'   \code{+/-Inf} only if it is a \code{sig*} or \code{pd} entry (the
+#'   boundary-model case where a shape parameter saturates); \code{sig*} are
+#'   compared on the inverse scale, so an infinite width contributes a finite
+#'   distance. \code{NA} is never allowed.
 #' @param p2 Second set of parameters; same format options as \code{p1}.
 #' @param mask Same format as the \code{mask} argument to \code{\link{loglik_math}}
 #'   and \code{\link{start_parms}}. Ignored if both \code{p1} and \code{p2} are
@@ -80,10 +84,11 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
     p <- round((-5 + sqrt(9 + 8 * (length(p1) + length(mask)))) / 2)
     checkmate::assert_true(setequal(c(names(mask), names(p1)),
                                     names(make_mask_names(p))))
-    checkmate::assert_numeric(p1, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(p1, any.missing = FALSE)
     allnames <- names(make_mask_names(p))
-    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
-      c(allnames[grepl("^sig", allnames)], "pd")))
+    inf_ok <- c(allnames[grepl("^sig", allnames)], "pd")
+    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in% inf_ok))
+    checkmate::assert_true(all(names(p1[is.infinite(p1)]) %in% inf_ok))
     p1 <- math_to_bio(create_param_vector_masked(p1, mask, p))
   }
   if (is.numeric(p2)) {
@@ -91,10 +96,11 @@ dist_between_params <- function(p1, p2, mask = NULL, give_closest_rep = FALSE) {
     p <- round((-5 + sqrt(9 + 8 * (length(p2) + length(mask)))) / 2)
     checkmate::assert_true(setequal(c(names(mask), names(p2)),
                                     names(make_mask_names(p))))
-    checkmate::assert_numeric(p2, any.missing = FALSE, finite = TRUE)
+    checkmate::assert_numeric(p2, any.missing = FALSE)
     allnames <- names(make_mask_names(p))
-    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in%
-      c(allnames[grepl("^sig", allnames)], "pd")))
+    inf_ok <- c(allnames[grepl("^sig", allnames)], "pd")
+    checkmate::assert_true(all(names(mask[is.infinite(mask)]) %in% inf_ok))
+    checkmate::assert_true(all(names(p2[is.infinite(p2)]) %in% inf_ok))
     p2 <- math_to_bio(create_param_vector_masked(p2, mask, p))
   }
 
