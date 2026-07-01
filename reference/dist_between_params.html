@@ -95,7 +95,11 @@ distance is most meaningful for those parameters).</p>
 <dd><p>First set of parameters. May be math-scale (a named numeric
 vector whose names complement <code>mask</code>) or biological-scale (a named
 list with entries <code>mu</code>, <code>sigltil</code>, <code>sigrtil</code>, <code>ctil</code>,
-<code>pd</code>, <code>o_mat</code>).</p></dd>
+<code>pd</code>, <code>o_mat</code>). On the math scale a coordinate may be
+<code>+/-Inf</code> only if it is a <code>sig*</code> or <code>pd</code> entry (the
+boundary-model case where a shape parameter saturates); <code>sig*</code> are
+compared on the inverse scale, so an infinite width contributes a finite
+distance. <code>NA</code> is never allowed.</p></dd>
 
 
 <dt id="arg-p-">p2<a class="anchor" aria-label="anchor" href="#arg-p-"></a></dt>

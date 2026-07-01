@@ -22,7 +22,11 @@ dist_between_params(p1, p2, mask = NULL, give_closest_rep = FALSE)
 
   First set of parameters. May be math-scale (a named numeric vector
   whose names complement `mask`) or biological-scale (a named list with
-  entries `mu`, `sigltil`, `sigrtil`, `ctil`, `pd`, `o_mat`).
+  entries `mu`, `sigltil`, `sigrtil`, `ctil`, `pd`, `o_mat`). On the
+  math scale a coordinate may be `+/-Inf` only if it is a `sig*` or `pd`
+  entry (the boundary-model case where a shape parameter saturates);
+  `sig*` are compared on the inverse scale, so an infinite width
+  contributes a finite distance. `NA` is never allowed.
 
 - p2:
 
