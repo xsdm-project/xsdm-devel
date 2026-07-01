@@ -98,8 +98,11 @@ vsp <- function(param_list, env_data, size_presence, size_absence, threshold = 0
                       sample_size, prob_type, n_cells))
       sample_size <- n_cells
     }
-    # Sample cell indices with probability weights
-    chosen <- sample(cell_indices, size = sample_size, replace = FALSE, prob = vals[cell_indices])
+    # Sample cell indices uniformly without replacement. Suitability drives the
+    # presence/absence outcome downstream via rbinom(), so it must not also bias
+    # the spatial sampling. Index into cell_indices via sample.int() to avoid the
+    # sample() footgun when cell_indices has length 1.
+    chosen <- cell_indices[sample.int(n_cells, size = sample_size, replace = FALSE)]
     coords <- terra::xyFromCell(r, chosen)
     data.frame(x = coords[, "x"], y = coords[, "y"], prob = vals[chosen])
   }
