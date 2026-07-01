@@ -1,3 +1,14 @@
+# xsdm 1.0.1
+
+## Bug fixes
+
+* `vsp()` now selects presence/absence cells by cell index with uniform
+  sampling (via `sample.int()`) instead of `sample(cell_indices, prob = ...)`.
+  This fixes the base-R `sample()` footgun when a pool has a single eligible
+  cell, and removes suitability weighting from the spatial draw (suitability
+  already enters the presence/absence outcome via `rbinom()`), which also
+  avoids an error when an absence pool's weights are all zero.
+
 # xsdm 1.0.0
 
 First public release.
